@@ -10,6 +10,6 @@ public class MAMCraftTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_4;
-		ExtraModuleNames.AddRange(new string[] { "MAMCraft", "LSJ" });
+		ExtraModuleNames.AddRange(new string[] { "MAMCraft", "LSJ", "JYS" });
 	}
 }

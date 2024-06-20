@@ -15,6 +15,16 @@
 			]
 		},
 		{
+			"Name": "JYS",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Core",
+				"CoreUObject",
+				"Engine"
+			]
+		},
+		{
 			"Name": "MAMCraft",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",

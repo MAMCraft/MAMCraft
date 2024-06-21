@@ -27,12 +27,18 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimMontage* RollingMonatge;
+
+	void Rolling();
+
 private:
 
-UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* cameraComponent;
 
-UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent* springArmComponent;
 
 };

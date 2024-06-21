@@ -37,6 +37,7 @@ APlayerCharacter::APlayerCharacter()
 	cameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	cameraComponent->SetupAttachment(springArmComponent, USpringArmComponent::SocketName);
 	cameraComponent->bUsePawnControlRotation = false;
+
 }
 
 
@@ -59,5 +60,18 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAction("RollingAction", IE_Pressed, this, &APlayerCharacter::Rolling);
+
+}
+
+void APlayerCharacter::Rolling()
+{
+	UE_LOG(LogTemp, Log, TEXT("Rolling"));
+
+	if (RollingMonatge)
+	{
+		PlayAnimMontage(RollingMonatge);
+		UE_LOG(LogTemp, Log, TEXT("Rolling"));
+	}
 }
 

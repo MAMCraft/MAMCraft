@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -26,5 +27,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+
+UPROPERTY(VisibleAnywhere)
+	class UCameraComponent* cameraComponent;
+
+UPROPERTY(VisibleAnywhere)
+	class USpringArmComponent* springArmComponent;
 
 };

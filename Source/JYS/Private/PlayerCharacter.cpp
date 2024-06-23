@@ -7,6 +7,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimInstance.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -61,17 +63,36 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("RollingAction", IE_Pressed, this, &APlayerCharacter::Rolling);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::attack);
 
 }
 
 void APlayerCharacter::Rolling()
 {
 	UE_LOG(LogTemp, Log, TEXT("Rolling"));
-
+	
 	if (RollingMonatge)
 	{
 		PlayAnimMontage(RollingMonatge);
 		UE_LOG(LogTemp, Log, TEXT("Rolling"));
 	}
 }
+
+void APlayerCharacter::attack()
+{
+	UE_LOG(LogTemp, Log, TEXT("Random Attack"));
+
+	if (attackMontages.Num() > 0)
+	{
+		int32 RandomIndex = UKismetMathLibrary::RandomIntegerInRange(0, attackMontages.Num() - 1);
+
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+		if (AnimInstance && attackMontages[RandomIndex])
+		{
+			AnimInstance->Montage_Play(attackMontages[RandomIndex]);
+		}
+	}
+}
+
 

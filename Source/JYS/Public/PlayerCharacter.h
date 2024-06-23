@@ -41,4 +41,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent* springArmComponent;
 
+	UPROPERTY(EditAnywhere)
+	TArray<UAnimMontage*> attackMontages;
+
+	void attack();
+
 };

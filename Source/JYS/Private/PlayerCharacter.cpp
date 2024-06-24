@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -40,6 +41,17 @@ APlayerCharacter::APlayerCharacter()
 	cameraComponent->SetupAttachment(springArmComponent, USpringArmComponent::SocketName);
 	cameraComponent->bUsePawnControlRotation = false;
 
+	// 플레이어 앞에 박스 생성 (Create and attach the overlap box)
+	overlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
+	overlapBox->SetupAttachment(RootComponent);
+
+	// 박스 설정 (Set the size and position of the overlap box)
+	overlapBox->SetBoxExtent(FVector(100.0f, 100.0f, 100.0f));
+	overlapBox->SetRelativeLocation(FVector(100.0f, 0.0f, 0.0f));
+
+	// overlap bind하기 (Bind the overlap event)
+	overlapBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
+
 }
 
 
@@ -64,7 +76,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("RollingAction", IE_Pressed, this, &APlayerCharacter::Rolling);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::attack);
-
 }
 
 void APlayerCharacter::Rolling()
@@ -92,6 +103,17 @@ void APlayerCharacter::attack()
 		{
 			AnimInstance->Montage_Play(attackMontages[RandomIndex]);
 		}
+	}
+}
+
+// 오버랩 되면 destroy되게끔
+void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && (OtherActor != this) && OtherComp)
+	{
+		// 오버랩 된 액터들을 Destroy한다
+		OtherActor->Destroy();
+		UE_LOG(LogTemp, Log, TEXT("Destroy"), *OtherActor->GetName());
 	}
 }
 

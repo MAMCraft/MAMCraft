@@ -10,6 +10,7 @@
 #include "Animation/AnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/BoxComponent.h"
+#include "Animation/AnimMontage.h"
 
 
 // Sets default values
@@ -60,6 +61,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
 }
 
 // Called every frame
@@ -76,16 +78,17 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("RollingAction", IE_Pressed, this, &APlayerCharacter::Rolling);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::attack);
+	PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::skill);
 }
 
 void APlayerCharacter::Rolling()
 {
-	UE_LOG(LogTemp, Log, TEXT("Rolling"));
+	UE_LOG(LogTemp, Log, TEXT("rollingMonatge"));
 	
-	if (RollingMonatge)
+	if (rollingMonatge)
 	{
-		PlayAnimMontage(RollingMonatge);
-		UE_LOG(LogTemp, Log, TEXT("Rolling"));
+		PlayAnimMontage(rollingMonatge);
+		UE_LOG(LogTemp, Log, TEXT("rollingMonatge"));
 	}
 }
 
@@ -93,16 +96,26 @@ void APlayerCharacter::attack()
 {
 	UE_LOG(LogTemp, Log, TEXT("Random Attack"));
 
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
 	if (attackMontages.Num() > 0)
 	{
 		int32 RandomIndex = UKismetMathLibrary::RandomIntegerInRange(0, attackMontages.Num() - 1);
-
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 		if (AnimInstance && attackMontages[RandomIndex])
 		{
 			AnimInstance->Montage_Play(attackMontages[RandomIndex]);
 		}
+	}
+}
+void APlayerCharacter::skill()
+{
+	UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
+
+	if (bowMontage)
+	{
+		PlayAnimMontage(bowMontage);
+		UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
 	}
 }
 

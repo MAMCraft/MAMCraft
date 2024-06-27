@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "LSJ.h"
 #include "GameFramework/Pawn.h"
-#include "Components/CapsuleComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "EnemyZombie.generated.h"
 
 UCLASS()
@@ -35,4 +35,19 @@ public:
 	USceneComponent* rootComp;
 	UPROPERTY(VisibleAnywhere, Category = "ROOT")
 	FVector rootCompScale;
+	UPROPERTY(VisibleAnywhere, Category = "MOVEMENT")
+	UFloatingPawnMovement* movement;
+
+	virtual void PostInitializeComponents() override;
+	virtual void PossessedBy(AController* newController) override;
+public:
+	UFUNCTION(BlueprintCallable)
+	const FVector& GetNextPatrolPoint();
+
+public:
+	UPROPERTY(EditAnywhere,Category="PATROL",Meta=(MakeEditWidget = true))
+	TArray<FVector> localPatrolPoints;
+	TArray<FVector> worldPatrolPoints;
+
+
 };

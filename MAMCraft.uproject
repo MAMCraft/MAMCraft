@@ -12,7 +12,9 @@
 				"Core",
 				"CoreUObject",
 				"Engine",
-				"NavigationSystem"
+				"NavigationSystem",
+				"AIModule",
+				"GamePlayTasks"
 			]
 		},
 		{
@@ -30,7 +32,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"AIModule"
 			]
 		}
 	],

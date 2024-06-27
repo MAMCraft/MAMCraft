@@ -2,7 +2,10 @@
 
 
 #include "ClickMovePlayerController.h"
+#include "Animation/AnimMontage.h"
+#include "Animation/AnimInstance.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
+#include <PlayerCharacter.h>
 
 
 AClickMovePlayerController::AClickMovePlayerController()
@@ -25,7 +28,17 @@ void AClickMovePlayerController::PlayerTick(float DeltaTime)
 	if (bClickLeftMouse)
 	{
 		MoveToMouseCursor();
+		UAnimInstance* AnimInstance = PlayerCharacter->GetMesh()->GetAnimInstance();
+		if (AnimInstance && runMontage)
+		{
+			AnimInstance->Montage_Play(runMontage);
+		}
 	}
+}
+
+void AClickMovePlayerController::BeginPlay()
+{
+	PlayerCharacter = Cast<ACharacter>(GetPawn());
 }
 
 void AClickMovePlayerController::InputLeftMouseButtonPressed()

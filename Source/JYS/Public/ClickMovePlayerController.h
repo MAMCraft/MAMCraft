@@ -18,6 +18,8 @@ public:
 	AClickMovePlayerController();
 	bool bClickLeftMouse;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimMontage* runMontage;
 
 protected:
 
@@ -31,4 +33,10 @@ protected:
 	virtual void SetupInputComponent() override;
 
 	virtual void PlayerTick(float DeltaTime) override;
+
+	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	ACharacter* PlayerCharacter;
+
 };

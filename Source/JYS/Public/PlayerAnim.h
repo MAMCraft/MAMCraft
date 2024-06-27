@@ -14,9 +14,4 @@ class JYS_API UPlayerAnim : public UAnimInstance
 {
 	GENERATED_BODY()
 	
-public: 
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-
-
-	
 };

@@ -3,7 +3,3 @@
 
 #include "PlayerAnim.h"
 
-void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
-{
-	
-}

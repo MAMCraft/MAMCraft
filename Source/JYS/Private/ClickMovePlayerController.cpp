@@ -27,6 +27,7 @@ void AClickMovePlayerController::PlayerTick(float DeltaTime)
 
 	if (bClickLeftMouse)
 	{
+		bClickLeftMouse = false;
 		MoveToMouseCursor();
 		UAnimInstance* AnimInstance = PlayerCharacter->GetMesh()->GetAnimInstance();
 		if (AnimInstance && runMontage)

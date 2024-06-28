@@ -11,6 +11,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Animation/AnimMontage.h"
+#include "HPWidget.h"
 
 
 // Sets default values
@@ -60,8 +61,11 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-
+	HPWidget = CreateWidget<UHPWidget>(GetWorld(), HPWidgetFactory);
+	if (HPWidget)
+	{
+		HPWidget->AddToViewport();
+	}
 }
 
 // Called every frame
@@ -90,6 +94,30 @@ void APlayerCharacter::Rolling()
 		PlayAnimMontage(rollingMonatge);
 		UE_LOG(LogTemp, Log, TEXT("rollingMonatge"));
 	}
+}
+
+void APlayerCharacter::OnMyTakeDamage(int damage)
+{
+	// 데미지 만큼 체력을 소모한다.
+	this->playerHP = this->playerHP - damage;
+	if (this->playerHP < damage)
+	{
+		this->playerHP = 0;
+	}
+
+	// 체력이 결정되었다면 UI로 반영한다.
+	if (nullptr != HPWidget)
+		HPWidget->SetHP(playerHP, playerMaxHP);
+
+	// 만약 체력이 0이면 죽는다.
+	if (this->playerHP == 0)
+	{
+		Destroy();
+	}
+	// 그렇지않다면 (== 체력이 0보다 크다면)
+	/*else
+	{
+	}*/
 }
 
 void APlayerCharacter::attack()
@@ -129,5 +157,6 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		UE_LOG(LogTemp, Log, TEXT("Destroy"), *OtherActor->GetName());
 	}
 }
+
 
 

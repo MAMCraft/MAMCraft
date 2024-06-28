@@ -37,6 +37,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAnimMontage* bowMontage;
 
+	UFUNCTION(BlueprintCallable)
+	void OnMyTakeDamage(int damage);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int playerMaxHP = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int playerHP = playerMaxHP;
+
 	void attack();
 
 	void skill();
@@ -57,5 +66,10 @@ private:
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UUserWidget> HPWidgetFactory;
+
+	UPROPERTY()
+	class UHPWidget* HPWidget;
 
 };

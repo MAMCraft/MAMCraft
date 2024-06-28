@@ -13,5 +13,11 @@ UCLASS()
 class JYS_API UPlayerAnim : public UAnimInstance
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float MovementSpeed = 0.0f;
+
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
 };

@@ -18,8 +18,8 @@ public:
 	AClickMovePlayerController();
 	bool bClickLeftMouse;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UAnimMontage* runMontage;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//UAnimMontage* runMontage;
 
 protected:
 

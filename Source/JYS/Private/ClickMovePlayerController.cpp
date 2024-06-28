@@ -29,11 +29,11 @@ void AClickMovePlayerController::PlayerTick(float DeltaTime)
 	{
 		bClickLeftMouse = false;
 		MoveToMouseCursor();
-		UAnimInstance* AnimInstance = PlayerCharacter->GetMesh()->GetAnimInstance();
-		if (AnimInstance && runMontage)
-		{
-			AnimInstance->Montage_Play(runMontage);
-		}
+		//UAnimInstance* AnimInstance = PlayerCharacter->GetMesh()->GetAnimInstance();
+		//if (AnimInstance && runMontage)
+		//{		
+		//	AnimInstance->Montage_Play(runMontage);
+		//}
 	}
 }
 

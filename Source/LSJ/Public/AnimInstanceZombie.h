@@ -13,14 +13,17 @@ UCLASS()
 class LSJ_API UAnimInstanceZombie : public UAnimInstance
 {
 	GENERATED_BODY()
+
+protected:
+	//virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	void NativeInitializeAnimation();
 private:
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="MOVEMENT",meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="MOVEMENT", meta = (allowprivateaccess = true))
 	float movementSpeed;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOVEMENT", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOVEMENT", meta = (allowprivateaccess = true))
 	class APawn* pawn;
 	UFUNCTION(BlueprintCallable, Category = "UPDATE")
 	void UpdateProperties();
-	UFUNCTION()
-	void NativeInitializeAnimation() override;
+
 
 };

@@ -10,6 +10,7 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bUseControllerRotationYaw = false;
 
 	rootComp = CreateDefaultSubobject<USceneComponent>(TEXT("ROOT"));
 	skMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESHCOMPONENT"));

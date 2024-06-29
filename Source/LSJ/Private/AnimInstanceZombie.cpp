@@ -5,13 +5,26 @@
 
 void UAnimInstanceZombie::NativeInitializeAnimation()
 {
-	Super::NativeInitializeAnimation();
+	//Super::NativeInitializeAnimation();
 	if (pawn == nullptr)
 	{
 		// 현재 스켈레톤의 주인(폰)을 가져온다.
 		pawn = TryGetPawnOwner();
 	}
 }
+//void UAnimInstanceZombie::NativeUpdateAnimation(float DeltaSeconds)
+//{
+//	Super::NativeUpdateAnimation(DeltaSeconds);
+//
+//	// 현재 AnimInstance를 소유중인 Pawn을 가져오는 것을 시도함
+//	pawn = TryGetPawnOwner();
+//
+//	// '시도' 이기 때문에 못 가져올 수도 있으므로 유효한 값인지 검사
+//	if (IsValid(pawn))
+//	{
+//		movementSpeed = pawn->GetVelocity().Size();
+//	}
+//}
 void UAnimInstanceZombie::UpdateProperties()
 {
 	// 폰이 없어졌다면?
@@ -32,6 +45,7 @@ void UAnimInstanceZombie::UpdateProperties()
 		// Z축은 필요가 없으니, 0으로 초기화해준다.
 		FVector NewVelocity = FVector(Velocity.X, Velocity.Y, 0.f);
 		movementSpeed = NewVelocity.Size();
+		UE_LOG(LogTemp, Display, TEXT("%f"), movementSpeed);
 	}
 }
 

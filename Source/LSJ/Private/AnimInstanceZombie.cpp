@@ -12,6 +12,15 @@ void UAnimInstanceZombie::NativeInitializeAnimation()
 		pawn = TryGetPawnOwner();
 	}
 }
+UAnimInstanceZombie::UAnimInstanceZombie()
+{
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Script/Engine.AnimMontage'/Game/LSJ/Resource/Zombie/Animation/zombieAnimationAttack_Montage.zombieAnimationAttack_Montage'"));
+	if (ATTACK_MONTAGE.Succeeded())
+	{
+		attackMontage = ATTACK_MONTAGE.Object;
+	}else
+		UE_LOG(LogTemp, Display, TEXT("attackMontage nullptr"));
+}
 //void UAnimInstanceZombie::NativeUpdateAnimation(float DeltaSeconds)
 //{
 //	Super::NativeUpdateAnimation(DeltaSeconds);
@@ -45,7 +54,10 @@ void UAnimInstanceZombie::UpdateProperties()
 		// Z축은 필요가 없으니, 0으로 초기화해준다.
 		FVector NewVelocity = FVector(Velocity.X, Velocity.Y, 0.f);
 		movementSpeed = NewVelocity.Size();
-		UE_LOG(LogTemp, Display, TEXT("%f"), movementSpeed);
 	}
 }
 
+void UAnimInstanceZombie::PlayAttackMontage()
+{
+	Montage_Play(attackMontage, 1.0f);
+}

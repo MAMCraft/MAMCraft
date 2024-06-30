@@ -3,19 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/BTService.h"
-#include "BTService_FindTarget.generated.h"
+#include "BehaviorTree/Services/BTService_BlackboardBase.h"
+#include "BTService_AttackRangeCheck.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LSJ_API UBTService_FindTarget : public UBTService
+class LSJ_API UBTService_AttackRangeCheck : public UBTService_BlackboardBase
 {
 	GENERATED_BODY()
+	
 public:
 	UPROPERTY(EditAnywhere, Category = "TRACE")
-	float traceRadius = 1000.0f;
+	float traceRange = 100.0f;
+	UPROPERTY(EditAnywhere,Category = "TRACE")
+	float traceRadius = 50.0f;
+
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };

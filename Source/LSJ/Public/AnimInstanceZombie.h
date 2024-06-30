@@ -18,6 +18,7 @@ protected:
 	//virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void NativeInitializeAnimation();
 private:
+	UAnimInstanceZombie();
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="MOVEMENT", meta = (allowprivateaccess = true))
 	float movementSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOVEMENT", meta = (allowprivateaccess = true))
@@ -25,5 +26,9 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "UPDATE")
 	void UpdateProperties();
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOVEMENT", meta = (allowprivateaccess = true))
+	UAnimMontage* attackMontage;
+public:
+	UFUNCTION()
+	void PlayAttackMontage();
 };

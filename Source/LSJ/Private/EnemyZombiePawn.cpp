@@ -59,8 +59,6 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 	else
 		UE_LOG(LogTemp, Log, TEXT("zombieAnim.Fail"));
 
-	animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
-
 	AIControllerClass = AAIControllerZombie::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -69,6 +67,7 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 void AEnemyZombiePawn::BeginPlay()
 {
 	Super::BeginPlay();
+	animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 	handAttackComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyZombiePawn::OnOverlapBegin);
 }
 void AEnemyZombiePawn::AttackHitCheck()
@@ -83,6 +82,8 @@ void AEnemyZombiePawn::Attack()
 {
 	if (animInstance == nullptr)
 	{
+		UBlackboardComponent* bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
+		bc->SetValueAsBool(FName("IsAttacking"), false);
 		animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 		return;
 	}

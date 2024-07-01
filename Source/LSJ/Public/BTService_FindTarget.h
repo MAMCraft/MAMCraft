@@ -3,15 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/BTService.h"
+#include "BehaviorTree/Services/BTService_BlackboardBase.h"
 #include "BTService_FindTarget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LSJ_API UBTService_FindTarget : public UBTService
-{
+class LSJ_API UBTService_FindTarget : public UBTService_BlackboardBase
+{ //UBTService
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, Category = "TRACE")

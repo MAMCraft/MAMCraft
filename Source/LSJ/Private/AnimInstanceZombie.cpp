@@ -20,6 +20,13 @@ UAnimInstanceZombie::UAnimInstanceZombie()
 		attackMontage = ATTACK_MONTAGE.Object;
 	}else
 		UE_LOG(LogTemp, Display, TEXT("attackMontage nullptr"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_MONTAGE(TEXT("/Script/Engine.AnimMontage'/Game/LSJ/Resource/Zombie/Animation/zombieAnimationHitEdit_Montage.zombieAnimationHitEdit_Montage'"));
+	if (ATTACK_MONTAGE.Succeeded())
+	{
+		hitMontage = HIT_MONTAGE.Object;
+	}
+	else
+		UE_LOG(LogTemp, Display, TEXT("hitMontage nullptr"));
 }
 //void UAnimInstanceZombie::NativeUpdateAnimation(float DeltaSeconds)
 //{
@@ -60,4 +67,9 @@ void UAnimInstanceZombie::UpdateProperties()
 void UAnimInstanceZombie::PlayAttackMontage()
 {
 	Montage_Play(attackMontage, 1.0f);
+}
+
+void UAnimInstanceZombie::PlayHitMontage()
+{
+	Montage_Play(hitMontage, 1.0f);
 }

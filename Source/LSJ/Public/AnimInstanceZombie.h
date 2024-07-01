@@ -28,7 +28,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOVEMENT", meta = (allowprivateaccess = true))
 	UAnimMontage* attackMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOVEMENT", meta = (allowprivateaccess = true))
+	UAnimMontage* hitMontage;
 public:
 	UFUNCTION()
 	void PlayAttackMontage();
+	UFUNCTION()
+	void PlayHitMontage();
 };

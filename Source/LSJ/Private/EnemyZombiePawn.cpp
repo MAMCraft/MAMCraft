@@ -16,23 +16,25 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationYaw = false;
 
-	rootComp = CreateDefaultSubobject<USceneComponent>(TEXT("ROOT"));
+	//rootComp = CreateDefaultSubobject<USceneComponent>(TEXT("ROOT"));
 	skMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESHCOMPONENT"));
 	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CAPSULECOMPONENT"));
 	handAttackComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("HANDATTACKCOMPONENT"));
 	movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MOVEMENT"));
 	statComponent = CreateDefaultSubobject<UStatComponent>(TEXT("STAT"));
 
-	rootComp->SetWorldLocation(FVector(0.0f, 0.0f, 0.0f));
-	rootCompScale = FVector(1.0f, 1.0f, 1.0f);
-	rootComp->SetWorldScale3D(rootCompScale);
-
-	RootComponent = rootComp;
-	capsuleComponent->SetupAttachment(rootComp);
-	skMeshComponent->SetupAttachment(capsuleComponent);
-
+	//RootComponent = capsuleComponent;
+	//capsuleComponent->SetWorldLocation(FVector(0.0f, 0.0f, 0.0f));
 	capsuleComponent->SetCapsuleHalfHeight(90.0f);
 	capsuleComponent->SetCapsuleRadius(22.0f);
+	//rootCompScale = FVector(1.0f, 1.0f, 1.0f);
+	//capsuleComponent->SetWorldScale3D(rootCompScale);
+	capsuleComponent->SetupAttachment(GetRootComponent());
+	
+	//capsuleComponent->SetupAttachment(skMeshComponent);
+	skMeshComponent->SetupAttachment(capsuleComponent);
+
+
 	skMeshComponent->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 
 	FName rightHandSocketName = TEXT("J_R_Hand");
@@ -57,6 +59,8 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 	else
 		UE_LOG(LogTemp, Log, TEXT("zombieAnim.Fail"));
 
+	animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
+
 	AIControllerClass = AAIControllerZombie::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -77,9 +81,9 @@ void AEnemyZombiePawn::AttackHitEnd()
 }
 void AEnemyZombiePawn::Attack()
 {
-	animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 	if (animInstance == nullptr)
 	{
+		animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 		return;
 	}
 	animInstance->PlayAttackMontage();
@@ -112,7 +116,6 @@ void AEnemyZombiePawn::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		//UE_LOG(LogTemp, Log, TEXT("Hit Actor : %s"), *HitResult.Actor->GetName());
 		// 데미지를 받는쪽의 TakeDamage를 호출한다
 		OtherActor->TakeDamage(statComponent->GetAttackDamage(), damageEvent, GetController(), this);
-		UE_LOG(LogTemp, Display, TEXT("%s %d"), *OtherActor->GetName(), statComponent->GetAttackDamage());
 	}
 }
 
@@ -121,5 +124,27 @@ float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	statComponent->OnAttacked(damage);
 
+	//넉백 추가 예정
+	/*FVector direction = DamageCauser->GetActorLocation() - GetActorLocation();
+	FVector directionNor = direction.GetSafeNormal();
+	float power = 100.0f;
+	capsuleComponent->AddForce(directionNor * power);*/
+	
+	if (statComponent->GetHp() <= 0)
+	{
+		//애니메이션 Die
+		//넉백 추가 예정
+		//collision off
+	}
+	else
+	{
+		//애니메이션 HIt
+		if (animInstance == nullptr)
+		{
+			animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
+			return damage;
+		}
+		animInstance->PlayHitMontage();
+	}
 	return damage;
 }

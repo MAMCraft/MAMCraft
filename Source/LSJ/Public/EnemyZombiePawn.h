@@ -47,10 +47,10 @@ public:
 	USkeletalMeshComponent* skMeshComponent;
 	UPROPERTY(VisibleAnywhere, Category = "COLLISIONCAPCULE")
 	UCapsuleComponent* capsuleComponent;
-	UPROPERTY(VisibleAnywhere, Category = "ROOT")
-	USceneComponent* rootComp;
-	UPROPERTY(VisibleAnywhere, Category = "ROOT")
-	FVector rootCompScale;
+	//UPROPERTY(VisibleAnywhere, Category = "ROOT")
+	//USceneComponent* rootComp;
+	//UPROPERTY(VisibleAnywhere, Category = "ROOT")
+	//FVector rootCompScale;
 	UPROPERTY(VisibleAnywhere, Category = "MOVEMENT")
 	UFloatingPawnMovement* movement;
 

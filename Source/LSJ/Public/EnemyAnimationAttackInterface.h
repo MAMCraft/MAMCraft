@@ -24,6 +24,7 @@ class LSJ_API IEnemyAnimationAttackInterface
 public:
 	virtual void AttackHitCheck() = 0;
 	virtual void Attack()=0;
+	virtual void Attack(TArray<FVector>& location) = 0;
 	virtual void AttackHitEnd() = 0;
 	virtual void OnAttackEnd() = 0;
 };

@@ -28,19 +28,7 @@ UAnimInstanceZombie::UAnimInstanceZombie()
 	else
 		UE_LOG(LogTemp, Display, TEXT("hitMontage nullptr"));
 }
-//void UAnimInstanceZombie::NativeUpdateAnimation(float DeltaSeconds)
-//{
-//	Super::NativeUpdateAnimation(DeltaSeconds);
-//
-//	// 현재 AnimInstance를 소유중인 Pawn을 가져오는 것을 시도함
-//	pawn = TryGetPawnOwner();
-//
-//	// '시도' 이기 때문에 못 가져올 수도 있으므로 유효한 값인지 검사
-//	if (IsValid(pawn))
-//	{
-//		movementSpeed = pawn->GetVelocity().Size();
-//	}
-//}
+
 void UAnimInstanceZombie::UpdateProperties()
 {
 	// 폰이 없어졌다면?

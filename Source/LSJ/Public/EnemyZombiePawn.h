@@ -26,13 +26,14 @@ protected:
 	virtual void BeginPlay() override;
 	
 public:	
-	//인터페이스 함수(공격이 가능하게 충돌 On) - 추후에 부모 EnemyPawn에 넣어줘야함
+	virtual void Attack(TArray<FVector>& location) override;
+	//인터페이스 함수(공격이 가능하게 충돌 On)
 	virtual void AttackHitCheck() override;
-	//인터페이스 함수(공격이 끝남 충돌 Off) - 추후에 부모 EnemyPawn에 넣어줘야함
+	//인터페이스 함수(공격이 끝남 충돌 Off)
 	virtual void AttackHitEnd() override;
-	//인터페이스 함수(공격애니메이션시작) - 추후에 부모 EnemyPawn에 넣어줘야함
+	//인터페이스 함수(공격애니메이션시작) 
 	virtual void Attack() override;
-	//인터페이스 함수(공격애니메이션종료) - 추후에 부모 EnemyPawn에 넣어줘야함
+	//인터페이스 함수(공격애니메이션종료) 
 	virtual void OnAttackEnd() override;
 	//데미지 받는 함수
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

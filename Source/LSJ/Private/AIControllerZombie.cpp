@@ -61,6 +61,7 @@ void AAIControllerZombie::RunAI()
 	this->Blackboard = blackboardComp;*/
 }
 
+
 void AAIControllerZombie::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);

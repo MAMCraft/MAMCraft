@@ -70,6 +70,9 @@ void AEnemyZombiePawn::BeginPlay()
 	animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 	handAttackComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyZombiePawn::OnOverlapBegin);
 }
+void AEnemyZombiePawn::Attack(TArray<FVector>& location)
+{
+}
 void AEnemyZombiePawn::AttackHitCheck()
 {
 	handAttackComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

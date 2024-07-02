@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "Components/BoxComponent.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -29,16 +30,16 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UAnimMontage* rollingMonatge;
+	UAnimMontage* rollingMontage;
 
-	UPROPERTY(EditAnywhere)
-	TArray<UAnimMontage*> attackMontages;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* attackComboMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAnimMontage* bowMontage;
 
-	UFUNCTION(BlueprintCallable)
-	void OnMyTakeDamage(int damage);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBoxComponent* rightWeaponCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int playerMaxHP = 10;
@@ -46,11 +47,32 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int playerHP = playerMaxHP;
 
-	void attack();
+	UFUNCTION(BlueprintCallable)
+	void OnMyTakeDamage(int damage);
+
+	// Event handler for montage notify begin
+	UFUNCTION()
+	void HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingpayload);
+
+
+	void comboAttack();
+	bool isAttacking;
+	int ComboAttackIndex = 0;
+
+	//void attack();
 
 	void skill();
 
 	void Rolling();
+
+	UFUNCTION()
+    void OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//UFUNCTION()
+	//void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	///** Overlap End */
+	//UFUNCTION()
+	//void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 private:
 
@@ -60,16 +82,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent* springArmComponent;
 
-	UPROPERTY(VisibleAnywhere)
-	class UBoxComponent* overlapBox;
-
-	UFUNCTION()
-	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UUserWidget> HPWidgetFactory;
 
 	UPROPERTY()
 	class UHPWidget* HPWidget;
+
+
 
 };

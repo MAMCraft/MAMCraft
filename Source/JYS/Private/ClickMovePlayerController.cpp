@@ -29,11 +29,6 @@ void AClickMovePlayerController::PlayerTick(float DeltaTime)
 	{
 		bClickLeftMouse = false;
 		MoveToMouseCursor();
-		//UAnimInstance* AnimInstance = PlayerCharacter->GetMesh()->GetAnimInstance();
-		//if (AnimInstance && runMontage)
-		//{		
-		//	AnimInstance->Montage_Play(runMontage);
-		//}
 	}
 }
 
@@ -70,6 +65,33 @@ void AClickMovePlayerController::MoveToMouseCursor()
 {
 	FHitResult hit;
 	GetHitResultUnderCursor(ECC_Visibility, false, hit);
+	AActor* Target = hit.GetActor();
+
+	// tag 넣어서 아이템별 각 기능 넣어주기
+	if (Target->ActorHasTag(FName(TEXT("ArrowItem"))))
+	{
+		// do something
+		UE_LOG(LogTemp,Warning,TEXT("Arrow Item"));
+		Target->Destroy();
+
+	}else if (Target->ActorHasTag(FName(TEXT("IncreaseHPItem"))))
+	{
+		// do something
+		UE_LOG(LogTemp, Warning, TEXT("Increase HP Item"));
+		Target->Destroy();
+
+	}else if (Target->ActorHasTag(FName(TEXT("FirstEquipmentItem"))))
+	{
+		// do something
+		UE_LOG(LogTemp, Warning, TEXT("First Equipment Item"));
+		Target->Destroy();
+
+	}else if (Target->ActorHasTag(FName(TEXT("SecondEquipmentItem"))))
+	{
+		// do something
+		UE_LOG(LogTemp, Warning, TEXT("Second Equipment Item"));
+		Target->Destroy();
+	}
 
 	if (hit.bBlockingHit)
 	{

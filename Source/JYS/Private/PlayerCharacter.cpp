@@ -43,16 +43,26 @@ APlayerCharacter::APlayerCharacter()
 	cameraComponent->SetupAttachment(springArmComponent, USpringArmComponent::SocketName);
 	cameraComponent->bUsePawnControlRotation = false;
 
-	// 플레이어 앞에 박스 생성 (Create and attach the overlap box)
-	overlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
-	overlapBox->SetupAttachment(RootComponent);
+	isAttacking = false;
 
-	// 박스 설정 (Set the size and position of the overlap box)
-	overlapBox->SetBoxExtent(FVector(100.0f, 100.0f, 100.0f));
-	overlapBox->SetRelativeLocation(FVector(100.0f, 0.0f, 0.0f));
+	// Right weapon collision box
+	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
+	rightWeaponCollision->SetupAttachment(GetMesh(), FName("rightWeaponBone"));
+	rightWeaponCollision->SetRelativeScale3D(FVector(0.01f));
 
-	// overlap bind하기 (Bind the overlap event)
-	overlapBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
+	//rightWeaponCollison->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollison);
+
+
+	//// 플레이어 앞에 박스 생성 (Create and attach the overlap box)
+	//overlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
+	//overlapBox->SetupAttachment(RootComponent);
+
+	//// 박스 설정 (Set the size and position of the overlap box)
+	//overlapBox->SetBoxExtent(FVector(100.0f, 100.0f, 100.0f));
+	//overlapBox->SetRelativeLocation(FVector(100.0f, 0.0f, 0.0f));
+
+	//// overlap bind하기 (Bind the overlap event)
+	//overlapBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
 
 }
 
@@ -66,13 +76,31 @@ void APlayerCharacter::BeginPlay()
 	{
 		HPWidget->AddToViewport();
 	}
+
+	// Combo Anim
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance != nullptr)
+	{
+		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &APlayerCharacter::HandleOnMontageNotifyBegin);
+	}
+
+	// Setup Right weapon collision box
+	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	rightWeaponCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	rightWeaponCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	// UE_LOG(LogTemp, Log, TEXT("CollisionBox"));
+	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
 }
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (rightWeaponCollision)
+	{
+		DrawDebugBox(GetWorld(), rightWeaponCollision->GetComponentLocation(), rightWeaponCollision->GetScaledBoxExtent(), FColor::Red, false, -1.0f, 0, 5.0f);
+	}
 }
 
 // Called to bind functionality to input
@@ -81,19 +109,24 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("RollingAction", IE_Pressed, this, &APlayerCharacter::Rolling);
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::attack);
+	PlayerInputComponent->BindAction("comboAttack", IE_Pressed, this, &APlayerCharacter::comboAttack);
 	PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::skill);
 }
 
 void APlayerCharacter::Rolling()
 {
-	UE_LOG(LogTemp, Log, TEXT("rollingMonatge"));
+	UE_LOG(LogTemp, Log, TEXT("rollingMontage"));
 	
-	if (rollingMonatge)
+	if (rollingMontage)
 	{
-		PlayAnimMontage(rollingMonatge);
-		UE_LOG(LogTemp, Log, TEXT("rollingMonatge"));
+		PlayAnimMontage(rollingMontage);
+		UE_LOG(LogTemp, Log, TEXT("rollingMontage"));
 	}
+}
+
+void APlayerCharacter::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("zzzzzz"));
 }
 
 void APlayerCharacter::OnMyTakeDamage(int damage)
@@ -120,22 +153,57 @@ void APlayerCharacter::OnMyTakeDamage(int damage)
 	}*/
 }
 
-void APlayerCharacter::attack()
+void APlayerCharacter::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingpayload)
 {
-	UE_LOG(LogTemp, Log, TEXT("Random Attack"));
+	// Decrement Combo Index
+	ComboAttackIndex--;
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
-	if (attackMontages.Num() > 0)
+	if (ComboAttackIndex < 0)
 	{
-		int32 RandomIndex = UKismetMathLibrary::RandomIntegerInRange(0, attackMontages.Num() - 1);
-
-		if (AnimInstance && attackMontages[RandomIndex])
+		// Get Anim Instance
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance != nullptr)
 		{
-			AnimInstance->Montage_Play(attackMontages[RandomIndex]);
+			AnimInstance->Montage_Stop(0.4f, attackComboMontage);
+			isAttacking = false;
 		}
 	}
+
 }
+
+void APlayerCharacter::comboAttack()
+{
+	//stop Montage if below zero
+	if (!isAttacking)
+	{
+		// Get the animation instance
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			// Play Light Attack
+			if (attackComboMontage != nullptr)
+			{
+				// AnimInstance->Montage_Play
+				PlayAnimMontage(attackComboMontage);
+				isAttacking = true; // Set attacking flag
+				UE_LOG(LogTemp, Log, TEXT("Playing attack combo montage"));
+			}
+			else
+			{
+				ComboAttackIndex++;
+				AnimInstance->Montage_JumpToSection(FName("NextCombo"), attackComboMontage);
+				UE_LOG(LogTemp, Log, TEXT("Jumping to next combo section"));
+			}
+		}
+	}
+	else {
+		ComboAttackIndex = 1;
+		UE_LOG(LogTemp, Log, TEXT("ComboAttackIndex set to 1"));
+	}
+
+}
+
+
 void APlayerCharacter::skill()
 {
 	UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
@@ -147,16 +215,7 @@ void APlayerCharacter::skill()
 	}
 }
 
-// 오버랩 되면 destroy되게끔
-void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor && (OtherActor != this) && OtherComp)
-	{
-		// 오버랩 된 액터들을 Destroy한다
-		OtherActor->Destroy();
-		UE_LOG(LogTemp, Log, TEXT("Destroy"), *OtherActor->GetName());
-	}
-}
+
 
 
 

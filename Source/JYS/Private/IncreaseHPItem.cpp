@@ -19,13 +19,21 @@ AIncreaseHPItem::AIncreaseHPItem()
 	boxComp->SetRelativeScale3D(FVector(1.0f));
 
 	boxComp->SetGenerateOverlapEvents(true);
-	boxComp->SetCollisionProfileName(TEXT("IncreaseHpItem"));
+	boxComp->SetCollisionProfileName(TEXT("Item"));
+
 }
+
+//void AIncreaseHPItem::OnMyCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//	UE_LOG(LogTemp, Log, TEXT("xxxxxx"));
+//}
 
 // Called when the game starts or when spawned
 void AIncreaseHPItem::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//boxComp->OnComponentBeginOverlap.AddDynamic(this, &AIncreaseHPItem::OnMyCompBeginOverlap);
 	
 }
 

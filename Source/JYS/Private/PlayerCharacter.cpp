@@ -14,6 +14,7 @@
 #include "HPWidget.h"
 
 
+
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -45,14 +46,6 @@ APlayerCharacter::APlayerCharacter()
 
 	isAttacking = false;
 
-	// Right weapon collision box
-	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
-	rightWeaponCollision->SetupAttachment(GetMesh(), FName("rightWeaponBone"));
-	rightWeaponCollision->SetRelativeScale3D(FVector(0.01f));
-
-	//rightWeaponCollison->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollison);
-
-
 	//// 플레이어 앞에 박스 생성 (Create and attach the overlap box)
 	//overlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
 	//overlapBox->SetupAttachment(RootComponent);
@@ -83,24 +76,13 @@ void APlayerCharacter::BeginPlay()
 	{
 		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &APlayerCharacter::HandleOnMontageNotifyBegin);
 	}
-
-	// Setup Right weapon collision box
-	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	rightWeaponCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	rightWeaponCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-
-	// UE_LOG(LogTemp, Log, TEXT("CollisionBox"));
-	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
 }
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (rightWeaponCollision)
-	{
-		DrawDebugBox(GetWorld(), rightWeaponCollision->GetComponentLocation(), rightWeaponCollision->GetScaledBoxExtent(), FColor::Red, false, -1.0f, 0, 5.0f);
-	}
+
 }
 
 // Called to bind functionality to input
@@ -124,18 +106,14 @@ void APlayerCharacter::Rolling()
 	}
 }
 
-void APlayerCharacter::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	UE_LOG(LogTemp, Warning, TEXT("zzzzzz"));
-}
 
 void APlayerCharacter::OnMyTakeDamage(int damage)
 {
 	// 데미지 만큼 체력을 소모한다.
-	this->playerHP = this->playerHP - damage;
-	if (this->playerHP < damage)
+	playerHP -= damage;
+	if (playerHP < damage)
 	{
-		this->playerHP = 0;
+		playerHP = 0;
 	}
 
 	// 체력이 결정되었다면 UI로 반영한다.
@@ -143,14 +121,10 @@ void APlayerCharacter::OnMyTakeDamage(int damage)
 		HPWidget->SetHP(playerHP, playerMaxHP);
 
 	// 만약 체력이 0이면 죽는다.
-	if (this->playerHP == 0)
+	if (playerHP == 0)
 	{
 		Destroy();
 	}
-	// 그렇지않다면 (== 체력이 0보다 크다면)
-	/*else
-	{
-	}*/
 }
 
 void APlayerCharacter::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingpayload)
@@ -213,6 +187,17 @@ void APlayerCharacter::skill()
 		PlayAnimMontage(bowMontage);
 		UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
 	}
+}
+
+// 플레이어가 좀비에게 데미지 받기
+void APlayerCharacter::Hit(AActor* OtherActor)
+{
+
+}
+
+void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	Hit(OtherActor);
 }
 
 

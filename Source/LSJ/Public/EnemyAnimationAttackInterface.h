@@ -23,7 +23,7 @@ class LSJ_API IEnemyAnimationAttackInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual void AttackHitCheck() = 0;
-	virtual void Attack()=0;
+	virtual void Attack() = 0;
 	virtual void Attack(TArray<FVector>& location) = 0;
 	virtual void AttackHitEnd() = 0;
 	virtual void OnAttackEnd() = 0;

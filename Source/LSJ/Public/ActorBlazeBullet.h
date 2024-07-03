@@ -19,6 +19,8 @@ class LSJ_API AActorBlazeBullet : public AActor
 	FVector attacklocation;
 	int explosionDamage;
 	int fireDamage;
+	bool one;
+	bool takeExplosionDamage; //한번 폭발데미지를 받았는지
 public:	
 	// Sets default values for this actor's properties
 	AActorBlazeBullet();
@@ -27,12 +29,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+//	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+//protected:
+//	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+//	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UPROPERTY(VisibleAnywhere,Category=Collision)
-	USphereComponent* collisionComp;
 	UPROPERTY(VisibleAnywhere, Category = "MESH")
 	UStaticMeshComponent* mesh;
 	FVector outVelocity = FVector::ZeroVector;
@@ -43,11 +46,13 @@ public:
 	void SetAttacklocation(FVector location);
 		UFUNCTION()
 	void SetDamage(int eDamage,int fDamage);
-	UFUNCTION()
-	void HitMesh(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
-	UFUNCTION()
-	void OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UPROPERTY(EditAnywhere,Category=FIREFLOOR)
 	TSubclassOf<AActorFireFloor> fireFloor;
+	/*UFUNCTION()
+	void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
+	*/
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	
 };

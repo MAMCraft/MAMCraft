@@ -2,7 +2,11 @@
 
 
 #include "ActorBlazeBullet.h"
+#include "Engine/EngineTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/DamageEvents.h"
+#include "DrawDebugHelpers.h"
+#include "Engine/OverlapResult.h"
 
 // Sets default values
 AActorBlazeBullet::AActorBlazeBullet()
@@ -10,9 +14,7 @@ AActorBlazeBullet::AActorBlazeBullet()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
-	collisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
-	RootComponent = collisionComp;
-	mesh->SetupAttachment(collisionComp);
+	RootComponent = mesh;
 	ConstructorHelpers::FObjectFinder<UStaticMesh>sphereMesh(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	if (sphereMesh.Succeeded())
 	{
@@ -20,29 +22,26 @@ AActorBlazeBullet::AActorBlazeBullet()
 	}
 	mesh->SetSimulatePhysics(true);
 
-	static ConstructorHelpers::FClassFinder<AActorFireFloor> blazeAnim1(TEXT("/Script/Engine.Blueprint'/Game/LSJ/Blueprints/BP_FireFloor.BP_FireFloor_C'"));
-	if (blazeAnim1.Succeeded())
+	static ConstructorHelpers::FClassFinder<AActorFireFloor> fireFloorBP(TEXT("/Script/Engine.Blueprint'/Game/LSJ/Blueprints/BP_FireFloor.BP_FireFloor_C'"));
+	if (fireFloorBP.Succeeded())
 	{
-		fireFloor = (blazeAnim1.Class);
+		fireFloor = (fireFloorBP.Class);
 	}
+
+	mesh->OnComponentHit.AddDynamic(this, &AActorBlazeBullet::OnHit);
 }
 
 // Called when the game starts or when spawned
 void AActorBlazeBullet::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 }
 
 // Called every frame
 void AActorBlazeBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (outVelocity != FVector::ZeroVector)
-	{
-		SetActorLocation(outVelocity);
-	}
 
 }
 
@@ -62,7 +61,7 @@ void AActorBlazeBullet::SetAttacklocation(FVector location)
 		//predictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
 		//FPredictProjectilePathResult result;
 		//UGameplayStatics::PredictProjectilePath(this, predictParams, result);
-		mesh->AddImpulse(outVelocity * 100.f); // objectToSend는 발사체 * 질량 해줘야되는거 같다.
+		mesh->AddImpulse(outVelocity*100); // objectToSend는 발사체 * 질량 해줘야되는거 같다.
 	}
 }
 
@@ -72,39 +71,67 @@ void AActorBlazeBullet::SetDamage(int eDamage, int fDamage)
 	this->fireDamage = fDamage;
 }
 
-void AActorBlazeBullet::HitMesh(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Log, TEXT("explosionDamage %s"),*OtherActor->GetName());
-	if (explosionDamage <= 0 && fireDamage <= 0)
-	{
-		UE_LOG(LogTemp, Log, TEXT("explosionDamage"));
+	if (one) //한번 닿았다면 리턴
 		return;
-	}
-	if (OtherActor->ActorHasTag(FName("Map")))
-	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		AActorFireFloor* fireInstance = Cast<AActorFireFloor>(GetWorld()->SpawnActor<AActorFireFloor>(fireFloor, OtherActor->GetActorLocation(), OtherActor->GetActorRotation(), SpawnParams));
-		//fireInstance->SetDamage(statComponent->GetAttackDamage(), (statComponent->GetAttackDamage() / 10));
-		//OtherActor->TakeDamage(statComponent->GetAttackDamage(), damageEvent, GetController(), this);
-		//폭발 지역 생성 - 콜리전 박스, 빨간 박스 / 2초 뒤 사라짐/ 오버랩 처리
-	}
-}
 
-void AActorBlazeBullet::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	UE_LOG(LogTemp, Log, TEXT("explosionDamage %s"), *OtherActor->GetName());
-	if (explosionDamage <= 0 && fireDamage <= 0)
+	UE_LOG(LogTemp, Warning, TEXT("HitComp : %s"), *HitComp->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("OtherActor : %s"), *OtherActor->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("OtherComp : %s"), *OtherComp->GetName());
+
+	if (OtherActor->ActorHasTag(FName("Floor")))
 	{
-		UE_LOG(LogTemp, Log, TEXT("explosionDamage"));
-		return;
-	}
-	if (OtherActor->ActorHasTag(FName("Map")))
-	{
+		one = true;
+		if (explosionDamage <= 0 && fireDamage <= 0)
+		{
+			UE_LOG(LogTemp, Log, TEXT("OnHit fail"));
+			return;
+		}
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
-		AActorFireFloor* fireInstance = Cast<AActorFireFloor>(GetWorld()->SpawnActor<AActorFireFloor>(fireFloor, OtherActor->GetActorLocation(), OtherActor->GetActorRotation(), SpawnParams));
-		//fireInstance->SetDamage(statComponent->GetAttackDamage(), (statComponent->GetAttackDamage() / 10));
+		AActorFireFloor* fireInstance = Cast<AActorFireFloor>(GetWorld()->SpawnActor<AActorFireFloor>(fireFloor, Hit.Location, OtherActor->GetActorRotation(), SpawnParams));
+		fireInstance->SetDamage(explosionDamage, fireDamage);
+
+		//충돌
+		FCollisionQueryParams Params(NAME_None, true, this);
+		FVector Center = Hit.Location;
+		FHitResult HitResult;
+		USTRUCT()
+		TArray<FOverlapResult> OverlapResults;
+		FVector attackExplosionBox = FVector(100, 100, 100); // 폭발범위
+		//FCollisionQueryParams Params(EName::Name, false, this);
+		//결과를 채널로 반환
+		bool bResult = GetWorld()->OverlapMultiByChannel(
+			OverlapResults,
+			Center,
+			FQuat::Identity,
+			ECollisionChannel::ECC_GameTraceChannel3,
+			FCollisionShape::MakeBox(attackExplosionBox),
+			Params
+		);
+		DrawDebugBox(GetWorld(), Center, attackExplosionBox, FColor::Blue, false, -1, 0, 20);
+		if (bResult)
+		{
+			for (auto overlapResults : OverlapResults)
+			{
+				if (overlapResults.GetActor()->ActorHasTag("Player"))
+				{
+					FDamageEvent damageEvent;
+					UE_LOG(LogTemp, Warning, TEXT("AActorBlazeBullet OverlapMultiByChannel Damage : %s"), *OtherActor->GetName());
+					//데미지를 받는쪽의 TakeDamage를 호출한다
+					OtherActor->TakeDamage(explosionDamage, damageEvent, nullptr, this);
+					break;
+				}
+			}
+		}
+		Destroy();
+		
+
+		/*FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		AActorFireFloor* fireInstance = Cast<AActorFireFloor>(GetWorld()->SpawnActor<AActorFireFloor>(fireFloor, Hit.Location, OtherActor->GetActorRotation(), SpawnParams));
+	*/	//fireInstance->SetDamage(statComponent->GetAttackDamage(), (statComponent->GetAttackDamage() / 10));
 		//OtherActor->TakeDamage(statComponent->GetAttackDamage(), damageEvent, GetController(), this);
 		//폭발 지역 생성 - 콜리전 박스, 빨간 박스 / 2초 뒤 사라짐/ 오버랩 처리
 	}

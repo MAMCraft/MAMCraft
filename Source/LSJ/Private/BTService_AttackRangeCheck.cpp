@@ -47,7 +47,6 @@ void UBTService_AttackRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 	if (bResult)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
 		if (HitResult.GetActor() == UGameplayStatics::GetPlayerPawn(this, 0))
 		{
 			//존재한다면 로그 남기기

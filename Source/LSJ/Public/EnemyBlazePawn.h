@@ -47,7 +47,11 @@ public:
 	virtual void Attack() override;
 	//인터페이스 함수(공격애니메이션종료) 
 	virtual void OnAttackEnd() override;
+	//인터페이스 함수(공격애니메이션시작 - blaze) 
 	virtual void Attack(TArray<FVector>& location) override;
+	//데미지 받는 함수
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	UFUNCTION()
 	void Fire();
 

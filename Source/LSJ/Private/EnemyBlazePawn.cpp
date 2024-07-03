@@ -131,3 +131,24 @@ void AEnemyBlazePawn::Attack(TArray<FVector>& location)
 	animInstance->PlayAttackMontage();
 }
 
+
+float AEnemyBlazePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	statComponent->OnAttacked(damage);
+
+	//넉백 추가 예정
+
+	if (statComponent->GetHp() <= 0)
+	{
+		//애니메이션 Die
+	
+		//collision off
+	}
+	else
+	{
+		//애니메이션 HIt
+
+	}
+	return damage;
+}

@@ -58,7 +58,19 @@ public:
 	bool isAttacking;
 	int ComboAttackIndex = 0;
 
-	//void attack();
+	// 데미지 처리
+	UFUNCTION()
+	void Hit(AActor* OtherActor);
+
+	void ApplyFireDamage();
+	void StopFireDamage();
+	void FlashRed();
+	void ResetMaterial();
+
+	FTimerHandle FireDamageTimerHandle;
+	FTimerHandle FlashRedTimerHandle;
+
+	bool bIsTakingFireDamage;
 
 	void skill();
 
@@ -71,6 +83,8 @@ public:
 	UFUNCTION()
 	void OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	//UFUNCTION()
 	//void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -93,11 +107,8 @@ private:
 	UPROPERTY()
 	class UHPWidget* HPWidget;
 
-	UFUNCTION()
-	void Hit(AActor* OtherActor);
 
-	UFUNCTION()
-    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 
 
 

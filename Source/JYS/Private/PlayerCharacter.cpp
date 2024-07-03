@@ -18,9 +18,9 @@
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled =true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
@@ -61,6 +61,7 @@ APlayerCharacter::APlayerCharacter()
 	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
 	rightWeaponCollision->SetupAttachment(GetMesh(), FName("rightWeaponBone"));
 	rightWeaponCollision->SetRelativeScale3D(FVector(0.01f));
+	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 
@@ -118,7 +119,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void APlayerCharacter::Rolling()
 {
 	UE_LOG(LogTemp, Log, TEXT("rollingMontage"));
-	
+
 	if (rollingMontage)
 	{
 		PlayAnimMontage(rollingMontage);
@@ -164,13 +165,34 @@ void APlayerCharacter::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBr
 	}
 
 }
+//공격 콜리전 끄고 키기
+//적을 선택했을때 공격애니메이션이 나가게
+//공격애니메이션 시작지점에 키고
+//끝나는 지점에 끄고
+//한번만 beginoverlap
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	if (DamageCauser->ActorHasTag(FName("Fire")))
+	{
+		//5초간 데미지 
+		//업데이트
+		if (!bIsTakingFireDamage)
+		{
+			bIsTakingFireDamage = true;
+			GetWorldTimerManager().SetTimer(FireDamageTimerHandle, this, &APlayerCharacter::ApplyFireDamage, 1.0f, true, 0.0f);
+			GetWorldTimerManager().SetTimer(FireDamageTimerHandle, this, &APlayerCharacter::StopFireDamage, 5.0f, false);
+		}
+	}
+	else
+		OnMyTakeDamage(DamageAmount);
+
+	//hit 캐릭터가 빨간색 반짝반짝
+
 	UE_LOG(LogTemp, Warning, TEXT("TakeDamage : %s"), *DamageCauser->GetName())
-	return Damage;
+		return Damage;
 }
 
 void APlayerCharacter::comboAttack()
@@ -223,6 +245,25 @@ void APlayerCharacter::Hit(AActor* OtherActor)
 
 }
 
+void APlayerCharacter::ApplyFireDamage()
+{
+	OnMyTakeDamage(1);
+}
+
+void APlayerCharacter::StopFireDamage()
+{
+	bIsTakingFireDamage = false;
+	GetWorldTimerManager().ClearTimer(FireDamageTimerHandle);
+}
+
+void APlayerCharacter::FlashRed()
+{
+}
+
+void APlayerCharacter::ResetMaterial()
+{
+}
+
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Hit(OtherActor);
@@ -232,9 +273,4 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 void APlayerCharacter::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnrightWeaponCollision : %s"), *OtherActor->GetName());
-
 }
-
-
-
-

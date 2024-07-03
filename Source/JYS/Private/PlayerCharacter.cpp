@@ -57,6 +57,10 @@ APlayerCharacter::APlayerCharacter()
 	//// overlap bindÇÏ±â (Bind the overlap event)
 	//overlapBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
 
+	//weapon
+	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
+	rightWeaponCollision->SetupAttachment(GetMesh(), FName("rightWeaponBone"));
+	rightWeaponCollision->SetRelativeScale3D(FVector(0.01f));
 }
 
 
@@ -76,6 +80,16 @@ void APlayerCharacter::BeginPlay()
 	{
 		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &APlayerCharacter::HandleOnMontageNotifyBegin);
 	}
+
+	//weapon
+	// Setup Right weapon collision box
+	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	rightWeaponCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	rightWeaponCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	// UE_LOG(LogTemp, Log, TEXT("CollisionBox"));
+	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
+
 }
 
 // Called every frame
@@ -83,6 +97,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	//weapon
+	if (rightWeaponCollision)
+	{
+		DrawDebugBox(GetWorld(), rightWeaponCollision->GetComponentLocation(), rightWeaponCollision->GetScaledBoxExtent(), FColor::Red, false, -1.0f, 0, 5.0f);
+	}
 }
 
 // Called to bind functionality to input
@@ -145,6 +165,14 @@ void APlayerCharacter::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBr
 
 }
 
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	UE_LOG(LogTemp, Warning, TEXT("TakeDamage : %s"), *DamageCauser->GetName())
+	return Damage;
+}
+
 void APlayerCharacter::comboAttack()
 {
 	//stop Montage if below zero
@@ -200,6 +228,12 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 	Hit(OtherActor);
 }
 
+//weapon
+void APlayerCharacter::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnrightWeaponCollision : %s"), *OtherActor->GetName());
+
+}
 
 
 

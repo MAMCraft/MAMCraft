@@ -51,6 +51,8 @@ public:
 	UFUNCTION()
 	void HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingpayload);
 
+	UFUNCTION()
+	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 	void comboAttack();
 	bool isAttacking;
@@ -61,6 +63,13 @@ public:
 	void skill();
 
 	void Rolling();
+
+	//weapon
+	UPROPERTY(VisibleAnywhere)
+	UBoxComponent* rightWeaponCollision;
+
+	UFUNCTION()
+	void OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
 	//UFUNCTION()
@@ -89,6 +98,8 @@ private:
 
 	UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+
 
 
 };

@@ -1,5 +1,6 @@
-#include "ActorFireFloor.h"
+
 // Fill out your copyright notice in the Description page of Project Settings.
+#include "ActorFireFloor.h"
 #include "Engine/DamageEvents.h"
 
 
@@ -15,15 +16,6 @@ AActorFireFloor::AActorFireFloor()
 	{
 		mesh->SetStaticMesh(boxMesh.Object);
 	}
-
-	UMaterialInstance* MyMaterialInstance = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInterface::StaticClass(), this, TEXT("/Script/Engine.MaterialInstanceConstant'/Game/LSJ/Material/MI_FireFloor.MI_FireFloor'")));
-	if (MyMaterialInstance == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to load material at path: %s"),TEXT("/Script/Engine.MaterialInstanceConstant'/Game/LSJ/Material/MI_FireFloor.MI_FireFloor'"));
-	}
-	UMaterialInstanceDynamic* MyMaterialDynamic = UMaterialInstanceDynamic::Create(MyMaterialInstance, this);
-	mesh->SetMaterial(0, MyMaterialDynamic);
-
 
 	//mesh->SetVectorParameterValueOnMaterials(TEXT("Color"), ChangeColor);
 

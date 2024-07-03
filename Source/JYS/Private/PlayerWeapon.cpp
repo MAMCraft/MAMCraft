@@ -2,7 +2,6 @@
 
 
 #include "PlayerWeapon.h"
-#include <LSJ/Public/EnemyZombiePawn.h>
 
 // Sets default values
 APlayerWeapon::APlayerWeapon()

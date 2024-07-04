@@ -13,6 +13,8 @@
 #include "Animation/AnimMontage.h"
 #include "HPWidget.h"
 #include "Engine/DamageEvents.h"
+#include "Components/ArrowComponent.h"
+#include "ArrowAttack.h"
 
 
 
@@ -47,22 +49,16 @@ APlayerCharacter::APlayerCharacter()
 
 	isAttacking = false;
 
-	//// 플레이어 앞에 박스 생성 (Create and attach the overlap box)
-	//overlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
-	//overlapBox->SetupAttachment(RootComponent);
-
-	//// 박스 설정 (Set the size and position of the overlap box)
-	//overlapBox->SetBoxExtent(FVector(100.0f, 100.0f, 100.0f));
-	//overlapBox->SetRelativeLocation(FVector(100.0f, 0.0f, 0.0f));
-
-	//// overlap bind하기 (Bind the overlap event)
-	//overlapBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
-
 	//weapon
 	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
 	rightWeaponCollision->SetupAttachment(GetMesh(), FName("rightWeaponBone"));
 	rightWeaponCollision->SetRelativeScale3D(FVector(0.01f));
 	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	arrowPositionComp = CreateDefaultSubobject<UArrowComponent>(TEXT("arrowPositionComp"));
+	arrowPositionComp->SetupAttachment(RootComponent);
+	// arrowPositionComp->SetRelativeLocationAndRotation(FVector(), FVector());
+
 }
 
 
@@ -92,6 +88,8 @@ void APlayerCharacter::BeginPlay()
 	// UE_LOG(LogTemp, Log, TEXT("CollisionBox"));
 	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
 
+
+	ArrowAttack = Cast<AActor>(GetMesh());
 }
 
 // Called every frame
@@ -115,6 +113,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("RollingAction", IE_Pressed, this, &APlayerCharacter::Rolling);
 	PlayerInputComponent->BindAction("comboAttack", IE_Pressed, this, &APlayerCharacter::comboAttack);
 	PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::skill);
+
 }
 
 void APlayerCharacter::Rolling()
@@ -236,15 +235,11 @@ void APlayerCharacter::skill()
 	if (bowMontage)
 	{
 		PlayAnimMontage(bowMontage);
+		OnMyActionArrow();
 		UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
 	}
 }
 
-// 플레이어가 좀비에게 데미지 받기
-void APlayerCharacter::Hit(AActor* OtherActor)
-{
-
-}
 
 void APlayerCharacter::ApplyFireDamage()
 {
@@ -257,18 +252,17 @@ void APlayerCharacter::StopFireDamage()
 	GetWorldTimerManager().ClearTimer(FireDamageTimerHandle);
 }
 
-void APlayerCharacter::FlashRed()
-{
-}
-
-void APlayerCharacter::ResetMaterial()
-{
-}
 
 
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Hit(OtherActor);
+	// Hit(OtherActor);
+}
+
+void APlayerCharacter::OnMyActionArrow()
+{
+	FTransform t = arrowPositionComp->GetComponentTransform();
+	GetWorld()->SpawnActor<AArrowAttack>(arrowFactory, t);
 }
 
 //weapon

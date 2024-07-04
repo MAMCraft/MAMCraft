@@ -64,13 +64,11 @@ public:
 	int ComboAttackIndex = 0;
 
 	// 데미지 처리
-	UFUNCTION()
-	void Hit(AActor* OtherActor);
+	//UFUNCTION()
+	//void Hit(AActor* OtherActor);
 
 	void ApplyFireDamage();
 	void StopFireDamage();
-	void FlashRed();
-	void ResetMaterial();
 
 	FTimerHandle FireDamageTimerHandle;
 	FTimerHandle FlashRedTimerHandle;
@@ -91,13 +89,6 @@ public:
 	UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	//UFUNCTION()
-	//void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	///** Overlap End */
-	//UFUNCTION()
-	//void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
 private:
 
 	UPROPERTY(VisibleAnywhere)
@@ -112,10 +103,17 @@ private:
 	UPROPERTY()
 	class UHPWidget* HPWidget;
 
+public:
 
+	UPROPERTY(EditAnywhere)
+	class AActor* ArrowAttack;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UArrowComponent* arrowPositionComp;
 
+	void OnMyActionArrow();
 
-
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AArrowAttack> arrowFactory;
 
 };

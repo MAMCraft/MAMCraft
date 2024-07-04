@@ -6,7 +6,6 @@
 #include "AIControllerZombie.h"
 #include <Kismet/GameplayStatics.h>
 #include "Blueprint/AIBlueprintHelperLibrary.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/DamageEvents.h"
 
 // Sets default values
@@ -74,8 +73,8 @@ void AEnemyZombiePawn::BeginPlay()
 	bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
 	animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 	handAttackComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyZombiePawn::OnOverlapBegin);
-	capsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyZombiePawn::OnBeginOverlap);
-	animInstance->hitEnd.AddUObject(this, &AEnemyZombiePawn::HitEnd);
+	//handAttackComponent->OnComponentHit.AddDynamic(this, &AEnemyZombiePawn::OnOverlapBegin);
+	//capsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyZombiePawn::OnBeginOverlap);
 	groundZValue = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation().Z;
 }
 void AEnemyZombiePawn::Attack(TArray<FVector>& location)
@@ -115,7 +114,7 @@ void AEnemyZombiePawn::OnAttackEnd()
 void AEnemyZombiePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	//UE_LOG(LogTemp, Log, TEXT("%s"), handAttackComponent->GetCollisionObjectType());
 	pawnLocation = GetActorLocation();
 	if (bHit)
 	{
@@ -178,7 +177,7 @@ void AEnemyZombiePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void AEnemyZombiePawn::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	handAttackComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	UE_LOG(LogTemp, Error, TEXT("%s"), *OtherComp->GetName());
 	if (OtherActor == UGameplayStatics::GetPlayerPawn(this, 0))
 	{
 		FDamageEvent damageEvent;
@@ -186,6 +185,15 @@ void AEnemyZombiePawn::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		// 데미지를 받는쪽의 TakeDamage를 호출한다
 		OtherActor->TakeDamage(statComponent->GetAttackDamage(), damageEvent, GetController(), this);
 	}
+	else
+		if (OtherActor->ActorHasTag("Player"))
+		{
+			FDamageEvent damageEvent;
+			//UE_LOG(LogTemp, Log, TEXT("Hit Actor : %s"), *HitResult.Actor->GetName());
+			// 데미지를 받는쪽의 TakeDamage를 호출한다
+			OtherActor->TakeDamage(statComponent->GetAttackDamage(), damageEvent, GetController(), this);
+		}
+	handAttackComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -198,7 +206,7 @@ float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	FVector directionNor = direction.GetSafeNormal();
 	float power = 100.0f;
 	capsuleComponent->AddForce(directionNor * power);*/
-	
+	Hit(DamageCauser);
 	if (statComponent->GetHp() <= 0)
 	{
 
@@ -208,6 +216,7 @@ float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	}
 	else
 	{
+
 		//애니메이션 HIt
 		if (animInstance == nullptr)
 		{
@@ -219,19 +228,6 @@ float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	return damage;
 }
 
-void AEnemyZombiePawn::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	FDamageEvent DamageEvent;
-	TakeDamage(1, DamageEvent, nullptr, this);
-	Hit(OtherActor);
-}
-//안쓸예정
-void AEnemyZombiePawn::HitEnd()
-{
-	//meshMoveLocation.Z = groundZValue;
-	//SetActorLocation(meshMoveLocation);
-	//UE_LOG(LogTemp, Error, TEXT("HitEnd"));
-}
 
 void AEnemyZombiePawn::Hit(AActor* damageCauser)
 {

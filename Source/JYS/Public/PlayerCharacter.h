@@ -44,6 +44,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int playerHP = playerMaxHP;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AttackDamage = 1;
+
 	UFUNCTION(BlueprintCallable)
 	void OnMyTakeDamage(int damage);
 
@@ -54,7 +57,9 @@ public:
 	UFUNCTION()
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
+	UFUNCTION()
 	void comboAttack();
+
 	bool isAttacking;
 	int ComboAttackIndex = 0;
 

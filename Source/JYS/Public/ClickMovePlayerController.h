@@ -36,7 +36,13 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY()
-	ACharacter* PlayerCharacter;
+	UPROPERTY(EditAnywhere)
+	class ACharacter* PlayerCharacter;
 
+	UPROPERTY(EditAnywhere)
+	class APlayerCharacter* PlayerCharacter2;
+
+	FVector EnemyLocation;
+
+	bool bIsEnemyHere;
 };

@@ -6,6 +6,8 @@
 #include "Animation/AnimInstance.h"
 #include "AnimInstanceZombie.generated.h"
 
+
+DECLARE_MULTICAST_DELEGATE(FHitEnd);
 /**
  * 
  */
@@ -35,4 +37,8 @@ public:
 	void PlayAttackMontage();
 	UFUNCTION()
 	void PlayHitMontage();
+
+	UFUNCTION()
+	void AnimNotify_HitEnd();
+	FHitEnd hitEnd;
 };

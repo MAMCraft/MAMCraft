@@ -51,6 +51,11 @@ void UBTService_AttackRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		{
 			//존재한다면 로그 남기기
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(FName("InAttackRange"), true);
+		
+			const FRotator resultRotation = FMath::RInterpTo(
+				controllingPawn->GetActorRotation(), 
+				HitResult.GetActor()->GetActorRotation(), DeltaSeconds, 1.0f);
+			controllingPawn->SetActorRotation(resultRotation);
 		}
 		else
 		{

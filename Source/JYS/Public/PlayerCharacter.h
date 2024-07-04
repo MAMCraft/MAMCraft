@@ -57,7 +57,9 @@ public:
 	UFUNCTION()
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
+	UFUNCTION()
 	void comboAttack();
+
 	bool isAttacking;
 	int ComboAttackIndex = 0;
 

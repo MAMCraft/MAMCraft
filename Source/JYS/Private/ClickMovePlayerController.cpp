@@ -30,11 +30,22 @@ void AClickMovePlayerController::PlayerTick(float DeltaTime)
 		bClickLeftMouse = false;
 		MoveToMouseCursor();
 	}
+	if (bIsEnemyHere)
+	{
+		float distance = (EnemyLocation - PlayerCharacter2->GetActorLocation()).Length();
+		if (distance < 100.f)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ATTACK!!!!!!!!!!!!!!!!!!!!!!!!!!"))
+			PlayerCharacter2->comboAttack();
+			bIsEnemyHere = false;
+		}
+	}
 }
 
 void AClickMovePlayerController::BeginPlay()
 {
 	PlayerCharacter = Cast<ACharacter>(GetPawn());
+	PlayerCharacter2 = Cast<APlayerCharacter>(GetPawn());
 }
 
 void AClickMovePlayerController::InputLeftMouseButtonPressed()
@@ -63,6 +74,7 @@ void AClickMovePlayerController::SetNewDestination(const FVector Destination)
 
 void AClickMovePlayerController::MoveToMouseCursor()
 {
+	bIsEnemyHere = false;
 	FHitResult hit;
 	GetHitResultUnderCursor(ECC_Visibility, false, hit);
 	AActor* Target = hit.GetActor();
@@ -91,6 +103,12 @@ void AClickMovePlayerController::MoveToMouseCursor()
 		// do something
 		UE_LOG(LogTemp, Warning, TEXT("Second Equipment Item"));
 		Target->Destroy();
+	}
+	else if (Target->ActorHasTag(FName(TEXT("Enemy"))))
+	{
+		EnemyLocation = Target->GetActorLocation();
+		bIsEnemyHere = true;
+		SetNewDestination(hit.ImpactPoint);
 	}
 
 	if (hit.bBlockingHit)

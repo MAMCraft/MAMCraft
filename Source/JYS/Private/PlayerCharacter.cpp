@@ -12,6 +12,7 @@
 #include "Components/BoxComponent.h"
 #include "Animation/AnimMontage.h"
 #include "HPWidget.h"
+#include "Engine/DamageEvents.h"
 
 
 
@@ -264,6 +265,7 @@ void APlayerCharacter::ResetMaterial()
 {
 }
 
+
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Hit(OtherActor);
@@ -273,4 +275,10 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 void APlayerCharacter::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnrightWeaponCollision : %s"), *OtherActor->GetName());
+	if (OtherActor->ActorHasTag("Enemy"))
+	{
+		FDamageEvent damageEvent;
+		OtherActor->TakeDamage(AttackDamage, damageEvent, GetController(), this);
+		}
+
 }

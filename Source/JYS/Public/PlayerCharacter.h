@@ -44,6 +44,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int playerHP = playerMaxHP;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AttackDamage = 1;
+
 	UFUNCTION(BlueprintCallable)
 	void OnMyTakeDamage(int damage);
 

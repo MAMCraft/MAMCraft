@@ -21,6 +21,9 @@ class LSJ_API AActorBlazeBullet : public AActor
 	int fireDamage;
 	bool one;
 	bool takeExplosionDamage; //한번 폭발데미지를 받았는지
+	float currentTime;
+	UPROPERTY(VisibleDefaultsOnly, Category = "DESTROYTIME")
+	float destroyTime = 2.0f;
 public:	
 	// Sets default values for this actor's properties
 	AActorBlazeBullet();

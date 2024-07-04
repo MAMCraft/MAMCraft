@@ -16,9 +16,9 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationYaw = false;
 
+	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CAPSULECOMPONENT"));
 	//rootComp = CreateDefaultSubobject<USceneComponent>(TEXT("ROOT"));
 	skMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESHCOMPONENT"));
-	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CAPSULECOMPONENT"));
 	handAttackComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("HANDATTACKCOMPONENT"));
 	movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MOVEMENT"));
 	statComponent = CreateDefaultSubobject<UStatComponent>(TEXT("STAT"));
@@ -67,8 +67,11 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 void AEnemyZombiePawn::BeginPlay()
 {
 	Super::BeginPlay();
+	bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
 	animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 	handAttackComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyZombiePawn::OnOverlapBegin);
+	capsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyZombiePawn::OnBeginOverlap);
+	groundZValue = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation().Z;
 }
 void AEnemyZombiePawn::Attack(TArray<FVector>& location)
 {
@@ -83,25 +86,69 @@ void AEnemyZombiePawn::AttackHitEnd()
 }
 void AEnemyZombiePawn::Attack()
 {
+	if (bHit)
+	{
+		OnAttackEnd();
+		return;
+	}
+	
 	if (animInstance == nullptr)
 	{
-		UBlackboardComponent* bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
+		//bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
 		bc->SetValueAsBool(FName("IsAttacking"), false);
 		animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
-		return;
 	}
 	animInstance->PlayAttackMontage();
 }
 void AEnemyZombiePawn::OnAttackEnd()
 {
 	handAttackComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	UBlackboardComponent* bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
+	//bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
 	bc->SetValueAsBool(FName("IsAttacking"), false);
 }
 // Called every frame
 void AEnemyZombiePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	pawnLocation = GetActorLocation();
+	if (bHit)
+	{
+		currentTime += DeltaTime;
+		//if (currentTime<hitKnockbackTime)
+		//{
+		//	FVector velocity = {
+		//		FMath::Lerp(1, outVelocity.X, 0.8),
+		//		FMath::Lerp(1, outVelocity.Y, 0.8),
+		//		FMath::Lerp(1, outVelocity.Z, 0.8)
+		//	};
+		//	pawnLocation += velocity;
+		//	//SetActorLocation(GetActorLocation() + velocity);
+		//}
+
+
+		if (currentTime > hitTime)
+		{
+			currentTime = 0;
+			bHit = false;
+		}
+	}
+
+	//if (pawnLocation.Z > groundZValue + 0.1f)
+	//{
+	//	//FVector currentLocation = GetActorLocation();
+	//	//currentLocation.Z -= 1.5f;
+	//	pawnLocation.Z -= (1.f + (pawnLocation.Z - groundZValue + 10.0f) * 0.07f);
+	//	//SetActorLocation(currentLocation);
+	//	UE_LOG(LogTemp, Log, TEXT("high currentLocation.Z %f"), pawnLocation.Z);
+	//}
+	//else if (pawnLocation.Z < groundZValue - 0.1f)
+	//{
+	//	//FVector currentLocation = GetActorLocation();
+	//	pawnLocation.Z += 2.f;
+	//	//SetActorLocation(currentLocation);
+	//	UE_LOG(LogTemp, Log, TEXT("low currentLocation.Z %f"), pawnLocation.Z);
+	//}
+	//SetActorLocation(pawnLocation);
 }
 
 // Called to bind functionality to input
@@ -136,6 +183,7 @@ float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	
 	if (statComponent->GetHp() <= 0)
 	{
+
 		//애니메이션 Die
 		//넉백 추가 예정
 		//collision off
@@ -148,7 +196,45 @@ float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 			animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 			return damage;
 		}
-		animInstance->PlayHitMontage();
+		//animInstance->PlayHitMontage();
 	}
 	return damage;
+}
+
+void AEnemyZombiePawn::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	FDamageEvent DamageEvent;
+	TakeDamage(1, DamageEvent, nullptr, this);
+	Hit(OtherActor);
+}
+
+void AEnemyZombiePawn::Hit(AActor* damageCauser)
+{
+	if (bc->GetValueAsBool(FName("IsAttacking")))
+		return;
+	if (currentTime > 0)
+		return;
+	bHit = true;
+	// knock back
+	//FVector startLoc = GetActorLocation();      // 발사 지점
+	//FVector targetLoc = GetActorLocation()+(GetActorLocation() - damageCauser->GetActorLocation()).GetSafeNormal2D() * FVector(0.5f,0.5f,2.f) * 1.f;  // 타겟 지점.
+	//float arcValue = 0.5f;                       // ArcParam (0.0-1.0)
+	//outVelocity = FVector::ZeroVector;   // 결과 Velocity
+	//if (UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, outVelocity, startLoc, targetLoc, GetWorld()->GetGravityZ(), arcValue))
+	//{
+	//	//FPredictProjectilePathParams predictParams(20.0f, startLoc, outVelocity, 15.0f);   // 20: tracing 보여질 프로젝타일 크기, 15: 시물레이션되는 Max 시간(초)
+	//	//predictParams.DrawDebugTime = 15.0f;     //디버그 라인 보여지는 시간 (초)
+	//	//predictParams.DrawDebugType = EDrawDebugTrace::Type::ForDuration;  // DrawDebugTime 을 지정하면 EDrawDebugTrace::Type::ForDuration 필요.
+	//	//predictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
+	//	//FPredictProjectilePathResult result;
+	//	//UGameplayStatics::PredictProjectilePath(this, predictParams, result);
+	//	//skMeshComponent->AddImpulse(outVelocity * 100); // objectToSend는 발사체 * 질량 해줘야되는거 같다.
+	//}
+	//Hit Montage
+
+	if (animInstance == nullptr)
+	{
+		animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
+	}
+	animInstance->PlayHitMontage();
 }

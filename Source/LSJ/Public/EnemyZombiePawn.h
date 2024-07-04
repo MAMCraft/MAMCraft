@@ -17,6 +17,16 @@ class LSJ_API AEnemyZombiePawn : public APawn, public IEnemyAnimationAttackInter
 {
 	GENERATED_BODY()
 
+	float hitKnockbackTime=0.8f;
+	float hitTime=0.5f;
+	float currentTime;
+	bool bHit;
+	void Hit(AActor* damageCauser);
+	FVector outVelocity;
+	float groundZValue;
+	UBlackboardComponent* bc;
+	FVector pawnLocation;
+
 public:
 	// Sets default values for this pawn's properties
 	AEnemyZombiePawn();
@@ -64,4 +74,6 @@ public:
 	class UStatComponent* statComponent;
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

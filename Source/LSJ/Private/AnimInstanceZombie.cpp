@@ -54,10 +54,10 @@ void UAnimInstanceZombie::UpdateProperties()
 
 void UAnimInstanceZombie::PlayAttackMontage()
 {
-	Montage_Play(attackMontage, 1.0f);
+	Montage_Play(attackMontage, 1.5f);
 }
 
 void UAnimInstanceZombie::PlayHitMontage()
 {
-	Montage_Play(hitMontage, 1.0f);
+	Montage_Play(hitMontage, 1.5f);
 }

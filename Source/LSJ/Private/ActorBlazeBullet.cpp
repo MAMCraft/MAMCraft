@@ -42,7 +42,12 @@ void AActorBlazeBullet::BeginPlay()
 void AActorBlazeBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	currentTime += DeltaTime;
+	if (currentTime > destroyTime)
+	{
+		currentTime = 0;
+		Destroy();
+	}
 }
 
 void AActorBlazeBullet::SetAttacklocation(FVector location)
@@ -80,9 +85,42 @@ void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	UE_LOG(LogTemp, Warning, TEXT("OtherActor : %s"), *OtherActor->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("OtherComp : %s"), *OtherComp->GetName());
 
+	//충돌
+	FCollisionQueryParams Params(NAME_None, true, this);
+	FVector Center = Hit.Location;
+	FHitResult HitResult;
+	USTRUCT()
+	TArray<FOverlapResult> OverlapResults;
+	FVector attackExplosionBox = FVector(100, 100, 100); // 폭발범위
+	//FCollisionQueryParams Params(EName::Name, false, this);
+	//결과를 채널로 반환
+	bool bResult = GetWorld()->OverlapMultiByChannel(
+		OverlapResults,
+		Center,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel3,
+		FCollisionShape::MakeBox(attackExplosionBox),
+		Params
+	);
+	DrawDebugBox(GetWorld(), Center, attackExplosionBox, FColor::Blue, false, -1, 0, 20);
+	if (bResult)
+	{
+		for (auto overlapResults : OverlapResults)
+		{
+			if (overlapResults.GetActor()->ActorHasTag("Player"))
+			{
+				FDamageEvent damageEvent;
+				UE_LOG(LogTemp, Error, TEXT("AActorBlazeBullet OverlapMultiByChannel Damage : %s"), *overlapResults.GetActor()->GetName());
+				//데미지를 받는쪽의 TakeDamage를 호출한다
+				overlapResults.GetActor()->TakeDamage(explosionDamage, damageEvent, nullptr, this);
+				break;
+			}
+		}
+	}
+
+	//FireFloor spawn
 	if (OtherActor->ActorHasTag(FName("Floor")))
 	{
-		one = true;
 		if (explosionDamage <= 0 && fireDamage <= 0)
 		{
 			UE_LOG(LogTemp, Log, TEXT("OnHit fail"));
@@ -93,41 +131,7 @@ void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		AActorFireFloor* fireInstance = Cast<AActorFireFloor>(GetWorld()->SpawnActor<AActorFireFloor>(fireFloor, Hit.Location, OtherActor->GetActorRotation(), SpawnParams));
 		fireInstance->SetDamage(explosionDamage, fireDamage);
 
-		//충돌
-		FCollisionQueryParams Params(NAME_None, true, this);
-		FVector Center = Hit.Location;
-		FHitResult HitResult;
-		USTRUCT()
-		TArray<FOverlapResult> OverlapResults;
-		FVector attackExplosionBox = FVector(100, 100, 100); // 폭발범위
-		//FCollisionQueryParams Params(EName::Name, false, this);
-		//결과를 채널로 반환
-		bool bResult = GetWorld()->OverlapMultiByChannel(
-			OverlapResults,
-			Center,
-			FQuat::Identity,
-			ECollisionChannel::ECC_GameTraceChannel3,
-			FCollisionShape::MakeBox(attackExplosionBox),
-			Params
-		);
-		DrawDebugBox(GetWorld(), Center, attackExplosionBox, FColor::Blue, false, -1, 0, 20);
-		if (bResult)
-		{
-			for (auto overlapResults : OverlapResults)
-			{
-				if (overlapResults.GetActor()->ActorHasTag("Player"))
-				{
-					FDamageEvent damageEvent;
-					UE_LOG(LogTemp, Warning, TEXT("AActorBlazeBullet OverlapMultiByChannel Damage : %s"), *OtherActor->GetName());
-					//데미지를 받는쪽의 TakeDamage를 호출한다
-					OtherActor->TakeDamage(explosionDamage, damageEvent, nullptr, this);
-					break;
-				}
-			}
-		}
 		Destroy();
-		
-
 		/*FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		AActorFireFloor* fireInstance = Cast<AActorFireFloor>(GetWorld()->SpawnActor<AActorFireFloor>(fireFloor, Hit.Location, OtherActor->GetActorRotation(), SpawnParams));
@@ -135,4 +139,5 @@ void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		//OtherActor->TakeDamage(statComponent->GetAttackDamage(), damageEvent, GetController(), this);
 		//폭발 지역 생성 - 콜리전 박스, 빨간 박스 / 2초 뒤 사라짐/ 오버랩 처리
 	}
+	one = true;
 }

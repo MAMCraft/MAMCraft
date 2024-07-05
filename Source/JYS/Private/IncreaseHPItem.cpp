@@ -47,10 +47,6 @@ void AIncreaseHPItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//boxComp->OnComponentBeginOverlap.AddDynamic(this, &AIncreaseHPItem::OnMyCompBeginOverlap);
-
-
-	
 }
 
 // Called every frame

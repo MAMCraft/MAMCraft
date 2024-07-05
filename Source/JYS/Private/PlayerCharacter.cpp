@@ -152,6 +152,12 @@ void APlayerCharacter::IncreaseHP(int32 Amount)
 	UE_LOG(LogTemp, Log, TEXT("HP Increased: %d / %d"), playerHP, playerMaxHP);
 }
 
+void APlayerCharacter::IncreaseAttackDamage(float Amount)
+{
+	AttackDamage += Amount;
+	UE_LOG(LogTemp, Log, TEXT("Attack Damage Increased: %f"), AttackDamage);
+}
+
 void APlayerCharacter::OnMyTakeDamage(int damage)
 {
 	// 데미지 만큼 체력을 소모한다.

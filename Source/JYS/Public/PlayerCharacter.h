@@ -52,6 +52,9 @@ public:
 	UFUNCTION()
 	void IncreaseHP(int32 Amount);
 
+	UFUNCTION()
+	void IncreaseAttackDamage(float Amount);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AttackDamage = 1;
 

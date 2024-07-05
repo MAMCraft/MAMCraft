@@ -14,6 +14,8 @@ void UAttackNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequ
             UE_LOG(LogTemp, Warning, TEXT("ddddd"));
             PlayerCharacter->rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
             PlayerCharacter->rightWeaponCollision->SetGenerateOverlapEvents(true);  // 충돌 이벤트를 생성하도록 설정
+
+
         }
     }
 }

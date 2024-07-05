@@ -3,6 +3,7 @@
 
 #include "IncreaseHPItem.h"
 #include "Components/StaticMeshComponent.h"
+#include <PlayerCharacter.h>
 
 // Sets default values
 AIncreaseHPItem::AIncreaseHPItem()
@@ -21,12 +22,25 @@ AIncreaseHPItem::AIncreaseHPItem()
 	boxComp->SetGenerateOverlapEvents(true);
 	boxComp->SetCollisionProfileName(TEXT("Item"));
 
+	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AIncreaseHPItem::OnMyCompBeginOverlap);
+
+
 }
 
-//void AIncreaseHPItem::OnMyCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-//{
-//	UE_LOG(LogTemp, Log, TEXT("xxxxxx"));
-//}
+void AIncreaseHPItem::OnMyCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Log, TEXT("xxxxxx"));
+
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
+	if (PlayerCharacter)
+	{
+		// HP를 10 증가시킴
+		PlayerCharacter->IncreaseHP(3);
+
+		// 아이템을 파괴하여 소모되게 함
+		Destroy();
+	}
+}
 
 // Called when the game starts or when spawned
 void AIncreaseHPItem::BeginPlay()
@@ -34,6 +48,8 @@ void AIncreaseHPItem::BeginPlay()
 	Super::BeginPlay();
 
 	//boxComp->OnComponentBeginOverlap.AddDynamic(this, &AIncreaseHPItem::OnMyCompBeginOverlap);
+
+
 	
 }
 

@@ -18,6 +18,7 @@ AArrowAttack::AArrowAttack()
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
 
+
 	ConstructorHelpers::FObjectFinder<UStaticMesh> TempMesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
 
 	if (TempMesh.Succeeded())
@@ -42,11 +43,14 @@ void AArrowAttack::Tick(float DeltaTime)
 	FVector P0 = GetActorLocation();
 	FVector velocity = GetActorForwardVector() * Speed;
 	float t = DeltaTime;
-	SetActorLocation(P0 + velocity * t);
+	FVector NewLocation = P0 + velocity * t;
+	SetActorLocation(NewLocation);
 }
 
 void AArrowAttack::DestroyArrow()
 {
 	Destroy();
 }
+
+
 

@@ -23,6 +23,7 @@ public:
 
 protected:
 
+public:
 	void InputLeftMouseButtonPressed();
 	void InputLeftMouseButtonReleased();
 

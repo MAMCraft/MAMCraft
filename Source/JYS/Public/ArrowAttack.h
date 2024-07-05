@@ -36,5 +36,9 @@ public:
 
 	void DestroyArrow();
 
+	UPROPERTY(EditAnywhere)
+	class APlayerCharacter* PlayerCharacter2;
+
+
 };
 

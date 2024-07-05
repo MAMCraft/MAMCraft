@@ -9,12 +9,17 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "TimerManager.h"
 #include "Components/BoxComponent.h"
 #include "Animation/AnimMontage.h"
 #include "HPWidget.h"
 #include "Engine/DamageEvents.h"
 #include "Components/ArrowComponent.h"
 #include "ArrowAttack.h"
+#include "ClickMovePlayerController.h"
+
 
 
 
@@ -59,6 +64,8 @@ APlayerCharacter::APlayerCharacter()
 	arrowPositionComp->SetupAttachment(RootComponent);
 	// arrowPositionComp->SetRelativeLocationAndRotation(FVector(), FVector());
 
+
+	bIsShootingBow = false;
 }
 
 
@@ -89,7 +96,7 @@ void APlayerCharacter::BeginPlay()
 	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
 
 
-	ArrowAttack = Cast<AActor>(GetMesh());
+	// ArrowAttackClass = Cast<AActor>(GetMesh());
 }
 
 // Called every frame
@@ -103,6 +110,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 	{
 		DrawDebugBox(GetWorld(), rightWeaponCollision->GetComponentLocation(), rightWeaponCollision->GetScaledBoxExtent(), FColor::Red, false, -1.0f, 0, 5.0f);
 	}
+
+
 }
 
 // Called to bind functionality to input
@@ -232,12 +241,12 @@ void APlayerCharacter::skill()
 {
 	UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
 
-	if (bowMontage)
-	{
 		PlayAnimMontage(bowMontage);
-		OnMyActionArrow();
-		UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
-	}
+		// 이동 애니메이션 재생
+		TurnToMoveAnim(1.0f); // 이동 애니메이션 시작
+		RotateToMouseDirection(); // 마우스 방향으로 회전
+
+		UE_LOG(LogTemp, Log, TEXT("bowMontage"));
 }
 
 
@@ -261,9 +270,69 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 
 void APlayerCharacter::OnMyActionArrow()
 {
+	// Arrow 스폰 위치를 10.f 만큼만 앞으로
+	//FVector ArrowSpawnLocation = arrowPositionComp->GetComponentLocation();
+	//ArrowSpawnLocation += arrowPositionComp->GetForwardVector() * 30.f;
 	FTransform t = arrowPositionComp->GetComponentTransform();
 	GetWorld()->SpawnActor<AArrowAttack>(arrowFactory, t);
 }
+
+void APlayerCharacter::DelayedArrowAttack()
+{
+	OnMyActionArrow();
+}
+
+void APlayerCharacter::RotateToMouseDirection()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController)
+	{
+		FVector WorldLocation, WorldDirection;
+		FVector2D ScreenLocation;
+		if (PlayerController->GetMousePosition(ScreenLocation.X, ScreenLocation.Y))
+		{
+			bool bSuccess = PlayerController->DeprojectScreenPositionToWorld(ScreenLocation.X, ScreenLocation.Y, WorldLocation, WorldDirection);
+			if (bSuccess)
+			{
+				// 플레이어 캐릭터가 바라봐야 할 위치를 찾음
+				FVector LookAtLocation = WorldLocation + (WorldDirection * 1000);  // 방향 벡터를 확장
+
+				// 해당 위치를 바라보는 회전을 계산
+				FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), LookAtLocation);
+				SetActorRotation(NewRotation);
+
+				// 화살 공격을 지연시킴
+				GetWorldTimerManager().SetTimer(SkillTimerHandle, this, &APlayerCharacter::DelayedArrowAttack, 0.5f, false);
+			}
+		}
+	}
+}
+
+void APlayerCharacter::TurnToMoveAnim(float value)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		// 활을 쏘는 중이면서 이동 클릭이 발생한 경우
+		if (bIsShootingBow && MoveController->bClickLeftMouse)
+		{
+			// bowMontage 중지
+			AnimInstance->Montage_Stop(0.1f, bowMontage);
+			bIsShootingBow = false; // 활쏘는 상태 해제
+
+			// 이동 애니메이션 재생
+			// AnimInstance->Montage_Play(runMontage, 1.0f, EMontagePlayReturnType::MontageLength, 0.0f, true);
+			PlayAnimMontage(runMontage);
+
+			// 이동 명령을 컨트롤러에게 보냄
+			if (MoveController)
+			{
+				MoveController->MoveToMouseCursor();
+			}
+		}
+	}
+}
+
 
 //weapon
 void APlayerCharacter::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -29,14 +29,19 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* rollingMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* attackComboMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* bowMontage;
+	 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* runMontage;
+
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int playerMaxHP = 10;
@@ -71,7 +76,7 @@ public:
 	void StopFireDamage();
 
 	FTimerHandle FireDamageTimerHandle;
-	FTimerHandle FlashRedTimerHandle;
+	// FTimerHandle FlashRedTimerHandle;
 
 	bool bIsTakingFireDamage;
 
@@ -103,10 +108,9 @@ private:
 	UPROPERTY()
 	class UHPWidget* HPWidget;
 
-public:
 
-	UPROPERTY(EditAnywhere)
-	class AActor* ArrowAttack;
+public:
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UArrowComponent* arrowPositionComp;
@@ -115,5 +119,25 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AArrowAttack> arrowFactory;
+
+	// 화살을 쏘면 클릭한 위치에 화살이 가게끔
+
+	float ArrowSpeed;
+
+	UFUNCTION()
+    void DelayedArrowAttack();
+
+	UFUNCTION()
+	void RotateToMouseDirection();
+
+	FTimerHandle SkillTimerHandle;
+
+	bool bIsShootingBow;
+	
+	UFUNCTION()
+	void TurnToMoveAnim(float value);
+
+	UPROPERTY(EditAnywhere)
+	class AClickMovePlayerController* MoveController;
 
 };

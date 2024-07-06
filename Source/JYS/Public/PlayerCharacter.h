@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Components/BoxComponent.h"
+#include "PlayerAnim.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -68,11 +69,21 @@ public:
 	UFUNCTION()
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
-
-
 	bool isAttacking;
+	//LSJ 콤보 공격 적용//////////////////////////
+	bool IsAttacking;
+	bool CanNextCombo;
+	bool IsComboInputOn;
+	int32 CurrentCombo;
+	int32 MaxCombo;
+	UFUNCTION()
+	void OnAttackComboMontageEnded();
+	void AttackStartComboState();
+	void AttackEndComboState();
+	UPROPERTY()
+	UPlayerAnim* AnimInstance;
+	/// /////////////////////////////////////////////////
 	int ComboAttackIndex = 0;
-
 	// 데미지 처리
 	//UFUNCTION()
 	//void Hit(AActor* OtherActor);

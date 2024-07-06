@@ -68,8 +68,11 @@ APlayerCharacter::APlayerCharacter()
 	bComboAttackStart = false;
 	bComboAttackNext = false;
 	comboAttackNumber = 0;
-}
 
+	//LSJ 콤보 공격 적용
+	MaxCombo = 2;
+	AttackEndComboState();
+}
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
@@ -81,11 +84,36 @@ void APlayerCharacter::BeginPlay()
 		HPWidget->AddToViewport();
 	}
 
-	// Combo Anim
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	// Combo Anim 
+	AnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance()); //LSJ 콤보 공격 적용
 	if (AnimInstance != nullptr)
 	{
 		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &APlayerCharacter::HandleOnMontageNotifyBegin);
+		//LSJ 콤보 공격 적용
+		AnimInstance->EndAttack.AddLambda([this]() -> void
+			{
+				OnAttackComboMontageEnded();
+			});
+		AnimInstance->OnNextAttackCheck.AddLambda([this]() -> void
+			{
+
+				CanNextCombo = false;
+
+				if (IsComboInputOn)
+				{
+					AttackStartComboState();
+					UE_LOG(LogTemp, Error, TEXT("%d"), CurrentCombo);
+					//switch (CurrentCombo)
+					//{
+					//case 1:
+					//	//AnimInstance->JumpToAttackMontageSection1();
+					//	break;
+					//case 2:
+					//	//AnimInstance->JumpToAttackMontageSection2();
+					//}
+					AnimInstance->JumpToAttackMontageSection(CurrentCombo);
+				}
+			});
 	}
 
 	//weapon
@@ -99,6 +127,8 @@ void APlayerCharacter::BeginPlay()
 
 
 	// ArrowAttackClass = Cast<AActor>(GetMesh());
+
+
 }
 
 // Called every frame
@@ -225,8 +255,6 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		return Damage;
 }
 
-
-
 void APlayerCharacter::skill()
 {
 	UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
@@ -319,25 +347,41 @@ void APlayerCharacter::comboAttackEnd()
 
 	bComboAttackStart = false;
 }
-
+//LSJ 콤보 공격 적용
 void APlayerCharacter::comboAttack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("3333333333333"))
+	//UE_LOG(LogTemp, Warning, TEXT("3333333333333"))
 
-	bComboAttackStart = true;
+	//bComboAttackStart = true;
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (!AnimInstance || !attackComboMontage) return;
+	//UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	//if (!AnimInstance || !attackComboMontage) return;
 
-	bComboAttacking = true;
-	const char* comboList[] = {"firstAttack", "secondAttack", "thirdAttack"};
+	//bComboAttacking = true;
+	//const char* comboList[] = {"firstAttack", "secondAttack", "thirdAttack"};
 
-	if (comboAttackNumber >= 2)
-		comboAttackNumber = 0;
+	//if (comboAttackNumber >= 2)
+	//	comboAttackNumber = 0;
 
-	AnimInstance->Montage_Play(attackComboMontage, 1.5f);
-	AnimInstance->Montage_JumpToSection(FName(comboList[comboAttackNumber]), attackComboMontage);
-	UE_LOG(LogTemp, Warning, TEXT("9999999999999999"))
+	//AnimInstance->Montage_Play(attackComboMontage, 1.5f);
+	//AnimInstance->Montage_JumpToSection(FName(comboList[comboAttackNumber]), attackComboMontage);
+	//UE_LOG(LogTemp, Warning, TEXT("9999999999999999"))
+
+
+	if (IsAttacking)
+	{
+		if (CanNextCombo)
+		{
+			IsComboInputOn = true;
+		}
+	}
+	else
+	{
+		AttackStartComboState();
+		AnimInstance->PlayAttackMontage();
+		AnimInstance->JumpToAttackMontageSection(CurrentCombo);
+		IsAttacking = true;
+	}
 
 }
 
@@ -373,3 +417,25 @@ void APlayerCharacter::OnrightWeaponCollision(UPrimitiveComponent* OverlappedCom
 		}
 
 }
+
+// LSJ 콤보 공격 적용
+void APlayerCharacter::OnAttackComboMontageEnded()
+{
+	IsAttacking = false;
+	AttackEndComboState();
+}
+
+void APlayerCharacter::AttackStartComboState()
+{
+	CanNextCombo = true;
+	IsComboInputOn = false;
+	CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
+}
+
+void APlayerCharacter::AttackEndComboState()
+{
+	IsComboInputOn = false;
+	CanNextCombo = false;
+	CurrentCombo = 0;
+}
+//

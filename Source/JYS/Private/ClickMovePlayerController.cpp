@@ -5,6 +5,7 @@
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimInstance.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
 #include <PlayerCharacter.h>
 
 
@@ -33,9 +34,12 @@ void AClickMovePlayerController::PlayerTick(float DeltaTime)
 	if (bIsEnemyHere)
 	{
 		float distance = (EnemyLocation - PlayerCharacter2->GetActorLocation()).Length();
-		if (distance < 100.f)
+		if (distance < 170.f)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("ATTACK!!!!!!!!!!!!!!!!!!!!!!!!!!"))
+			FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(PlayerCharacter2->GetActorLocation(), EnemyLocation);
+			FRotator newRotation = FRotator(PlayerCharacter2->GetActorRotation().Pitch, lookRotation.Yaw, PlayerCharacter2->GetActorRotation().Roll);
+			PlayerCharacter2->SetActorRotation(newRotation);
 			PlayerCharacter2->comboAttack();
 			bIsEnemyHere = false;
 		}
@@ -78,7 +82,8 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	FHitResult hit;
 	GetHitResultUnderCursor(ECC_Visibility, false, hit);
 	AActor* Target = hit.GetActor();
-
+	if (Target == nullptr)
+		return;
 	// tag 넣어서 아이템별 각 기능 넣어주기
 	if (Target->ActorHasTag(FName(TEXT("ArrowItem"))))
 	{

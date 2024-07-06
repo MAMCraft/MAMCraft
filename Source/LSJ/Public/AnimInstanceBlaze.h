@@ -27,7 +27,7 @@ class LSJ_API UAnimInstanceBlaze : public UAnimInstance
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOVEMENT", meta = (allowprivateaccess = true))
 	UAnimMontage* attackMontage;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOVEMENT", meta = (allowprivateaccess = true))
-	UAnimMontage* hitMontage;
+	UAnimMontage* dieMontage;
 protected:
 	//virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void NativeInitializeAnimation();
@@ -35,7 +35,7 @@ public:
 	UFUNCTION()
 	void PlayAttackMontage();
 	UFUNCTION()
-	void PlayHitMontage();
+	void PlayDieMontage();
 
 	UFUNCTION()
 	void AnimNotify_Fire();

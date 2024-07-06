@@ -16,9 +16,9 @@ class LSJ_API UBTTaskNode_RunAway : public UBTTaskNode
 private:
 	float currentTime=0.f;
 	UPROPERTY(EditAnywhere, Category = "MOVINGTIME")
-	float movingTime = 2.f;
+	float movingTime = 1.f;
 		UPROPERTY(EditAnywhere, Category = "MOVINGTIME")
-	float runAwaySpeed = 2.f;
+	float runAwaySpeed = 300.f;
 public:
 	UBTTaskNode_RunAway();
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;

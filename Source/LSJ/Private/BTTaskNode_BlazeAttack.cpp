@@ -36,6 +36,7 @@ EBTNodeResult::Type UBTTaskNode_BlazeAttack::ExecuteTask(UBehaviorTreeComponent&
 	IEnemyAnimationAttackInterface* attackPawn = Cast<IEnemyAnimationAttackInterface>(ControllingPawn);
 	if (attackPawn)
 	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(FName("IsAttacking"), true);
 		attackPawn->Attack(attackLocaction);
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(FName("WasRunAway"),false);
 		return EBTNodeResult::Succeeded;

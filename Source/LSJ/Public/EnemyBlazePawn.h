@@ -10,6 +10,7 @@
 #include "AnimInstanceBlaze.h"
 #include "ActorBlazeBullet.h"
 #include "StatComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyBlazePawn.generated.h"
 
 UCLASS()
@@ -17,6 +18,44 @@ class LSJ_API AEnemyBlazePawn : public APawn, public IEnemyAnimationAttackInterf
 {
 	GENERATED_BODY()
 
+	float hitTime = 0.3f;
+	float hitCurrentTime;
+	bool bHit;
+	void Hit(AActor* damageCauser);
+
+	float dieDestroyTime = 2.f;
+	float dieFalldownTime = 1.5f;
+	float dieCurrentTime;
+	bool bDie;
+	FVector hitDirection;
+	FVector dieDirection;
+	void Die(AActor* damageCauser);
+	UBlackboardComponent* bc;
+
+	float MisSpeed;
+
+
+	//#region 속도 변수들
+	double velocityDie = 30.f;
+	float FloatVelo = 0.f;
+	float gravityDie = 09.82f;
+	float Rad = 75.f;
+
+	float MaxH = 0.f;
+
+	float PositionX = 0.f;
+	float PositionY = 0.f;
+
+	float timeDie = 0.f;
+
+	double Velo_x = 0.0;
+	double Velo_y = 0.0;
+	bool SimulationStart = false;
+
+	float fx = 0.f;
+	float fy = 0.f;
+
+	float groundZValue;
 public:
 	// Sets default values for this pawn's properties
 	AEnemyBlazePawn();

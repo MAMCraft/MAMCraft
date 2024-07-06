@@ -115,7 +115,8 @@ void AEnemyZombiePawn::Tick(float DeltaTime)
 	{
 		hitCurrentTime += DeltaTime;
 
-		SetActorLocation(GetActorLocation() + direction * FMath::Lerp(4.0f,6.0f,0.8f));
+		//SetActorLocation(GetActorLocation() + direction * FMath::Lerp(4.0f,6.0f,0.8f));
+		capsuleComponent->SetWorldLocation(GetActorLocation()+direction * FMath::Lerp(4.0f, 6.0f, 0.8f));
 		if (hitCurrentTime > hitTime)
 		{
 			hitCurrentTime = 0;
@@ -160,7 +161,8 @@ void AEnemyZombiePawn::Tick(float DeltaTime)
 			SetActorRotation(lookRotation);
 			FVector currentLocation = GetActorLocation();
 			currentLocation.Z = FMath::Lerp(currentLocation.Z,groundZValue + -80.0f,0.5f);
-			SetActorLocation( currentLocation);
+			//SetActorLocation( currentLocation);
+			capsuleComponent->SetWorldLocation(currentLocation);
 		}
 		
 		if (dieCurrentTime > dieDestroyTime)
@@ -235,6 +237,13 @@ void AEnemyZombiePawn::Hit(AActor* damageCauser)
 
 	if (hitCurrentTime > 0)
 		return;
+	//何调模 规氢 备窍扁
+	FVector start = GetActorLocation();
+	start.Z = 0;
+	FVector end = damageCauser->GetActorLocation();
+	end.Z = 0;
+	direction = (start - end).GetSafeNormal();
+	direction.Z = 0.f;
 
 	if (statComponent->GetHp()<=0)
 	{
@@ -249,12 +258,7 @@ void AEnemyZombiePawn::Hit(AActor* damageCauser)
 		animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 	}
 	animInstance->PlayHitMontage();
-	FVector start = GetActorLocation();
-	start.Z = 0;
-	FVector end = damageCauser->GetActorLocation();
-	end.Z = 0;
-	direction = (start - end).GetSafeNormal();
-	direction.Z = 0.f;
+
 }
 
 void AEnemyZombiePawn::Die(AActor* damageCauser)

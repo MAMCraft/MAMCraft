@@ -15,7 +15,7 @@ UAnimInstanceBlaze::UAnimInstanceBlaze()
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_MONTAGE(TEXT("/Script/Engine.AnimMontage'/Game/LSJ/Resource/Blaze/Animaion/blazeAnimationHitorStun_SK_Blaze_ao_Blaze_Stun_Montage.blazeAnimationHitorStun_SK_Blaze_ao_Blaze_Stun_Montage'"));
 	if (ATTACK_MONTAGE.Succeeded())
 	{
-		hitMontage = HIT_MONTAGE.Object;
+		dieMontage = HIT_MONTAGE.Object;
 	}
 	else
 		UE_LOG(LogTemp, Display, TEXT("hitMontage nullptr"));
@@ -38,9 +38,9 @@ void UAnimInstanceBlaze::PlayAttackMontage()
 	Montage_Play(attackMontage, 1.0f);
 }
 
-void UAnimInstanceBlaze::PlayHitMontage()
+void UAnimInstanceBlaze::PlayDieMontage()
 {
-	Montage_Play(hitMontage, 1.0f);
+	Montage_Play(dieMontage, 1.0f);
 }
 
 void UAnimInstanceBlaze::AnimNotify_Fire()

@@ -7,6 +7,7 @@
 
 UBTTaskNode_RunAway::UBTTaskNode_RunAway()
 {
+	NodeName = "UBTTaskNode_RunAway";
 	bNotifyTick = true;
 }
 void UBTTaskNode_RunAway::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -23,9 +24,10 @@ void UBTTaskNode_RunAway::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
 	APawn* target = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("Player")));
 
-	FVector oppositeDirection = (ControllingPawn->GetActorLocation() - target->GetActorLocation()).GetSafeNormal2D();
+	FVector oppositeDirection = target->GetActorLocation() - ControllingPawn->GetActorLocation();
 	oppositeDirection.Z = 0;
-	FVector bActorLocation = ControllingPawn->GetActorLocation() + oppositeDirection * runAwaySpeed;
+	UE_LOG(LogTemp, Log, TEXT("oppositeDirection %f %f"), oppositeDirection.X, oppositeDirection.Y);
+	FVector bActorLocation = ControllingPawn->GetActorLocation() + -1.0f * oppositeDirection.GetSafeNormal2D() * runAwaySpeed * DeltaSeconds;
 
 	ControllingPawn->SetActorLocation(bActorLocation);
 }

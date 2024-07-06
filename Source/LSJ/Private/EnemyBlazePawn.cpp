@@ -7,6 +7,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "ActorBlazeBullet.h"
+
 // Sets default values
 AEnemyBlazePawn::AEnemyBlazePawn()
 {
@@ -59,13 +60,54 @@ void AEnemyBlazePawn::BeginPlay()
 	animInstance = Cast<UAnimInstanceBlaze>(skMeshComponent->GetAnimInstance());
 	animInstance->BulletFire.AddUObject(this, &AEnemyBlazePawn::Fire);
 	statComponent->SetLevel(FName("Blaze"));
+	bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
+	groundZValue = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation().Z;
 }
 
 // Called every frame
 void AEnemyBlazePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (bDie)
+	{
+		dieCurrentTime += DeltaTime;
+		if (dieCurrentTime > dieDestroyTime)
+		{
+			Destroy();
+		}
+		if (GetActorLocation().Z - groundZValue < -100.f)
+			return;
+		//위치 이동 포물선
+		//ground까지
+		timeDie += DeltaTime;
+		Velo_x = velocityDie * hitDirection.X * FMath::Cos(FMath::DegreesToRadians(Rad)) * timeDie;
+		Velo_y = velocityDie*100.0 * hitDirection.Z * FMath::Sin(FMath::DegreesToRadians(Rad)) * timeDie;
+		double Velo_z = velocityDie * hitDirection.Y * FMath::Cos(FMath::DegreesToRadians(Rad)) * timeDie;
+		//핵심 부분입니다.
+		double xx = Velo_x;
+		double yy = Velo_y - (0.5 * gravityDie * FMath::Pow(timeDie, 2));
+		double zz = Velo_z;
+		//y값의 경우 중력의 힘을 받기 때문에 필요한 부분입니다.
+		//모두 위 공식에 근거하여 식을 대입해보시면 알 수 있습니다.
+		fx = (xx);
+		fy = (yy);
+		float fz = (zz);
+		//double을 float으로 바꾸어줍니다.
+		// 안 바꾸어주어도 상관은 없지만 저의 경우 float을 써야만 하는 상황이 오기 때문에 굳이 넣어줬었습니다.
+		float CurrentX = GetActorLocation().X;
+		float CurrentY = GetActorLocation().Z;
+		float CurrentZ = GetActorLocation().Y;
+		if (CurrentY > MaxH)
+		{
+			MaxH = CurrentY;
+		}
+		FVector v = FVector(fx, fz, fy);
+		
+		SetActorLocation(FVector(fx + GetActorLocation().X, fz + GetActorLocation().Y, fy + GetActorLocation().Z));
+		//float angle = FMath::Atan2(fy + PositionY, fx + PositionX) * FMath::RadiansToDegrees(angle);
+		//angle 부분은 미사일이 현 상황에 따라 앞 꼬다리 부분의 방향을 말하는 것인데 어느정도 수정이 필요해보이네요 전
+		//transform.eulerAngles = new Vector3(0, 0, angle);
+	}
 }
 
 // Called to bind functionality to input
@@ -90,7 +132,6 @@ void AEnemyBlazePawn::Attack()
 {
 	if (animInstance == nullptr)
 	{
-		UBlackboardComponent* bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
 		bc->SetValueAsBool(FName("IsAttacking"), false);
 		animInstance = Cast<UAnimInstanceBlaze>(skMeshComponent->GetAnimInstance());
 		return;
@@ -110,11 +151,10 @@ void AEnemyBlazePawn::Fire()
 }
 void AEnemyBlazePawn::OnAttackEnd()
 {
-	UBlackboardComponent* bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
+	bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
 	bc->SetValueAsBool(FName("IsAttacking"), false);
 	bc->SetValueAsBool(FName("WasRunAway"), false);
 	movement->MaxSpeed = 300.f;
-	
 }
 
 void AEnemyBlazePawn::Attack(TArray<FVector>& location)
@@ -122,7 +162,6 @@ void AEnemyBlazePawn::Attack(TArray<FVector>& location)
 	attackLocation = location;
 	if (animInstance == nullptr)
 	{
-		UBlackboardComponent* bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
 		bc->SetValueAsBool(FName("IsAttacking"), false);
 		animInstance = Cast<UAnimInstanceBlaze>(skMeshComponent->GetAnimInstance());
 		return;
@@ -136,19 +175,50 @@ float AEnemyBlazePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	statComponent->OnAttacked(damage);
+	Hit(DamageCauser);
+	return damage;
+}
 
-	//넉백 추가 예정
+void AEnemyBlazePawn::Hit(AActor* damageCauser)
+{
+	if (bDie)
+		return;
+	if (bc->GetValueAsBool(FName("IsAttacking")))
+	{
+		OnAttackEnd();
+	}
+
+	if (hitCurrentTime > 0)
+		return;
+	//부딧친 방향 구하기
+	FVector start = GetActorLocation();
+	start.Z = 0;
+	FVector end = damageCauser->GetActorLocation();
+	end.Z = 0;
+	hitDirection = (start - end).GetSafeNormal();
+	hitDirection.Z = 0.f;
 
 	if (statComponent->GetHp() <= 0)
 	{
-		//애니메이션 Die
-	
-		//collision off
+		bDie = true;
+		Die(damageCauser);
 	}
-	else
-	{
-		//애니메이션 HIt
 
+	bHit = true;
+
+	/*if (animInstance == nullptr)
+	{
+		animInstance = Cast<UAnimInstanceBlaze>(skMeshComponent->GetAnimInstance());
 	}
-	return damage;
+	animInstance->PlayHitMontage();*/
+	
+}
+void AEnemyBlazePawn::Die(AActor* damageCauser)
+{
+	if (animInstance == nullptr)
+	{
+		animInstance = Cast<UAnimInstanceBlaze>(skMeshComponent->GetAnimInstance());
+	}
+	animInstance->PlayDieMontage();
+	GetController()->UninitializeComponents();
 }

@@ -155,7 +155,7 @@ void APlayerCharacter::IncreaseHP(int32 Amount)
 void APlayerCharacter::IncreaseAttackDamage(float Amount)
 {
 	AttackDamage += Amount;
-	UE_LOG(LogTemp, Log, TEXT("Attack Damage Increased: %f"), AttackDamage);
+	UE_LOG(LogTemp, Log, TEXT("Attack Damage Increased: %d"), AttackDamage);
 }
 
 void APlayerCharacter::OnMyTakeDamage(int damage)

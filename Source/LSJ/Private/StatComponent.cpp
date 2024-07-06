@@ -39,15 +39,15 @@ void UStatComponent::SetLevel(FName name)
 {
 	// GameInstance를 받아와서 안의 값을 가져옴
 	auto gameInstance = Cast<UMAMCGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
 	if (gameInstance)
 	{
 		auto StatData = gameInstance->GetStatData(name);
-		if (StatData)
 		{
-			level = StatData->level;
-			hp = StatData->maxHp;
-			attackDamage = StatData->attackDamage;
-			moveSpeed = StatData->moveSpeed;
+			level = StatData.level;
+			hp = StatData.maxHp;
+			attackDamage = StatData.attackDamage;
+			moveSpeed = StatData.moveSpeed;
 		}
 	}
 

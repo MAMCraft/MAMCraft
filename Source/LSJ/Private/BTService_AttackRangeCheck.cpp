@@ -25,11 +25,11 @@ void UBTService_AttackRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	//결과를 채널로 반환
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		currentLocation,
+		currentLocation+controllingPawn->GetActorForwardVector() * 2.0f,
 		attackRangeLocation,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel3,
-		FCollisionShape::MakeSphere(50.0f),
+		FCollisionShape::MakeSphere(traceRadius),
 		Params);
 
 

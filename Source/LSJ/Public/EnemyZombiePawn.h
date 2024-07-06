@@ -18,11 +18,17 @@ class LSJ_API AEnemyZombiePawn : public APawn, public IEnemyAnimationAttackInter
 {
 	GENERATED_BODY()
 
-	float hitKnockbackTime=0.8f;
-	float hitTime=0.5f;
-	float currentTime;
+	//float hitKnockbackTime=0.3f;
+	float hitTime=0.3f;
+	float hitCurrentTime;
 	bool bHit;
 	void Hit(AActor* damageCauser);
+
+	float dieDestroyTime = 2.f;
+	float dieCurrentTime;
+	bool bDie;
+	void Die(AActor* damageCauser);
+
 	FVector outVelocity;
 	float groundZValue;
 	UBlackboardComponent* bc;

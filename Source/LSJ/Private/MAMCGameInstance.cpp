@@ -16,9 +16,8 @@ void UMAMCGameInstance::Init()
 	Super::Init();
 
 }
-
-FEnemyData* UMAMCGameInstance::GetStatData(FName name)
+FEnemyData UMAMCGameInstance::GetStatData(FName name)
 {
 	//return myStats->FindRow<FEnemyData>(*FString::FromInt(level), TEXT(""));
-	return myStats->FindRow<FEnemyData>(name, TEXT(""));
+	return *myStats->FindRow<FEnemyData>(name, "",false);
 }

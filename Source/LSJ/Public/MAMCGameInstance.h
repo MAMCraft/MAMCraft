@@ -11,17 +11,17 @@ USTRUCT()
 struct  FEnemyData : public FTableRowBase
 {
 	GENERATED_BODY()
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 level;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "STAT")
+	int level;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 attackDamage;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "STAT")
+	int attackDamage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 moveSpeed;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "STAT")
+	int moveSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 maxHp;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "STAT")
+	int maxHp;
 };
 
 /**
@@ -36,8 +36,8 @@ public:
 	UMAMCGameInstance();
 
 	virtual void Init() override;
-
-	FEnemyData* GetStatData(FName name);
+	UFUNCTION()
+	FEnemyData GetStatData(FName name);
 
 private:
 	UPROPERTY()

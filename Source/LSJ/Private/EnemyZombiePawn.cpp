@@ -90,12 +90,6 @@ void AEnemyZombiePawn::AttackHitEnd()
 }
 void AEnemyZombiePawn::Attack()
 {
-	if (bHit)
-	{
-		OnAttackEnd();
-		return;
-	}
-	
 	if (animInstance == nullptr)
 	{
 		//bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
@@ -118,9 +112,9 @@ void AEnemyZombiePawn::Tick(float DeltaTime)
 	pawnLocation = GetActorLocation();
 	if (bHit)
 	{
-		currentTime += DeltaTime;
+		hitCurrentTime += DeltaTime;
 
-		SetActorLocation(GetActorLocation() + direction * FMath::Lerp(5.0f,10.f,0.5));
+		SetActorLocation(GetActorLocation() + direction * FMath::Lerp(2.0f,6.f,0.5));
 
 		//if (currentTime<hitKnockbackTime)
 		//{
@@ -143,10 +137,12 @@ void AEnemyZombiePawn::Tick(float DeltaTime)
 		//meshMoveLocation.Z = GetActorLocation().Z + 62.5f;
 		//pawnLocation.Z += 62.5f;
 		//SetActorLocation(pawnLocation);
-		if (currentTime > hitTime)
+		if (hitCurrentTime > hitTime)
 		{
-			currentTime = 0;
+			hitCurrentTime = 0;
 			bHit = false;
+			if (bc->GetValueAsBool(FName("IsAttacking")))
+				bc->SetValueAsBool(FName("IsAttacking"), false);
 		}
 	}
 
@@ -216,7 +212,6 @@ float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	}
 	else
 	{
-
 		//애니메이션 HIt
 		if (animInstance == nullptr)
 		{
@@ -232,39 +227,27 @@ float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 void AEnemyZombiePawn::Hit(AActor* damageCauser)
 {
 	if (bc->GetValueAsBool(FName("IsAttacking")))
+	{
+		OnAttackEnd();
+	}
+
+	if (hitCurrentTime > 0)
 		return;
-	if (currentTime > 0)
-		return;
+
+	//capsuleComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
 	bHit = true;
-	// knock back
-	//FVector startLoc = GetActorLocation();      // 발사 지점
-	//FVector targetLoc = GetActorLocation()+(GetActorLocation() - damageCauser->GetActorLocation()).GetSafeNormal2D() * FVector(0.5f,0.5f,2.f) * 1.f;  // 타겟 지점.
-	//float arcValue = 0.5f;                       // ArcParam (0.0-1.0)
-	//outVelocity = FVector::ZeroVector;   // 결과 Velocity
-	//if (UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, outVelocity, startLoc, targetLoc, GetWorld()->GetGravityZ(), arcValue))
-	//{
-	//	//FPredictProjectilePathParams predictParams(20.0f, startLoc, outVelocity, 15.0f);   // 20: tracing 보여질 프로젝타일 크기, 15: 시물레이션되는 Max 시간(초)
-	//	//predictParams.DrawDebugTime = 15.0f;     //디버그 라인 보여지는 시간 (초)
-	//	//predictParams.DrawDebugType = EDrawDebugTrace::Type::ForDuration;  // DrawDebugTime 을 지정하면 EDrawDebugTrace::Type::ForDuration 필요.
-	//	//predictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
-	//	//FPredictProjectilePathResult result;
-	//	//UGameplayStatics::PredictProjectilePath(this, predictParams, result);
-	//	//skMeshComponent->AddImpulse(outVelocity * 100); // objectToSend는 발사체 * 질량 해줘야되는거 같다.
-	//}
-	//Hit Montage
 
 	if (animInstance == nullptr)
 	{
 		animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 	}
 	animInstance->PlayHitMontage();
-	//pawnLocation.Z += 62.5f;
-	//SetActorLocation(pawnLocation);
+
 	direction = (GetActorLocation() - damageCauser->GetActorLocation()).GetSafeNormal();
 	direction.Z = 0.f;
-	//UE_LOG(LogTemp, Error, TEXT("GetSafeNormal %f %f %f"), (GetActorLocation()-damageCauser->GetActorLocation()).GetSafeNormal().X,
-	//	(GetActorLocation() - damageCauser->GetActorLocation()).GetSafeNormal().Y,
-	//	(GetActorLocation() - damageCauser->GetActorLocation()).GetSafeNormal().Z);
-	//UE_LOG(LogTemp, Error, TEXT("HitEnd"));
-	//capsuleComponent->AddForce(GetActorLocation() - damageCauser->GetActorLocation().GetSafeNormal() * 500.f);
+}
+
+void AEnemyZombiePawn::Die(AActor* damageCauser)
+{
+	
 }

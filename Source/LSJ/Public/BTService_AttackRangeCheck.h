@@ -18,7 +18,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "TRACE")
 	float traceRange = 100.0f;
 	UPROPERTY(EditAnywhere,Category = "TRACE")
-	float traceRadius = 50.0f;
+	float traceRadius = 26.0f;
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;

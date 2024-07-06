@@ -30,16 +30,16 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	UAnimMontage* rollingMontage;
+	class UAnimMontage* rollingMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	UAnimMontage* attackComboMontage;
+	class UAnimMontage* attackComboMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	UAnimMontage* bowMontage;
+	class UAnimMontage* bowMontage;
 	 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	UAnimMontage* runMontage;
+	class UAnimMontage* runMontage;
 
 
 
@@ -48,6 +48,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int playerHP = playerMaxHP;
+
+	UFUNCTION()
+	void IncreaseHP(int32 Amount);
+
+	UFUNCTION()
+	void IncreaseAttackDamage(float Amount);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AttackDamage = 1;
@@ -62,8 +68,7 @@ public:
 	UFUNCTION()
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
-	UFUNCTION()
-	void comboAttack();
+
 
 	bool isAttacking;
 	int ComboAttackIndex = 0;
@@ -132,12 +137,26 @@ public:
 
 	FTimerHandle SkillTimerHandle;
 
-	bool bIsShootingBow;
-	
-	UFUNCTION()
-	void TurnToMoveAnim(float value);
+	// ÄÞº¸ ¾îÅÃ
+	bool bComboAttacking;
+	bool bComboAttackStart;
+	bool bComboAttackNext;
+	int comboAttackNumber;
 
-	UPROPERTY(EditAnywhere)
-	class AClickMovePlayerController* MoveController;
+	UFUNCTION(BlueprintCallable)
+	void comboAttackStart();
+
+	UFUNCTION(BlueprintCallable)
+	void comboAttackEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void comboAttack();
+
+	UFUNCTION(BlueprintCallable)
+	void comboAttackEndNotice();
+
+	UFUNCTION(BlueprintCallable)
+	void comboAttackCheck();
+
 
 };

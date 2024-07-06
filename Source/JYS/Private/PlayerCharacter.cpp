@@ -64,8 +64,10 @@ APlayerCharacter::APlayerCharacter()
 	arrowPositionComp->SetupAttachment(RootComponent);
 	// arrowPositionComp->SetRelativeLocationAndRotation(FVector(), FVector());
 
-
-	bIsShootingBow = false;
+	bComboAttacking = false;
+	bComboAttackStart = false;
+	bComboAttackNext = false;
+	comboAttackNumber = 0;
 }
 
 
@@ -121,7 +123,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("RollingAction", IE_Pressed, this, &APlayerCharacter::Rolling);
 	PlayerInputComponent->BindAction("comboAttack", IE_Pressed, this, &APlayerCharacter::comboAttack);
-	PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::skill);
+	PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::comboAttackStart);
+	PlayerInputComponent->BindAction("Skill", IE_Released, this, &APlayerCharacter::comboAttackEnd);
 
 }
 
@@ -136,6 +139,24 @@ void APlayerCharacter::Rolling()
 	}
 }
 
+
+void APlayerCharacter::IncreaseHP(int32 Amount)
+{
+	playerHP = FMath::Clamp(playerHP + Amount, 0, playerMaxHP);
+
+	if (HPWidget)
+	{
+		HPWidget->SetHP(playerHP, playerMaxHP);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("HP Increased: %d / %d"), playerHP, playerMaxHP);
+}
+
+void APlayerCharacter::IncreaseAttackDamage(float Amount)
+{
+	AttackDamage += Amount;
+	UE_LOG(LogTemp, Log, TEXT("Attack Damage Increased: %f"), AttackDamage);
+}
 
 void APlayerCharacter::OnMyTakeDamage(int damage)
 {
@@ -160,18 +181,18 @@ void APlayerCharacter::OnMyTakeDamage(int damage)
 void APlayerCharacter::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingpayload)
 {
 	// Decrement Combo Index
-	ComboAttackIndex--;
+	//ComboAttackIndex--;
 
-	if (ComboAttackIndex < 0)
-	{
-		// Get Anim Instance
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Stop(0.4f, attackComboMontage);
-			isAttacking = false;
-		}
-	}
+	//if (ComboAttackIndex < 0)
+	//{
+	//	// Get Anim Instance
+	//	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	//	if (AnimInstance != nullptr)
+	//	{
+	//		AnimInstance->Montage_Stop(0.4f, attackComboMontage);
+	//		isAttacking = false;
+	//	}
+	//}
 
 }
 //공격 콜리전 끄고 키기
@@ -204,37 +225,6 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		return Damage;
 }
 
-void APlayerCharacter::comboAttack()
-{
-	//stop Montage if below zero
-	if (!isAttacking)
-	{
-		// Get the animation instance
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			// Play Light Attack
-			if (attackComboMontage != nullptr)
-			{
-				// AnimInstance->Montage_Play
-				PlayAnimMontage(attackComboMontage);
-				isAttacking = true; // Set attacking flag
-				UE_LOG(LogTemp, Log, TEXT("Playing attack combo montage"));
-			}
-			else
-			{
-				ComboAttackIndex++;
-				AnimInstance->Montage_JumpToSection(FName("NextCombo"), attackComboMontage);
-				UE_LOG(LogTemp, Log, TEXT("Jumping to next combo section"));
-			}
-		}
-	}
-	else {
-		ComboAttackIndex = 1;
-		UE_LOG(LogTemp, Log, TEXT("ComboAttackIndex set to 1"));
-	}
-
-}
 
 
 void APlayerCharacter::skill()
@@ -243,7 +233,6 @@ void APlayerCharacter::skill()
 
 		PlayAnimMontage(bowMontage);
 		// 이동 애니메이션 재생
-		TurnToMoveAnim(1.0f); // 이동 애니메이션 시작
 		RotateToMouseDirection(); // 마우스 방향으로 회전
 
 		UE_LOG(LogTemp, Log, TEXT("bowMontage"));
@@ -308,30 +297,69 @@ void APlayerCharacter::RotateToMouseDirection()
 	}
 }
 
-void APlayerCharacter::TurnToMoveAnim(float value)
+void APlayerCharacter::comboAttackStart()
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance)
+	UE_LOG(LogTemp, Warning, TEXT("55555555555"))
+
+	bComboAttackStart = true;
+
+	if (bComboAttacking == false)
 	{
-		// 활을 쏘는 중이면서 이동 클릭이 발생한 경우
-		if (bIsShootingBow && MoveController->bClickLeftMouse)
-		{
-			// bowMontage 중지
-			AnimInstance->Montage_Stop(0.1f, bowMontage);
-			bIsShootingBow = false; // 활쏘는 상태 해제
-
-			// 이동 애니메이션 재생
-			// AnimInstance->Montage_Play(runMontage, 1.0f, EMontagePlayReturnType::MontageLength, 0.0f, true);
-			PlayAnimMontage(runMontage);
-
-			// 이동 명령을 컨트롤러에게 보냄
-			if (MoveController)
-			{
-				MoveController->MoveToMouseCursor();
-			}
-		}
+		comboAttack();
+	}
+	else if (bComboAttacking == true)
+	{
+		bComboAttackNext = true;
 	}
 }
+
+void APlayerCharacter::comboAttackEnd()
+{
+	UE_LOG(LogTemp, Warning, TEXT("4444444444444"))
+
+	bComboAttackStart = false;
+}
+
+void APlayerCharacter::comboAttack()
+{
+	UE_LOG(LogTemp, Warning, TEXT("3333333333333"))
+
+	bComboAttackStart = true;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance || !attackComboMontage) return;
+
+	bComboAttacking = true;
+	const char* comboList[] = {"firstAttack", "secondAttack", "thirdAttack"};
+
+	if (comboAttackNumber >= 2)
+		comboAttackNumber = 0;
+
+	AnimInstance->Montage_Play(attackComboMontage, 1.5f);
+	AnimInstance->Montage_JumpToSection(FName(comboList[comboAttackNumber]), attackComboMontage);
+	UE_LOG(LogTemp, Warning, TEXT("9999999999999999"))
+
+}
+
+void APlayerCharacter::comboAttackEndNotice()
+{
+	UE_LOG(LogTemp, Warning, TEXT("222222222222222"))
+	bComboAttacking = false;
+	comboAttackNumber = 0;
+}
+
+void APlayerCharacter::comboAttackCheck()
+{
+	UE_LOG(LogTemp, Warning, TEXT("11111111111111"))
+	if (bComboAttackNext == true)
+	{
+		comboAttackNumber += 1;
+		bComboAttackNext = false;
+		comboAttack();
+	}
+}
+
+
 
 
 //weapon

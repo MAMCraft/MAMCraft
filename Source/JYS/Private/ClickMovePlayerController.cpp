@@ -7,6 +7,8 @@
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <PlayerCharacter.h>
+#include <TreasureChest.h>
+#include <IncreaseHPItem.h>
 
 
 AClickMovePlayerController::AClickMovePlayerController()
@@ -114,6 +116,14 @@ void AClickMovePlayerController::MoveToMouseCursor()
 		EnemyLocation = Target->GetActorLocation();
 		bIsEnemyHere = true;
 		SetNewDestination(hit.ImpactPoint);
+	}
+	else if (Target->ActorHasTag(FName("TreasureChest")))
+	{
+		ATreasureChest* Chest = Cast<ATreasureChest>(Target);
+		if (Chest)
+		{
+			Chest->OnChestClicked();
+		}
 	}
 
 	if (hit.bBlockingHit)

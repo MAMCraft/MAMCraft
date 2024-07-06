@@ -57,7 +57,9 @@ APlayerCharacter::APlayerCharacter()
 	//weapon
 	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
 	rightWeaponCollision->SetupAttachment(GetMesh(), FName("rightWeaponBone"));
-	rightWeaponCollision->SetRelativeScale3D(FVector(0.01f));
+	rightWeaponCollision->SetRelativeScale3D(FVector(0.003f, 0.003f, 0.015f));
+	rightWeaponCollision->SetRelativeRotation(FRotator(40.f, 0.0f, -180.0f));
+	rightWeaponCollision->SetRelativeLocation(FVector(0.2f, 0.0f, -0.3f));
 	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	arrowPositionComp = CreateDefaultSubobject<UArrowComponent>(TEXT("arrowPositionComp"));

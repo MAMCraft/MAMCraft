@@ -46,4 +46,6 @@ public:
 	FVector EnemyLocation;
 
 	bool bIsEnemyHere;
+
+	AActor* OnChestClicked;
 };

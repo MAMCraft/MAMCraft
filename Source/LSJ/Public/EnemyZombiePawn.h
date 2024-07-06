@@ -25,8 +25,10 @@ class LSJ_API AEnemyZombiePawn : public APawn, public IEnemyAnimationAttackInter
 	void Hit(AActor* damageCauser);
 
 	float dieDestroyTime = 2.f;
+	float dieFalldownTime = 1.5f;
 	float dieCurrentTime;
 	bool bDie;
+	FVector dieDirection;
 	void Die(AActor* damageCauser);
 
 	FVector outVelocity;

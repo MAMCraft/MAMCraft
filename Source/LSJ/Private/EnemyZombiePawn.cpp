@@ -7,6 +7,7 @@
 #include <Kismet/GameplayStatics.h>
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Engine/DamageEvents.h"
+#include <Kismet/KismetMathLibrary.h>
 
 // Sets default values
 AEnemyZombiePawn::AEnemyZombiePawn()
@@ -17,7 +18,7 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 
 	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CAPSULECOMPONENT"));
 	capsuleComponent->SetCapsuleHalfHeight(90.0f);
-	capsuleComponent->SetCapsuleRadius(22.0f);
+	capsuleComponent->SetCapsuleRadius(50.0f);
 	capsuleComponent->SetupAttachment(GetRootComponent());
 	//rootComp = CreateDefaultSubobject<USceneComponent>(TEXT("ROOT"));
 	skMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESHCOMPONENT"));
@@ -114,35 +115,57 @@ void AEnemyZombiePawn::Tick(float DeltaTime)
 	{
 		hitCurrentTime += DeltaTime;
 
-		SetActorLocation(GetActorLocation() + direction * FMath::Lerp(2.0f,6.f,0.5));
-
-		//if (currentTime<hitKnockbackTime)
-		//{
-		//	FVector velocity = {
-		//		FMath::Lerp(1, outVelocity.X, 0.8),
-		//		FMath::Lerp(1, outVelocity.Y, 0.8),
-		//		FMath::Lerp(1, outVelocity.Z, 0.8)
-		//	};
-		//	pawnLocation += velocity;
-		//	//SetActorLocation(GetActorLocation() + velocity);
-		//}
-		//UE_LOG(LogTemp, Warning, TEXT("ComponentSpace %f %f %f"), skMeshComponent->GetBoneLocation(FName("J_Root"), EBoneSpaces::ComponentSpace).X,
-		//	skMeshComponent->GetBoneLocation(FName("J_Root"), EBoneSpaces::ComponentSpace).Y,
-		//	skMeshComponent->GetBoneLocation(FName("J_Root"), EBoneSpaces::ComponentSpace).Z);
-		//UE_LOG(LogTemp, Warning, TEXT("WorldSpace %f %f %f"), skMeshComponent->GetBoneLocation(FName("J_Root"), EBoneSpaces::WorldSpace).X,
-		//	skMeshComponent->GetBoneLocation(FName("J_Root"), EBoneSpaces::WorldSpace).Y,
-		//	skMeshComponent->GetBoneLocation(FName("J_Root"), EBoneSpaces::WorldSpace).Z);
-		//FVector meshMoveLocation = skMeshComponent->GetBoneLocation(FName("J_Root"), EBoneSpaces::ComponentSpace)*0.1f;
-		//meshMoveLocation.X = GetActorLocation().X;
-		//meshMoveLocation.Z = GetActorLocation().Z + 62.5f;
-		//pawnLocation.Z += 62.5f;
-		//SetActorLocation(pawnLocation);
+		SetActorLocation(GetActorLocation() + direction * FMath::Lerp(4.0f,6.0f,0.8f));
 		if (hitCurrentTime > hitTime)
 		{
 			hitCurrentTime = 0;
 			bHit = false;
 			if (bc->GetValueAsBool(FName("IsAttacking")))
 				bc->SetValueAsBool(FName("IsAttacking"), false);
+			if (bDie)
+			{
+				animInstance->StopAllMontages(1.0f);
+				capsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				skMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			}
+		}
+	}
+
+	if (bDie)
+	{
+		dieCurrentTime += DeltaTime;
+
+
+		//회전 시도
+		//float rotation = FMath::Atan2(direction.X, direction.Y);
+		//FRotator localRotation = FRotator(rotation, GetActorRotation().Yaw, GetActorRotation().Roll);
+		//FQuat::Slerp(GetActorRotation().Quaternion(), localRotation.Quaternion(), 10.0f);
+		//SetActorRotation(localRotation);
+
+		if (GetActorLocation().Z - groundZValue < 15.f)
+		{
+			//capsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			//skMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+		if (dieCurrentTime < dieFalldownTime)
+		{
+			FRotator NewRotation = FRotator(0.0, 800.0 * DeltaTime, 0.0) + GetActorRotation();
+			//capsuleComponent->AddRelativeRotation(NewRotation);
+			SetActorRelativeRotation(NewRotation.Quaternion());
+		}
+		else
+		if (dieCurrentTime > dieFalldownTime && dieDestroyTime > dieCurrentTime)
+		{
+			FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), dieDirection);
+			SetActorRotation(lookRotation);
+			FVector currentLocation = GetActorLocation();
+			currentLocation.Z = FMath::Lerp(currentLocation.Z,groundZValue + -80.0f,0.5f);
+			SetActorLocation( currentLocation);
+		}
+		
+		if (dieCurrentTime > dieDestroyTime)
+		{
+			Destroy();
 		}
 	}
 
@@ -191,41 +214,20 @@ void AEnemyZombiePawn::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		}
 	handAttackComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
-
+//데미지 받기
 float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	statComponent->OnAttacked(damage);
-
-	//넉백 추가 예정
-	/*FVector direction = DamageCauser->GetActorLocation() - GetActorLocation();
-	FVector directionNor = direction.GetSafeNormal();
-	float power = 100.0f;
-	capsuleComponent->AddForce(directionNor * power);*/
 	Hit(DamageCauser);
-	if (statComponent->GetHp() <= 0)
-	{
-
-		//애니메이션 Die
-		//넉백 추가 예정
-		//collision off
-	}
-	else
-	{
-		//애니메이션 HIt
-		if (animInstance == nullptr)
-		{
-			animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
-			return damage;
-		}
-		//animInstance->PlayHitMontage();
-	}
 	return damage;
 }
 
 
 void AEnemyZombiePawn::Hit(AActor* damageCauser)
 {
+	if (bDie)
+		return;
 	if (bc->GetValueAsBool(FName("IsAttacking")))
 	{
 		OnAttackEnd();
@@ -234,6 +236,11 @@ void AEnemyZombiePawn::Hit(AActor* damageCauser)
 	if (hitCurrentTime > 0)
 		return;
 
+	if (statComponent->GetHp()<=0)
+	{
+		bDie = true;
+		Die(damageCauser);
+	}
 	//capsuleComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
 	bHit = true;
 
@@ -242,12 +249,20 @@ void AEnemyZombiePawn::Hit(AActor* damageCauser)
 		animInstance = Cast<UAnimInstanceZombie>(skMeshComponent->GetAnimInstance());
 	}
 	animInstance->PlayHitMontage();
-
-	direction = (GetActorLocation() - damageCauser->GetActorLocation()).GetSafeNormal();
+	FVector start = GetActorLocation();
+	start.Z = 0;
+	FVector end = damageCauser->GetActorLocation();
+	end.Z = 0;
+	direction = (start - end).GetSafeNormal();
 	direction.Z = 0.f;
 }
 
 void AEnemyZombiePawn::Die(AActor* damageCauser)
 {
-	
+	FVector locationTarget = FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 1000.0f);
+	dieDirection = locationTarget;
+	//capsuleComponent->SetSimulatePhysics(true);
+	//capsuleComponent->SetEnableGravity(true);
+	GetController()->UninitializeComponents();
+	//capsuleComponent->SetConstraintMode(EDOFMode::Default);
 }

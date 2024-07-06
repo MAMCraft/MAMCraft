@@ -13,7 +13,6 @@ UBTTaskNode_LookTarget::UBTTaskNode_LookTarget()
 void UBTTaskNode_LookTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-	UE_LOG(LogTemp, Log, TEXT("%f %f"), ControllingPawn->GetActorRotation().Yaw, newYaw);
 	FVector start = ControllingPawn->GetActorLocation();
 	start.Z = 0;
 	FVector end = target->GetActorLocation();

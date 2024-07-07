@@ -21,11 +21,18 @@ ATreasureChest::ATreasureChest()
 
     BoxComp->SetBoxExtent(FVector(50.0f));
     BoxComp->SetGenerateOverlapEvents(true);
-    BoxComp->SetCollisionProfileName(TEXT("ATreasureChest"));
+    BoxComp->SetCollisionProfileName(TEXT("TreasureChest"));
 
+    static ConstructorHelpers::FClassFinder<AIncreaseHPItem> increaseHPItem(TEXT("/Script/Engine.Blueprint'/Game/JYS/Blueprints/BP_IncreaseHPItem.BP_IncreaseHPItem_C'"));
+    if (increaseHPItem.Succeeded())
+    {
+        ItemToSpawn = (increaseHPItem.Class);
+    }
     //BoxComp->OnComponentBeginOverlap.AddDynamic(this, &ATreasureChest::OnChestClicked);
     // 보물상자를 클릭했을 때 OnChestClicked 함수를 호출하도록 설정
     // BoxComp->OnClicked.AddDynamic(this, &ATreasureChest::OnChestClicked);
+
+    OnlyOneTime = false;
 }
 
 // Called when the game starts or when spawned
@@ -44,22 +51,21 @@ void ATreasureChest::Tick(float DeltaTime)
 
 void ATreasureChest::OnChestClicked()
 {
-	//FActorSpawnParameters SpawnParams;
-	//SpawnParams.Owner = this;
-	//SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	//FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 0.0f, 50.0f);
-	//AActor* SpawnedActor = GetWorld()->SpawnActor<AIncreaseHPItem>(ItemToSpawn, SpawnLocation, GetActorRotation(), SpawnParams);
-
-    if (ItemToSpawn)
-    {
-        FActorSpawnParameters SpawnParams;
-        SpawnParams.Owner = this;
-        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-        FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 0.0f, 50.0f);
-        AActor* SpawnedActor = GetWorld()->SpawnActor<AIncreaseHPItem>(ItemToSpawn, SpawnLocation, GetActorRotation(), SpawnParams);
+    if (OnlyOneTime) {
+        return;
     }
+    UE_LOG(LogTemp, Warning, TEXT("Item Spawn!!!!!!!!!!!!!!!!"))
+
+    UE_LOG(LogTemp, Warning, TEXT("Item!!!!!!!!!!!!!"))
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = this;
+    // SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+    FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 200.0f, 0.0f);
+    AActor* SpawnedActor = GetWorld()->SpawnActor<AIncreaseHPItem>(ItemToSpawn, SpawnLocation, GetActorRotation(), SpawnParams);
+
+    OnlyOneTime = true;
+
 }
 
 

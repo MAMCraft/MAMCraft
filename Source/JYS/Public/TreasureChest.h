@@ -29,6 +29,7 @@ public:
 
     UFUNCTION()
     void OnChestClicked();
+	bool OnlyOneTime;
 
 private:
     class UBoxComponent* BoxComp;

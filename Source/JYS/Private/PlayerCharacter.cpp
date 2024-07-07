@@ -58,7 +58,7 @@ APlayerCharacter::APlayerCharacter()
 	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
 	rightWeaponCollision->SetupAttachment(GetMesh(), FName("rightWeaponBone"));
 	rightWeaponCollision->SetRelativeScale3D(FVector(0.003f, 0.003f, 0.015f));
-	rightWeaponCollision->SetRelativeRotation(FRotator(40.f, 0.0f, -180.0f));
+	rightWeaponCollision->SetRelativeRotation(FRotator(40.f, 0.0f, 90.0f));
 	rightWeaponCollision->SetRelativeLocation(FVector(0.2f, 0.0f, -0.3f));
 	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -142,7 +142,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	//weapon
 	if (rightWeaponCollision)
 	{
-		DrawDebugBox(GetWorld(), rightWeaponCollision->GetComponentLocation(), rightWeaponCollision->GetScaledBoxExtent(), FColor::Red, false, -1.0f, 0, 5.0f);
+		DrawDebugBox(GetWorld(), rightWeaponCollision->GetComponentLocation(), rightWeaponCollision->GetScaledBoxExtent(), rightWeaponCollision->GetRelativeRotation().Quaternion(), FColor::Red, false, -1.0f, 0, 5.0f);
 	}
 
 
@@ -155,8 +155,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("RollingAction", IE_Pressed, this, &APlayerCharacter::Rolling);
 	PlayerInputComponent->BindAction("comboAttack", IE_Pressed, this, &APlayerCharacter::comboAttack);
-	PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::comboAttackStart);
-	PlayerInputComponent->BindAction("Skill", IE_Released, this, &APlayerCharacter::comboAttackEnd);
+	//PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::comboAttackStart);
+	//PlayerInputComponent->BindAction("Skill", IE_Released, this, &APlayerCharacter::comboAttackEnd);
+	PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::skill);
 
 }
 

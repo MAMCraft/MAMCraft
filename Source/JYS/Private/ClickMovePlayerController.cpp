@@ -119,6 +119,7 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	}
 	else if (Target->ActorHasTag(FName("TreasureChest")))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Item Spawn22222222222222222222222222222"))
 		ATreasureChest* Chest = Cast<ATreasureChest>(Target);
 		if (Chest)
 		{

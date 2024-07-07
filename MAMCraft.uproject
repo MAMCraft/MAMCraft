@@ -14,7 +14,8 @@
 				"Engine",
 				"NavigationSystem",
 				"AIModule",
-				"GamePlayTasks"
+				"GamePlayTasks",
+				"UMG"
 			]
 		},
 		{

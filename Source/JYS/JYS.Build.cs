@@ -6,7 +6,7 @@ public class JYS : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "NavigationSystem", "AIModule", "UMG" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "NavigationSystem", "AIModule", "UMG", "LSJ" });
         PrivateDependencyModuleNames.AddRange(new string[] { });
 
     }

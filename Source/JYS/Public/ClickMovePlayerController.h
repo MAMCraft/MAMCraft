@@ -48,4 +48,6 @@ public:
 	bool bIsEnemyHere;
 
 	AActor* OnChestClicked;
+
+	void UsePosionItem();
 };

@@ -74,6 +74,10 @@ APlayerCharacter::APlayerCharacter()
 	//LSJ 콤보 공격 적용
 	MaxCombo = 2;
 	AttackEndComboState();
+
+	//LSJ 인벤토리
+	inventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("INVENTORYCOMPONENT"));
+
 }
 
 // Called when the game starts or when spawned
@@ -85,7 +89,12 @@ void APlayerCharacter::BeginPlay()
 	{
 		HPWidget->AddToViewport();
 	}
-
+	//LSJ 인벤토리
+	inventoryHUD = CreateWidget<class UInventoryWidget>(GetWorld(), inventoryHUDFactory);
+	if (inventoryHUD)
+	{
+		inventoryHUD->AddToViewport();
+	}
 	// Combo Anim 
 	AnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance()); //LSJ 콤보 공격 적용
 	if (AnimInstance != nullptr)

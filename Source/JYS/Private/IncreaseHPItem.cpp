@@ -4,7 +4,7 @@
 #include "IncreaseHPItem.h"
 #include "Components/StaticMeshComponent.h"
 #include <PlayerCharacter.h>
-
+#include <Kismet/GameplayStatics.h>
 // Sets default values
 AIncreaseHPItem::AIncreaseHPItem()
 {
@@ -25,6 +25,14 @@ AIncreaseHPItem::AIncreaseHPItem()
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AIncreaseHPItem::OnMyCompBeginOverlap);
 
 
+	//아이템설명
+	UseActionText = FText::FromString("Health");
+	//텍스트 지정
+	FString Path = FString("/Script/Engine.Texture2D'/Game/LSJ/Resource/posion.posion'");
+	UTexture2D* Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path));
+	Thumnail = Texture;
+	//아이템명 으로 탐색 for문
+	ItemDisplayName = FText::FromString("IncreaseHPItem");
 }
 
 void AIncreaseHPItem::OnMyCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -56,3 +64,15 @@ void AIncreaseHPItem::Tick(float DeltaTime)
 
 }
 
+void AIncreaseHPItem::Use()
+{
+	Super::Use();
+	//APlayerCharacter* player = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
+	//if (player)
+	//{
+	//	// HP를 10 증가시킴
+	//	player->IncreaseHP(3);
+	//	player->inventoryComponent->RemoveItem(this);
+	//	// 아이템을 파괴하여 소모되게 함
+	//}
+}

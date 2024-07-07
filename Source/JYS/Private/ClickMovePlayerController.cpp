@@ -9,8 +9,8 @@
 #include <PlayerCharacter.h>
 #include <TreasureChest.h>
 #include <IncreaseHPItem.h>
-
-
+#include <InventoryComponent.h>
+#include "GameFramework/PlayerController.h"
 AClickMovePlayerController::AClickMovePlayerController()
 {
 	bShowMouseCursor = true;
@@ -22,6 +22,7 @@ void AClickMovePlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 	InputComponent->BindAction("LeftClick", IE_Pressed, this, &AClickMovePlayerController::InputLeftMouseButtonPressed);
 	InputComponent->BindAction("LeftClick", IE_Released, this, &AClickMovePlayerController::InputLeftMouseButtonReleased);
+	InputComponent->BindAction("Posion", IE_Pressed, this, &AClickMovePlayerController::UsePosionItem);
 }
 
 void AClickMovePlayerController::PlayerTick(float DeltaTime)
@@ -46,12 +47,22 @@ void AClickMovePlayerController::PlayerTick(float DeltaTime)
 			bIsEnemyHere = false;
 		}
 	}
+		
+
 }
 
 void AClickMovePlayerController::BeginPlay()
 {
 	PlayerCharacter = Cast<ACharacter>(GetPawn());
 	PlayerCharacter2 = Cast<APlayerCharacter>(GetPawn());
+}
+
+void AClickMovePlayerController::UsePosionItem()
+{
+	if (PlayerCharacter2->inventoryComponent->Items.IsEmpty())
+		return;
+	PlayerCharacter2->IncreaseHP(3);
+	PlayerCharacter2->inventoryComponent->RemoveItem(PlayerCharacter2->inventoryComponent->Items[0]);
 }
 
 void AClickMovePlayerController::InputLeftMouseButtonPressed()
@@ -95,8 +106,9 @@ void AClickMovePlayerController::MoveToMouseCursor()
 
 	}else if (Target->ActorHasTag(FName(TEXT("IncreaseHPItem"))))
 	{
-		// do something
-		UE_LOG(LogTemp, Warning, TEXT("Increase HP Item"));
+		//LSJ 인벤토리
+		AItem* item = Cast<AItem>(Target);
+		PlayerCharacter2->inventoryComponent->AddItem(item);
 		Target->Destroy();
 
 	}else if (Target->ActorHasTag(FName(TEXT("FirstEquipmentItem"))))

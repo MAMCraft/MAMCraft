@@ -7,6 +7,8 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Components/BoxComponent.h"
 #include "PlayerAnim.h"
+#include "InventoryWidget.h"
+#include "InventoryComponent.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -169,5 +171,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void comboAttackCheck();
 
-
+	//LSJ 인벤토리
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> inventoryHUDFactory;
+	UInventoryWidget* inventoryHUD;
+	UInventoryComponent* inventoryComponent;
 };

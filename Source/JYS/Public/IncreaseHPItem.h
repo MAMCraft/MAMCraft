@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include <Components/BoxComponent.h>
+#include "Item.h"
 #include "IncreaseHPItem.generated.h"
 
 UCLASS()
-class JYS_API AIncreaseHPItem : public AActor
+class JYS_API AIncreaseHPItem : public AItem
 {
 	GENERATED_BODY()
 	
@@ -28,6 +29,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void Use() override;
 
 public:	
 	// Called every frame

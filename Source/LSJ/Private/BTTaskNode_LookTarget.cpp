@@ -15,6 +15,8 @@ void UBTTaskNode_LookTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	FVector start = ControllingPawn->GetActorLocation();
 	start.Z = 0;
+	if (target == nullptr)
+		return;
 	FVector end = target->GetActorLocation();
 	end.Z = 0;
 	FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(start, end);

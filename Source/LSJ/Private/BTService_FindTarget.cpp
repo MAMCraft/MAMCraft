@@ -36,5 +36,5 @@ void UBTService_FindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	}
 	if(target==nullptr)
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("Player"), nullptr);
-	DrawDebugSphere(controllingPawn->GetWorld(), startLocation, traceRadius, 16, FColor::Red, false, 0.2f);
+	//DrawDebugSphere(controllingPawn->GetWorld(), startLocation, traceRadius, 16, FColor::Red, false, 0.2f);
 }

@@ -58,7 +58,8 @@ APlayerCharacter::APlayerCharacter()
 	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
 	rightWeaponCollision->SetupAttachment(GetMesh(), FName("R_Arm_armor_end"));
 	rightWeaponCollision->SetRelativeScale3D(FVector(0.003f, 0.003f, 0.015f));
-	rightWeaponCollision->SetRelativeLocation(FVector(0.0f, 0.0f, -0.4f));
+	rightWeaponCollision->SetRelativeLocation(FVector(0.0f, -0.4f, 0.0f));
+	rightWeaponCollision->SetRelativeRotation(FRotator(0.0f, 0.0f, 90.0f));
 	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	arrowPositionComp = CreateDefaultSubobject<UArrowComponent>(TEXT("arrowPositionComp"));
@@ -123,7 +124,8 @@ void APlayerCharacter::BeginPlay()
 					//}
 					if (CurrentCombo>1)
 					{
-						
+						//GetMesh()->SocketRo
+						//¼ÒÄÏÀÇ ratation
 					}
 					AnimInstance->JumpToAttackMontageSection(CurrentCombo);
 				}
@@ -154,7 +156,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	//weapon
 	if (rightWeaponCollision)
 	{
-		DrawDebugBox(GetWorld(), rightWeaponCollision->GetComponentLocation(), rightWeaponCollision->GetScaledBoxExtent(), GetMesh()->GetSocketRotation(FName("R_Arm_armor_end")).Quaternion(), FColor::Red, false, -1.0f, 0, 5.0f);
+		DrawDebugBox(GetWorld(), rightWeaponCollision->GetSocketLocation(FName("R_Arm_armor_end")), rightWeaponCollision->GetScaledBoxExtent(),rightWeaponCollision->GetSocketRotation(FName("R_Arm_armor_end")).Quaternion(), FColor::Red, false, -1.0f, 0, 5.0f);
 	}
 
 

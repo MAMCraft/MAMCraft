@@ -43,7 +43,7 @@ void UBTService_AttackRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	FColor drawColor = bResult ? FColor::Green : FColor::Red;
 	//생성후 삭제되기까지의 시간
 	float debugLifeTime = 5.0f;
-	DrawDebugCapsule(GetWorld(), center, halfHeight, traceRadius,capsuleRot, drawColor, false, debugLifeTime);
+	//DrawDebugCapsule(GetWorld(), center, halfHeight, traceRadius,capsuleRot, drawColor, false, debugLifeTime);
 
 	if (bResult)
 	{

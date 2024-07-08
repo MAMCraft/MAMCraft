@@ -23,7 +23,10 @@ void UBTTaskNode_RunAway::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	}
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
 	APawn* target = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("Player")));
-
+	if (target == nullptr)
+		return;
+	if (ControllingPawn == nullptr)
+		return;
 	FVector oppositeDirection = target->GetActorLocation() - ControllingPawn->GetActorLocation();
 	oppositeDirection.Z = 0;
 	UE_LOG(LogTemp, Log, TEXT("oppositeDirection %f %f"), oppositeDirection.X, oppositeDirection.Y);

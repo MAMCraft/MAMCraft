@@ -36,6 +36,6 @@ void UBTService_AttackRangeState::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(FName("InAttackRange"), IsAttackRange);
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(FName("IsTooClose"), IsTooClose);
 		
-	DrawDebugSphere(controllingPawn->GetWorld(), controllingPawn->GetActorLocation(), attackMinRadius, 16, FColor::Yellow, false, 0.2f);
-	DrawDebugSphere(controllingPawn->GetWorld(), controllingPawn->GetActorLocation(), attackMaxRadius, 16, FColor::Yellow, false, 0.2f);
+	//DrawDebugSphere(controllingPawn->GetWorld(), controllingPawn->GetActorLocation(), attackMinRadius, 16, FColor::Yellow, false, 0.2f);
+	//DrawDebugSphere(controllingPawn->GetWorld(), controllingPawn->GetActorLocation(), attackMaxRadius, 16, FColor::Yellow, false, 0.2f);
 }

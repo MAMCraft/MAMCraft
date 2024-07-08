@@ -56,10 +56,9 @@ APlayerCharacter::APlayerCharacter()
 
 	//weapon
 	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
-	rightWeaponCollision->SetupAttachment(GetMesh(), FName("rightWeaponBone"));
+	rightWeaponCollision->SetupAttachment(GetMesh(), FName("R_Arm_armor_end"));
 	rightWeaponCollision->SetRelativeScale3D(FVector(0.003f, 0.003f, 0.015f));
-	rightWeaponCollision->SetRelativeRotation(FRotator(40.f, 0.0f, 90.0f));
-	rightWeaponCollision->SetRelativeLocation(FVector(0.2f, 0.0f, -0.3f));
+	rightWeaponCollision->SetRelativeLocation(FVector(0.0f, 0.0f, -0.4f));
 	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	arrowPositionComp = CreateDefaultSubobject<UArrowComponent>(TEXT("arrowPositionComp"));
@@ -122,6 +121,10 @@ void APlayerCharacter::BeginPlay()
 					//case 2:
 					//	//AnimInstance->JumpToAttackMontageSection2();
 					//}
+					if (CurrentCombo>1)
+					{
+						
+					}
 					AnimInstance->JumpToAttackMontageSection(CurrentCombo);
 				}
 			});
@@ -129,7 +132,7 @@ void APlayerCharacter::BeginPlay()
 
 	//weapon
 	// Setup Right weapon collision box
-	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	rightWeaponCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	rightWeaponCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
@@ -151,7 +154,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	//weapon
 	if (rightWeaponCollision)
 	{
-		DrawDebugBox(GetWorld(), rightWeaponCollision->GetComponentLocation(), rightWeaponCollision->GetScaledBoxExtent(), rightWeaponCollision->GetRelativeRotation().Quaternion(), FColor::Red, false, -1.0f, 0, 5.0f);
+		DrawDebugBox(GetWorld(), rightWeaponCollision->GetComponentLocation(), rightWeaponCollision->GetScaledBoxExtent(), GetMesh()->GetSocketRotation(FName("R_Arm_armor_end")).Quaternion(), FColor::Red, false, -1.0f, 0, 5.0f);
 	}
 
 

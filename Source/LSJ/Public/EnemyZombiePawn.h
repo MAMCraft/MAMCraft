@@ -43,6 +43,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void OnUnPossess();
 	
 public:	
 	virtual void Attack(TArray<FVector>& location) override;
@@ -84,4 +85,11 @@ public:
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
+	//hit material
+	UMaterialInterface* hitMaterial;
+	UMaterialInterface* originMaterial;
+	FTimerHandle damageBlinkTimerHandle;
+	void BlinkRed();
+	void EndBlink();
+
 };

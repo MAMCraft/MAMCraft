@@ -63,6 +63,12 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 	else
 		UE_LOG(LogTemp, Log, TEXT("zombieAnim.Fail"));
 
+	ConstructorHelpers::FObjectFinder<UMaterialInterface> hitMaterialFinder(TEXT("/Script/Engine.Material'/Game/LSJ/Resource/Zombie/Skeleton/MI_ZombieHit.MI_ZombieHit'"));
+	if (hitMaterialFinder.Succeeded())
+	{
+		hitMaterial = hitMaterialFinder.Object;
+	}
+
 	AIControllerClass = AAIControllerZombie::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -77,6 +83,11 @@ void AEnemyZombiePawn::BeginPlay()
 	//handAttackComponent->OnComponentHit.AddDynamic(this, &AEnemyZombiePawn::OnOverlapBegin);
 	//capsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyZombiePawn::OnBeginOverlap);
 	groundZValue = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation().Z;
+}
+void AEnemyZombiePawn::OnUnPossess()
+{
+	Super::UnPossessed();
+	GetWorldTimerManager().ClearTimer(damageBlinkTimerHandle);
 }
 void AEnemyZombiePawn::Attack(TArray<FVector>& location)
 {
@@ -216,6 +227,26 @@ void AEnemyZombiePawn::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		}
 	handAttackComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
+void AEnemyZombiePawn::BlinkRed()
+{
+	if (skMeshComponent)
+	{
+		if (!originMaterial)
+		{
+			originMaterial = skMeshComponent->GetMaterial(0);
+		}
+		if (hitMaterial)
+		{
+			skMeshComponent->SetMaterial(0, hitMaterial);
+		}
+		GetWorldTimerManager().SetTimer(damageBlinkTimerHandle, this, &AEnemyZombiePawn::EndBlink, 0.1f, false);
+	}
+}
+void AEnemyZombiePawn::EndBlink()
+{
+	if (skMeshComponent && originMaterial)
+		skMeshComponent->SetMaterial(0, originMaterial);
+}
 //데미지 받기
 float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
@@ -237,6 +268,9 @@ void AEnemyZombiePawn::Hit(AActor* damageCauser)
 
 	if (hitCurrentTime > 0)
 		return;
+
+	//색 변하게
+	BlinkRed();
 	//부딧친 방향 구하기
 	FVector start = GetActorLocation();
 	start.Z = 0;

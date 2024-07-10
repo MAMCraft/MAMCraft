@@ -53,8 +53,9 @@ void AClickMovePlayerController::PlayerTick(float DeltaTime)
 
 void AClickMovePlayerController::BeginPlay()
 {
-	PlayerCharacter = Cast<ACharacter>(GetPawn());
+	//PlayerCharacter = Cast<ACharacter>(GetPawn());
 	PlayerCharacter2 = Cast<APlayerCharacter>(GetPawn());
+	PlayerCharacter2->SetController(this);
 }
 
 void AClickMovePlayerController::UsePosionItem()
@@ -87,6 +88,11 @@ void AClickMovePlayerController::SetNewDestination(const FVector Destination)
 			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Destination);
 		}
 	}
+}
+
+void AClickMovePlayerController::SetNewMove(const FVector Dest)
+{
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Dest);
 }
 
 void AClickMovePlayerController::MoveToMouseCursor()
@@ -141,6 +147,7 @@ void AClickMovePlayerController::MoveToMouseCursor()
 
 	if (hit.bBlockingHit)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Iclick"))
 		SetNewDestination(hit.ImpactPoint);
 	}
 }

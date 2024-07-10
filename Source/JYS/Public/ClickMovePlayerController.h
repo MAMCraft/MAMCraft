@@ -28,6 +28,7 @@ public:
 	void InputLeftMouseButtonReleased();
 
 	void SetNewDestination(const FVector Destination);
+	void SetNewMove(const FVector Dest);
 
 	void MoveToMouseCursor();
 	
@@ -37,8 +38,8 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere)
-	class ACharacter* PlayerCharacter;
+	//UPROPERTY(EditAnywhere)
+	//class ACharacter* PlayerCharacter;
 
 	UPROPERTY(EditAnywhere)
 	class APlayerCharacter* PlayerCharacter2;

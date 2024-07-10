@@ -126,6 +126,25 @@ private:
 	UPROPERTY()
 	class UHPWidget* HPWidget;
 
+	FVector StartLocation; // 캐릭터 시작 위치 저장
+	FRotator StartRotation; // 캐릭터 시작 회전 저장
+
+	int32 RespawnCount; // 현재 부활 횟수
+	const int32 MaxRespawns = 2; // 최대 부활 횟수
+
+	// 원래 머티리얼을 저장할 변수
+	UMaterialInterface* OriginalMaterial;
+	UMaterialInterface* RedMaterial;
+
+
+	// 타이머 핸들러
+	FTimerHandle DamageBlinkTimerHandle;
+
+	// 깜빡임 함수
+	void BlinkRed();
+
+	// 깜빡임을 종료하는 함수
+	void EndBlink();
 
 public:
 	
@@ -176,4 +195,14 @@ public:
 	TSubclassOf<UUserWidget> inventoryHUDFactory;
 	UInventoryWidget* inventoryHUD;
 	UInventoryComponent* inventoryComponent;
+
+	bool OnSkill;
+	float characterSpeed;
+
+	UFUNCTION()
+	void Respawn();
+
+	UPROPERTY(EditDefaultsOnly)
+	class AClickMovePlayerController* char_controller;
+	void SetController(AClickMovePlayerController* cont);
 };

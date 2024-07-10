@@ -19,6 +19,7 @@
 #include "Components/ArrowComponent.h"
 #include "ArrowAttack.h"
 #include "ClickMovePlayerController.h"
+#include <Blueprint/AIBlueprintHelperLibrary.h>
 
 
 
@@ -78,12 +79,27 @@ APlayerCharacter::APlayerCharacter()
 	//LSJ 인벤토리
 	inventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("INVENTORYCOMPONENT"));
 
+	ConstructorHelpers::FObjectFinder<UMaterialInterface> RedMaterialFinder(TEXT("/Script/Engine.Material'/Game/GameResource/Player/Mesh/MI_DamageRed.MI_DamageRed'"));
+	if (RedMaterialFinder.Succeeded())
+	{
+	UE_LOG(LogTemp, Warning, TEXT("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+		RedMaterial = RedMaterialFinder.Object;
+	}
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+
+	// 캐릭터의 시작 위치와 회전을 저장
+	StartLocation = GetActorLocation();
+	StartRotation = GetActorRotation();
+
+	// 초기 부활 횟수 설정
+	RespawnCount = 1;
+
 	HPWidget = CreateWidget<UHPWidget>(GetWorld(), HPWidgetFactory);
 	if (HPWidget)
 	{
@@ -130,6 +146,7 @@ void APlayerCharacter::BeginPlay()
 					AnimInstance->JumpToAttackMontageSection(CurrentCombo);
 				}
 			});
+		characterSpeed = GetCharacterMovement()->MaxWalkSpeed ;
 	}
 
 	//weapon
@@ -181,6 +198,14 @@ void APlayerCharacter::Rolling()
 
 	if (rollingMontage)
 	{
+
+			/*FVector Destination = GetActorLocation() + GetActorForwardVector() * 120.0f;
+			float const Distance = FVector::Dist(Destination,GetActorLocation());
+			if (Distance > 120.0f)
+			{
+				UAIBlueprintHelperLibrary::SimpleMoveToLocation(UGameplayStatics::GetPlayerController(GetWorld(), 0), Destination);
+			}*/
+		char_controller->SetNewMove(GetActorLocation() + GetActorForwardVector() * 200 );
 		PlayAnimMontage(rollingMontage);
 		UE_LOG(LogTemp, Log, TEXT("rollingMontage"));
 	}
@@ -207,6 +232,7 @@ void APlayerCharacter::IncreaseAttackDamage(float Amount)
 
 void APlayerCharacter::OnMyTakeDamage(int damage)
 {
+	UE_LOG(	LogTemp, Warning, TEXT("부활~~~~~~~~~~~~~~~~~~~~~~%d"), playerHP)
 	// 데미지 만큼 체력을 소모한다.
 	playerHP -= damage;
 	if (playerHP < damage)
@@ -218,35 +244,24 @@ void APlayerCharacter::OnMyTakeDamage(int damage)
 	if (nullptr != HPWidget)
 		HPWidget->SetHP(playerHP, playerMaxHP);
 
-	// 만약 체력이 0이면 죽는다.
-	if (playerHP == 0)
+	// 빨간색으로 깜빡이기
+	BlinkRed();
+
+	if (playerHP == 0 && RespawnCount > 0)
 	{
-		Destroy();
+		Respawn();
+		RespawnCount--;
+		playerHP = playerMaxHP;
+	} else if (playerHP == 0 && RespawnCount <=0) {
+			// 부활 횟수 초과시 캐릭터 파괴 
+			Destroy();
 	}
 }
 
 void APlayerCharacter::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingpayload)
 {
-	// Decrement Combo Index
-	//ComboAttackIndex--;
-
-	//if (ComboAttackIndex < 0)
-	//{
-	//	// Get Anim Instance
-	//	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	//	if (AnimInstance != nullptr)
-	//	{
-	//		AnimInstance->Montage_Stop(0.4f, attackComboMontage);
-	//		isAttacking = false;
-	//	}
-	//}
-
 }
-//공격 콜리전 끄고 키기
-//적을 선택했을때 공격애니메이션이 나가게
-//공격애니메이션 시작지점에 키고
-//끝나는 지점에 끄고
-//한번만 beginoverlap
+
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
@@ -272,16 +287,22 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		return Damage;
 }
 
+
 void APlayerCharacter::skill()
 {
 	UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
+	if (OnSkill)
+	{
+		return;
+	}
+	
+	PlayAnimMontage(bowMontage);
 
-		PlayAnimMontage(bowMontage);
-		// 이동 애니메이션 재생
-		RotateToMouseDirection(); // 마우스 방향으로 회전
+	// Rotate to mouse direction
+	RotateToMouseDirection();
 
-		UE_LOG(LogTemp, Log, TEXT("bowMontage"));
 }
+
 
 
 void APlayerCharacter::ApplyFireDamage()
@@ -300,6 +321,37 @@ void APlayerCharacter::StopFireDamage()
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Hit(OtherActor);
+}
+
+void APlayerCharacter::BlinkRed()
+{
+	// 메쉬 컴포넌트가 유효한지 확인
+	if (GetMesh())
+	{
+		// 원래 머티리얼을 저장 (한 번만 저장)
+		if (!OriginalMaterial)
+		{
+			OriginalMaterial = GetMesh()->GetMaterial(0);
+		}
+
+		// 빨간색 머티리얼을 적용
+		if (RedMaterial)
+		{
+			GetMesh()->SetMaterial(0, RedMaterial);
+		}
+
+		// 일정 시간 후 원래 머티리얼로 복원
+		GetWorldTimerManager().SetTimer(DamageBlinkTimerHandle, this, &APlayerCharacter::EndBlink, 0.5f, false);
+	}
+}
+
+void APlayerCharacter::EndBlink()
+{
+	// 원래 머티리얼을 복원
+	if (GetMesh() && OriginalMaterial)
+	{
+		GetMesh()->SetMaterial(0, OriginalMaterial);
+	}
 }
 
 void APlayerCharacter::OnMyActionArrow()
@@ -367,24 +419,6 @@ void APlayerCharacter::comboAttackEnd()
 //LSJ 콤보 공격 적용
 void APlayerCharacter::comboAttack()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("3333333333333"))
-
-	//bComboAttackStart = true;
-
-	//UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	//if (!AnimInstance || !attackComboMontage) return;
-
-	//bComboAttacking = true;
-	//const char* comboList[] = {"firstAttack", "secondAttack", "thirdAttack"};
-
-	//if (comboAttackNumber >= 2)
-	//	comboAttackNumber = 0;
-
-	//AnimInstance->Montage_Play(attackComboMontage, 1.5f);
-	//AnimInstance->Montage_JumpToSection(FName(comboList[comboAttackNumber]), attackComboMontage);
-	//UE_LOG(LogTemp, Warning, TEXT("9999999999999999"))
-
-
 	if (IsAttacking)
 	{
 		if (CanNextCombo)
@@ -420,7 +454,27 @@ void APlayerCharacter::comboAttackCheck()
 	}
 }
 
+void APlayerCharacter::Respawn()
+{
+	// 부활 횟수를 증가시킴
+	// RespawnCount++;
 
+	// 캐릭터 위치와 회전을 시작 위치로 설정
+	SetActorLocation(StartLocation);
+	SetActorRotation(StartRotation);
+
+	// HP를 초기화
+	playerHP = playerMaxHP;
+	if (HPWidget)
+	{
+		HPWidget->SetHP(playerHP, playerMaxHP);
+	}
+}
+
+void APlayerCharacter::SetController(AClickMovePlayerController* cont)
+{
+	char_controller = cont;
+}
 
 
 //weapon
@@ -455,4 +509,3 @@ void APlayerCharacter::AttackEndComboState()
 	CanNextCombo = false;
 	CurrentCombo = 0;
 }
-//

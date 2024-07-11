@@ -19,24 +19,35 @@ void AArrowAttack::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, A
 // Sets default values
 AArrowAttack::AArrowAttack()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+    // Set this actor to call Tick() every frame. You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
 
-	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
-	SetRootComponent(BoxComp);
-	BoxComp->SetBoxExtent(FVector(37.5f, 12.5f, 50.f));
+    // 루트 컴포넌트로 UBoxComponent를 설정하고, 속성을 초기화합니다.
+    BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+    SetRootComponent(BoxComp);
+    BoxComp->SetBoxExtent(FVector(37.5f, 12.5f, 50.f));
 
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(RootComponent);
+    // 화살 메시를 위한 UStaticMeshComponent를 생성하고, 루트 컴포넌트에 부착합니다.
+    MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+    MeshComp->SetupAttachment(RootComponent);
 
+    // 화살 메시를 생성하고 설정합니다.
+    ConstructorHelpers::FObjectFinder<UStaticMesh> TempMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));  // 경로 수정
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> TempMesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+    if (TempMesh.Succeeded())
+    {
+        MeshComp->SetStaticMesh(TempMesh.Object);
+        MeshComp->SetRelativeScale3D(FVector(0.75f, 0.25f, 1));
+    }
 
-	if (TempMesh.Succeeded())
-	{
-		MeshComp->SetStaticMesh(TempMesh.Object);
-		MeshComp->SetRelativeScale3D(FVector(0.75f, 0.25f, 1));
-	}
+    // 화살 메시를 오른손 소켓에 부착하도록 설정합니다.
+    static FName SocketName(TEXT("R_Hand_Bow"));  // 소켓 이름 설정
+
+    // 소켓이 존재하는지 확인하고 부착합니다.
+    if (GetAttachParentActor())
+    {
+        MeshComp->AttachToComponent(GetAttachParentActor()->GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
+    }
 }
 
 // Called when the game starts or when spawned

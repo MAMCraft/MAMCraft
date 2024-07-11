@@ -90,14 +90,6 @@ public:
 	//UFUNCTION()
 	//void Hit(AActor* OtherActor);
 
-	void ApplyFireDamage();
-	void StopFireDamage();
-
-	FTimerHandle FireDamageTimerHandle;
-	// FTimerHandle FlashRedTimerHandle;
-
-	bool bIsTakingFireDamage;
-
 	void skill();
 
 	void Rolling();
@@ -145,6 +137,21 @@ private:
 
 	// 깜빡임을 종료하는 함수
 	void EndBlink();
+
+	// 화염 데미지를 받고 있는지 여부를 나타내는 변수
+	bool bIsTakingFireDamage;
+
+	// 타이머 핸들러
+	FTimerHandle FireDamageTimerHandle;
+	FTimerHandle StopFireDamageTimerHandle;
+
+	// 화염 데미지 적용 함수
+	UFUNCTION()
+	void ApplyFireDamage();
+
+	// 화염 데미지 종료 함수
+	UFUNCTION()
+	void StopFireDamage();
 
 public:
 	
@@ -205,4 +212,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class AClickMovePlayerController* char_controller;
 	void SetController(AClickMovePlayerController* cont);
+	
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* swordMesh;
+
 };

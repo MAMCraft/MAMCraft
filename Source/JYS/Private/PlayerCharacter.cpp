@@ -56,13 +56,18 @@ APlayerCharacter::APlayerCharacter()
 	isAttacking = false;
 
 	//weapon
+	swordMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CustomStaticMesh"));
 	rightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("rightWeaponBox"));
 	rightWeaponCollision->SetupAttachment(GetMesh(), FName("R_Arm_armor_end"));
 	rightWeaponCollision->SetRelativeScale3D(FVector(0.003f, 0.003f, 0.015f));
 	rightWeaponCollision->SetRelativeLocation(FVector(0.0f, -0.4f, 0.0f));
 	rightWeaponCollision->SetRelativeRotation(FRotator(0.0f, 0.0f, 90.0f));
 	rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	swordMesh->SetupAttachment(GetMesh(), FName("R_Arm_armor_end"));
+	swordMesh->SetRelativeScale3D(FVector(0.003f, 0.003f, 0.015f));
+	swordMesh->SetRelativeLocation(FVector(0.0f, -0.4f, 0.0f));
+	swordMesh->SetRelativeRotation(FRotator(0.0f, 0.0f, 90.0f));
+	swordMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	arrowPositionComp = CreateDefaultSubobject<UArrowComponent>(TEXT("arrowPositionComp"));
 	arrowPositionComp->SetupAttachment(RootComponent);
 	// arrowPositionComp->SetRelativeLocationAndRotation(FVector(), FVector());
@@ -79,12 +84,17 @@ APlayerCharacter::APlayerCharacter()
 	//LSJ 인벤토리
 	inventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("INVENTORYCOMPONENT"));
 
+	// 데미지 받으면 빨간색으로 깜빡
 	ConstructorHelpers::FObjectFinder<UMaterialInterface> RedMaterialFinder(TEXT("/Script/Engine.Material'/Game/GameResource/Player/Mesh/MI_DamageRed.MI_DamageRed'"));
 	if (RedMaterialFinder.Succeeded())
 	{
 	UE_LOG(LogTemp, Warning, TEXT("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
 		RedMaterial = RedMaterialFinder.Object;
 	}
+
+	bIsTakingFireDamage = false;
+	FireDamageTimerHandle.Invalidate();
+	StopFireDamageTimerHandle.Invalidate();
 }
 
 // Called when the game starts or when spawned
@@ -92,6 +102,8 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FireDamageTimerHandle.Invalidate();
+	StopFireDamageTimerHandle.Invalidate();
 
 	// 캐릭터의 시작 위치와 회전을 저장
 	StartLocation = GetActorLocation();
@@ -171,10 +183,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 
 	//weapon
-	if (rightWeaponCollision)
-	{
-		DrawDebugBox(GetWorld(), rightWeaponCollision->GetSocketLocation(FName("R_Arm_armor_end")), rightWeaponCollision->GetScaledBoxExtent(),rightWeaponCollision->GetSocketRotation(FName("R_Arm_armor_end")).Quaternion(), FColor::Red, false, -1.0f, 0, 5.0f);
-	}
+	//if (rightWeaponCollision)
+	//{
+	//	DrawDebugBox(GetWorld(), rightWeaponCollision->GetSocketLocation(FName("R_Arm_armor_end")), rightWeaponCollision->GetScaledBoxExtent(),rightWeaponCollision->GetSocketRotation(FName("R_Arm_armor_end")).Quaternion(), FColor::Red, false, -1.0f, 0, 5.0f);
+	//}
 
 
 }
@@ -232,7 +244,6 @@ void APlayerCharacter::IncreaseAttackDamage(float Amount)
 
 void APlayerCharacter::OnMyTakeDamage(int damage)
 {
-	UE_LOG(	LogTemp, Warning, TEXT("부활~~~~~~~~~~~~~~~~~~~~~~%d"), playerHP)
 	// 데미지 만큼 체력을 소모한다.
 	playerHP -= damage;
 	if (playerHP < damage)
@@ -265,26 +276,37 @@ void APlayerCharacter::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBr
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (DamageCauser->ActorHasTag(FName("Fire")))
+	// 데미지를 받는 경우
+	if (ActualDamage > 0.0f)
 	{
-		//5초간 데미지 
-		//업데이트
-		if (!bIsTakingFireDamage)
+		// 데미지 적용
+		OnMyTakeDamage(ActualDamage);
+
+		// Fire 태그를 가진 액터에게서 데미지를 받을 경우
+		if (DamageCauser->ActorHasTag(FName("Fire")))
 		{
-			bIsTakingFireDamage = true;
-			GetWorldTimerManager().SetTimer(FireDamageTimerHandle, this, &APlayerCharacter::ApplyFireDamage, 1.0f, true, 0.0f);
-			GetWorldTimerManager().SetTimer(FireDamageTimerHandle, this, &APlayerCharacter::StopFireDamage, 5.0f, false);
+			if (!bIsTakingFireDamage)
+			{
+				bIsTakingFireDamage = true;
+				UE_LOG(LogTemp, Warning, TEXT("Started taking fire damage"));
+
+				// 타이머 설정: 0.5초마다 ApplyFireDamage 함수 호출
+				GetWorldTimerManager().SetTimer(FireDamageTimerHandle, this, &APlayerCharacter::ApplyFireDamage, 0.1f, true, 0.0f);
+
+				// 5초 후에 StopFireDamage 함수 호출
+				GetWorldTimerManager().SetTimer(StopFireDamageTimerHandle, this, &APlayerCharacter::StopFireDamage, 5.0f, false);
+			}
 		}
 	}
-	else
-		OnMyTakeDamage(DamageAmount);
+	//else
+	//{
+	//	OnMyTakeDamage(DamageAmount);
+	//}
 
-	//hit 캐릭터가 빨간색 반짝반짝
-
-	UE_LOG(LogTemp, Warning, TEXT("TakeDamage : %s"), *DamageCauser->GetName())
-		return Damage;
+	UE_LOG(LogTemp, Warning, TEXT("TakeDamage : %s"), *DamageCauser->GetName());
+	return ActualDamage;
 }
 
 
@@ -307,13 +329,25 @@ void APlayerCharacter::skill()
 
 void APlayerCharacter::ApplyFireDamage()
 {
+	// Fire 데미지 적용
 	OnMyTakeDamage(1);
+
+	// 로그 남기기
+	UE_LOG(LogTemp, Warning, TEXT("Applying fire damage"));
 }
+
 
 void APlayerCharacter::StopFireDamage()
 {
+	// Fire 데미지 중지
 	bIsTakingFireDamage = false;
+
+	// 타이머 해제
 	GetWorldTimerManager().ClearTimer(FireDamageTimerHandle);
+	GetWorldTimerManager().ClearTimer(StopFireDamageTimerHandle);
+
+	// 로그 남기기
+	UE_LOG(LogTemp, Warning, TEXT("Stopped taking fire damage"));
 }
 
 
@@ -341,7 +375,7 @@ void APlayerCharacter::BlinkRed()
 		}
 
 		// 일정 시간 후 원래 머티리얼로 복원
-		GetWorldTimerManager().SetTimer(DamageBlinkTimerHandle, this, &APlayerCharacter::EndBlink, 0.5f, false);
+		GetWorldTimerManager().SetTimer(DamageBlinkTimerHandle, this, &APlayerCharacter::EndBlink, 0.3f, false);
 	}
 }
 
@@ -485,7 +519,7 @@ void APlayerCharacter::OnrightWeaponCollision(UPrimitiveComponent* OverlappedCom
 	{
 		FDamageEvent damageEvent;
 		OtherActor->TakeDamage(AttackDamage, damageEvent, GetController(), this);
-		}
+	}
 
 }
 

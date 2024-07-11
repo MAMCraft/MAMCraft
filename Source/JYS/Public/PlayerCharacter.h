@@ -72,7 +72,7 @@ public:
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 	bool isAttacking;
-	//LSJ 콤보 공격 적용//////////////////////////
+	//콤보 공격 적용//////////////////////////
 	bool IsAttacking;
 	bool CanNextCombo;
 	bool IsComboInputOn;
@@ -215,6 +215,9 @@ public:
 	
 
 	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* swordMesh;
+	UStaticMeshComponent* swordMesh; 
+	
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* bowMesh;
 
 };

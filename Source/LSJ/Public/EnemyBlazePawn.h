@@ -107,4 +107,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	class UStatComponent* statComponent;
+
+	//hit material
+	UMaterialInterface* hitMaterial;
+	UMaterialInterface* originMaterial;
+	FTimerHandle damageBlinkTimerHandle;
+	void BlinkRed();
+	void EndBlink();
+
+		UPROPERTY(VisibleAnyWhere, Category = UI)
+	class UWidgetComponent* hpBarWidgetComponent;
+	UHpBarWidget* hpBarWidget;
 };

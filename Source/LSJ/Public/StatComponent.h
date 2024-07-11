@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "StatComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnHPChangedDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LSJ_API UStatComponent : public UActorComponent
@@ -26,11 +28,17 @@ public:
 	void SetLevel(FName name);
 	void OnAttacked(float DamageAmount);
 
+	float GetHPRatio();
+	void SetDamage(int NewDamage);
+	void SetHP(int NewHP);
 	int GetLevel() { return level; }
-	int GetHp() { return hp; }
+	int GetHp() { return currentHp; }
+	int GetMaxHp() { return hp; }
 	int GetAttackDamage() { return attackDamage; }
 	int GetMoveSpeed() { return moveSpeed; }
 
+	FOnHPIsZeroDelegate OnHPIsZero;
+	FOnHPChangedDelegate OnHPChanged;
 private:
 	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int level;
@@ -43,4 +51,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int hp;
+	UPROPERTY()
+	int currentHp;
 };

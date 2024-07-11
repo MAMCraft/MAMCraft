@@ -10,6 +10,7 @@
 #include "AnimInstanceZombie.h"
 #include "StatComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "HpBarWidget.h"
 #include "EnemyZombiePawn.generated.h"
 
 
@@ -92,4 +93,7 @@ public:
 	void BlinkRed();
 	void EndBlink();
 
+	UPROPERTY(VisibleAnyWhere, Category = UI)
+	class UWidgetComponent* hpBarWidgetComponent;
+	UHpBarWidget* hpBarWidget;
 };

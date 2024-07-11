@@ -8,6 +8,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Engine/DamageEvents.h"
 #include <Kismet/KismetMathLibrary.h>
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AEnemyZombiePawn::AEnemyZombiePawn()
@@ -68,6 +69,17 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 	{
 		hitMaterial = hitMaterialFinder.Object;
 	}
+	//hpbar
+	hpBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
+	hpBarWidgetComponent->SetupAttachment(skMeshComponent);
+	hpBarWidgetComponent->SetRelativeLocation(FVector(0, 0, 180));
+	hpBarWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LSJ/Blueprints/WBP_HP.WBP_HP_C'"));
+	if (UI_HUD.Succeeded())
+	{
+		hpBarWidgetComponent->SetWidgetClass(UI_HUD.Class);
+		hpBarWidgetComponent->SetDrawSize(FVector2D(150, 50));
+	}
 
 	AIControllerClass = AAIControllerZombie::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -83,7 +95,25 @@ void AEnemyZombiePawn::BeginPlay()
 	//handAttackComponent->OnComponentHit.AddDynamic(this, &AEnemyZombiePawn::OnOverlapBegin);
 	//capsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyZombiePawn::OnBeginOverlap);
 	groundZValue = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation().Z;
+
+	//UUserWidget* Widget = CreateWidget<UUserWidget>(this, WidgetAsset);
+	//if (Widget)
+	//{
+	//	// Viewport에 띄우기 
+	//	Widget->AddToViewport();
+
+	//	// 가시성 세팅 ( HitTestInvisible 통해 보이게 설정( 상호작용은 불가능 ) )
+	//	Widget->SetVisibility(ESlateVisibility::HitTestInvisible);
+	//}
+	//hpBarWidgetComponent->InitWidget();
+	hpBarWidget = Cast<UHpBarWidget>(hpBarWidgetComponent->GetUserWidgetObject());
+	if (nullptr != hpBarWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("BindCharacterStat"));
+		hpBarWidget->BindCharacterStat(statComponent);
+	}
 }
+
 void AEnemyZombiePawn::OnUnPossess()
 {
 	Super::UnPossessed();
@@ -251,7 +281,8 @@ void AEnemyZombiePawn::EndBlink()
 float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	statComponent->OnAttacked(damage);
+	//statComponent->OnAttacked(damage);
+	statComponent->SetDamage(damage);
 	Hit(DamageCauser);
 	return damage;
 }

@@ -43,7 +43,12 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 	{
 		bullet =(blazeAnim1.Class);
 	}
-
+	//hit material
+	ConstructorHelpers::FObjectFinder<UMaterialInterface> hitMaterialFinder(TEXT("/Script/Engine.Material'/Game/LSJ/Resource/Blaze/Mesh/MI_BlazeHit.MI_BlazeHit'"));
+	if (hitMaterialFinder.Succeeded())
+	{
+		hitMaterial = hitMaterialFinder.Object;
+	}
 	AIControllerClass = AAIControllerBlaze::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -188,8 +193,11 @@ void AEnemyBlazePawn::Hit(AActor* damageCauser)
 		OnAttackEnd();
 	}
 
-	if (hitCurrentTime > 0)
-		return;
+	/*if (hitCurrentTime > 0)
+		return;*/
+
+	//색 변하게
+	BlinkRed();
 	//부딧친 방향 구하기
 	FVector start = GetActorLocation();
 	start.Z = 0;
@@ -221,4 +229,25 @@ void AEnemyBlazePawn::Die(AActor* damageCauser)
 	}
 	animInstance->PlayDieMontage();
 	GetController()->UninitializeComponents();
+}
+
+void AEnemyBlazePawn::BlinkRed()
+{
+	if (skMeshComponent)
+	{
+		if (!originMaterial)
+		{
+			originMaterial = skMeshComponent->GetMaterial(0);
+		}
+		if (hitMaterial)
+		{
+			skMeshComponent->SetMaterial(0, hitMaterial);
+		}
+		GetWorldTimerManager().SetTimer(damageBlinkTimerHandle, this, &AEnemyBlazePawn::EndBlink, 0.1f, false);
+	}
+}
+void AEnemyBlazePawn::EndBlink()
+{
+	if (skMeshComponent && originMaterial)
+		skMeshComponent->SetMaterial(0, originMaterial);
 }

@@ -48,6 +48,7 @@ void UStatComponent::SetLevel(FName name)
 			hp = StatData.maxHp;
 			attackDamage = StatData.attackDamage;
 			moveSpeed = StatData.moveSpeed;
+			currentHp = hp;
 		}
 	}
 
@@ -60,3 +61,39 @@ void UStatComponent::OnAttacked(float DamageAmount)
 		hp = 0;
 }
 
+float UStatComponent::GetHPRatio()
+{
+	UE_LOG(LogTemp, Error, TEXT("GetHPRatio currentHp %d"), currentHp);
+	UE_LOG(LogTemp, Error, TEXT("GetHPRatio hp %d"), hp);
+	return (float)currentHp / hp;
+}
+
+void UStatComponent::SetDamage(int NewDamage)
+{
+	//if (CurrentStatData != nullptr)
+	{
+		//Clamp는 최소수치와 최대 수치를 정해 그 사이에서만 결과가 나오게 하는 함수다.
+		/*CurrentHP = FMath::Clamp<float>(CurrentHP - NewDamage, 0, CurrentStatData->MaxHP);
+		if (CurrentHP <= 0)
+		{
+			OnHPIsZero.Broadcast();
+		}*/
+		//SetHP(FMath::Clamp<float>(CurrentHP - NewDamage, 0, CurrentStatData->MaxHP));
+		SetHP(FMath::Clamp<float>(currentHp - NewDamage, 0, hp));
+	}
+}
+
+void UStatComponent::SetHP(int NewHP)
+{
+	currentHp = NewHP;
+	//체력 변동 딜리게이트 호출
+	OnHPChanged.Broadcast();
+	// float수치로 0에 최대한 근접한 오차 이하일경우
+	if (currentHp < 1)
+	{
+		currentHp = 0;
+
+		//죽었을떄의 딜리게이트 호출
+		OnHPIsZero.Broadcast();
+	}
+}

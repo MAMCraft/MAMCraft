@@ -79,7 +79,9 @@ APlayerCharacter::APlayerCharacter()
 	bowMesh->SetRelativeRotation(FRotator(0.0f, 80.0f, 180.0f));
 	bowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-
+	// 메쉬들이 사라졌다가 있었다가..
+	bowMesh->SetVisibility(false);
+	swordMesh->SetVisibility(true);
 
 	bComboAttacking = false;
 	bComboAttackStart = false;
@@ -326,12 +328,13 @@ void APlayerCharacter::skill()
 	{
 		return;
 	}
+
 	
+
 	PlayAnimMontage(bowMontage);
 
 	// Rotate to mouse direction
 	RotateToMouseDirection();
-
 }
 
 
@@ -515,6 +518,16 @@ void APlayerCharacter::Respawn()
 void APlayerCharacter::SetController(AClickMovePlayerController* cont)
 {
 	char_controller = cont;
+}
+
+void APlayerCharacter::HideBowMesh()
+{
+	bowMesh->SetVisibility(false);
+}
+
+void APlayerCharacter::ShowSwordMesh()
+{
+	swordMesh->SetVisibility(true);
 }
 
 

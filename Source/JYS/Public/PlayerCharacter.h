@@ -219,5 +219,11 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* bowMesh;
+	
+	void HideBowMesh();
+	void ShowSwordMesh();
+	void HandleMontageFinished();
+	
+
 
 };

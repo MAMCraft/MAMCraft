@@ -17,7 +17,8 @@ void UBowAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
             //PlayerCharacter->rightWeaponCollision->SetGenerateOverlapEvents(true);  // 충돌 이벤트를 생성하도록 설정
             PlayerCharacter->OnSkill = true;
             PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = 0;
-
+            PlayerCharacter->bowMesh->SetVisibility(true);
+            PlayerCharacter->swordMesh->SetVisibility(false);
         }
     }
 }
@@ -34,7 +35,8 @@ void UBowAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeque
             PlayerCharacter->OnSkill = false;
             PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = PlayerCharacter->characterSpeed;
             PlayerCharacter->AnimInstance->Montage_Stop(1.0f);
-
+            PlayerCharacter->HideBowMesh();
+            PlayerCharacter->ShowSwordMesh();
         }
     }
 }

@@ -43,10 +43,10 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
 	springArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
-	springArmComponent->SetupAttachment(RootComponent);
+	springArmComponent->SetupAttachment(GetMesh());
 	springArmComponent->SetUsingAbsoluteRotation(true);
-	springArmComponent->TargetArmLength = 800.0f;
-	springArmComponent->SetRelativeRotation(FRotator(-60.0f, 45.0f, 0.0f));
+	springArmComponent->TargetArmLength = 1400.0f;
+	springArmComponent->SetRelativeRotation(FRotator(-56.0f, 45.0f, 0.0f));
 	springArmComponent->bDoCollisionTest = false;
 
 	cameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -71,6 +71,15 @@ APlayerCharacter::APlayerCharacter()
 	arrowPositionComp = CreateDefaultSubobject<UArrowComponent>(TEXT("arrowPositionComp"));
 	arrowPositionComp->SetupAttachment(RootComponent);
 	// arrowPositionComp->SetRelativeLocationAndRotation(FVector(), FVector());
+
+	bowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("bowStaticMesh"));
+	bowMesh->SetupAttachment(GetMesh(), FName("R_Arm_armor_end"));
+	bowMesh->SetRelativeScale3D(FVector(0.01f, 0.01f, 0.01f));
+	bowMesh->SetRelativeLocation(FVector(0.018f, -0.3f, 0.0f));
+	bowMesh->SetRelativeRotation(FRotator(0.0f, 80.0f, 180.0f));
+	bowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
 
 	bComboAttacking = false;
 	bComboAttackStart = false;
@@ -404,27 +413,25 @@ void APlayerCharacter::DelayedArrowAttack()
 
 void APlayerCharacter::RotateToMouseDirection()
 {
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController)
+	auto* pc = Cast<AClickMovePlayerController>(Controller);
+	if (pc)
 	{
-		FVector WorldLocation, WorldDirection;
-		FVector2D ScreenLocation;
-		if (PlayerController->GetMousePosition(ScreenLocation.X, ScreenLocation.Y))
+		FHitResult hitInfo;
+		pc->GetHitResultUnderCursor(ECC_Visibility, false, hitInfo);
+
+		if (hitInfo.GetActor())
 		{
-			bool bSuccess = PlayerController->DeprojectScreenPositionToWorld(ScreenLocation.X, ScreenLocation.Y, WorldLocation, WorldDirection);
-			if (bSuccess)
-			{
-				// 플레이어 캐릭터가 바라봐야 할 위치를 찾음
-				FVector LookAtLocation = WorldLocation + (WorldDirection * 1000);  // 방향 벡터를 확장
+			FVector LookAtLocation = hitInfo.ImpactPoint;  // 방향 벡터를 확장
 
-				// 해당 위치를 바라보는 회전을 계산
-				FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), LookAtLocation);
-				SetActorRotation(NewRotation);
+			FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), LookAtLocation);
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(pc, LookAtLocation);
 
-				// 화살 공격을 지연시킴
-				GetWorldTimerManager().SetTimer(SkillTimerHandle, this, &APlayerCharacter::DelayedArrowAttack, 0.5f, false);
-			}
+			SetActorRotation(NewRotation);
+
+			// 화살 공격을 지연시킴
+			GetWorldTimerManager().SetTimer(SkillTimerHandle, this, &APlayerCharacter::DelayedArrowAttack, 0.5f, false);
 		}
+	
 	}
 }
 

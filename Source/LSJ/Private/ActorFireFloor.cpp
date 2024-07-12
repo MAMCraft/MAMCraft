@@ -17,9 +17,21 @@ AActorFireFloor::AActorFireFloor()
 		mesh->SetStaticMesh(boxMesh.Object);
 	}
 
+
 	//mesh->SetVectorParameterValueOnMaterials(TEXT("Color"), ChangeColor);
 
-
+		//Effect
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> Fire(TEXT("/Script/Engine.ParticleSystem'/Game/M5VFXVOL2/Particles/Fire/Fire_02.Fire_02'"));
+	if (Fire.Succeeded())
+	{
+		FireParticle = Fire.Object;
+	}
+	//Effect
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> Explosion(TEXT("/Script/Engine.ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Gruntling/Bomber/P_FireBombExplosion.P_FireBombExplosion'"));
+	if (Explosion.Succeeded())
+	{
+		ExplosionParticle = Explosion.Object;
+	}
 	mesh->OnComponentBeginOverlap.AddDynamic(this,&AActorFireFloor::OverlapBegin);
 	mesh->OnComponentEndOverlap.AddDynamic(this,&AActorFireFloor::OnOverlapEnd);
 }
@@ -32,7 +44,10 @@ void AActorFireFloor::SetDamage(int eDamage, int fDamage)
 void AActorFireFloor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	mesh->SetVisibility(false);
+	GameStatic->SpawnEmitterAttached(FireParticle, RootComponent, FName("Muzzle"));
+	//ÀÌÆåÆ®
+	GameStatic->SpawnEmitterAttached(ExplosionParticle, RootComponent);
 }
 
 // Called every frame

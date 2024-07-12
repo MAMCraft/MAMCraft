@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Particles/ParticleSystem.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "ActorFireFloor.generated.h"
 
 UCLASS()
@@ -35,4 +37,11 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, Category = "MESH")
 	UStaticMeshComponent* mesh;
+
+		UPROPERTY()
+	class UGameplayStatics* GameStatic;
+	UPROPERTY()
+	class UParticleSystem * FireParticle;
+	UPROPERTY()
+	class UParticleSystem * ExplosionParticle;
 };

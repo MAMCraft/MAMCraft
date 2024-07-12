@@ -68,6 +68,13 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 		UE_LOG(LogTemp, Error, TEXT("BindCharacterStat"));
 		hpBarWidget->BindCharacterStat(statComponent);
 	}
+	//Effect
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> Fire(TEXT("/Script/Engine.ParticleSystem'/Game/M5VFXVOL2/Particles/Fire/Fire_02.Fire_02'"));
+	if (Fire.Succeeded())
+	{
+		FireParticle = Fire.Object;
+	}
+
 	AIControllerClass = AAIControllerBlaze::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -174,7 +181,8 @@ void AEnemyBlazePawn::Fire()
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
-	AActorBlazeBullet* bulletInstance = Cast<AActorBlazeBullet>(GetWorld()->SpawnActor<AActorBlazeBullet>(bullet, GetActorLocation(), GetActorRotation(), SpawnParams));
+	FVector fireLocation = GetActorLocation() + FVector(0.f,0.f,120.f);
+	AActorBlazeBullet* bulletInstance = Cast<AActorBlazeBullet>(GetWorld()->SpawnActor<AActorBlazeBullet>(bullet, fireLocation, GetActorRotation(), SpawnParams));
 	bulletInstance->SetAttacklocation(attackLocation[attackRangeindex]);
 	bulletInstance->SetDamage(statComponent->GetAttackDamage(), (statComponent->GetAttackDamage()/10));
 

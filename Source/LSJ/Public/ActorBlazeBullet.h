@@ -8,6 +8,8 @@
 #include <Components/SphereComponent.h>
 #include <GameFramework/ProjectileMovementComponent.h>
 #include "ActorFireFloor.h"
+#include "Particles/ParticleSystem.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "ActorBlazeBullet.generated.h"
 
 UCLASS()
@@ -58,4 +60,10 @@ public:
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
+	UPROPERTY()
+	class UGameplayStatics* GameStatic;
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	class UParticleSystem * FireParticle;
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	class UParticleSystem * ExplosionParticle;
 };

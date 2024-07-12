@@ -12,6 +12,8 @@
 #include "StatComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "HpBarWidget.h"
+#include "Particles/ParticleSystem.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "EnemyBlazePawn.generated.h"
 
 UCLASS()
@@ -115,8 +117,13 @@ public:
 	FTimerHandle damageBlinkTimerHandle;
 	void BlinkRed();
 	void EndBlink();
-
+	//HPBar
 	UPROPERTY(VisibleAnyWhere, Category = UI)
 	class UWidgetComponent* hpBarWidgetComponent;
 	UHpBarWidget* hpBarWidget;
+	//Effect
+	UPROPERTY()
+	class UGameplayStatics* GameStatic;
+	UPROPERTY()
+	class UParticleSystem * FireParticle;
 };

@@ -27,6 +27,12 @@ AActorBlazeBullet::AActorBlazeBullet()
 	{
 		fireFloor = (fireFloorBP.Class);
 	}
+	//Effect
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> Fire(TEXT("/Script/Engine.ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Ambient/Fire/P_LavaDrips.P_LavaDrips'"));
+	if (Fire.Succeeded())
+	{
+		FireParticle = Fire.Object;
+	}
 
 	mesh->OnComponentHit.AddDynamic(this, &AActorBlazeBullet::OnHit);
 }
@@ -35,7 +41,11 @@ AActorBlazeBullet::AActorBlazeBullet()
 void AActorBlazeBullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+	GameStatic->SpawnEmitterAttached(FireParticle, RootComponent);
+	//회전
+	//파티클 변수로 저장해서 TICK에서 회전
+	//옷 가져가기
 }
 
 // Called every frame
@@ -55,10 +65,11 @@ void AActorBlazeBullet::SetAttacklocation(FVector location)
 	attacklocation = location;
 
 	FVector startLoc = GetActorLocation();      // 발사 지점
+	startLoc.Z += 80.f;
 	FVector targetLoc = attacklocation;  // 타겟 지점.
-	float arcValue = 0.5f;                       // ArcParam (0.0-1.0)
+	float arcValue = 0.99f;                       // ArcParam (0.0-1.0)
 	outVelocity = FVector::ZeroVector;   // 결과 Velocity
-	if (UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, outVelocity, startLoc, targetLoc, GetWorld()->GetGravityZ(), arcValue))
+	if (UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, outVelocity, startLoc, targetLoc, GetWorld()->GetGravityZ(), arcValue)) //GetWorld()->GetGravityZ()
 	{
 		//FPredictProjectilePathParams predictParams(20.0f, startLoc, outVelocity, 15.0f);   // 20: tracing 보여질 프로젝타일 크기, 15: 시물레이션되는 Max 시간(초)
 		//predictParams.DrawDebugTime = 15.0f;     //디버그 라인 보여지는 시간 (초)
@@ -66,7 +77,7 @@ void AActorBlazeBullet::SetAttacklocation(FVector location)
 		//predictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
 		//FPredictProjectilePathResult result;
 		//UGameplayStatics::PredictProjectilePath(this, predictParams, result);
-		mesh->AddImpulse(outVelocity*100); // objectToSend는 발사체 * 질량 해줘야되는거 같다.
+		mesh->AddImpulse(outVelocity*20.0f); // objectToSend는 발사체 * 질량 해줘야되는거 같다.
 	}
 }
 

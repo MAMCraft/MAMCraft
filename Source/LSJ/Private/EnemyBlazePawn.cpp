@@ -7,6 +7,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "ActorBlazeBullet.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AEnemyBlazePawn::AEnemyBlazePawn()
@@ -49,6 +50,24 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 	{
 		hitMaterial = hitMaterialFinder.Object;
 	}
+	//hpUI
+	//hpbar
+	hpBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
+	hpBarWidgetComponent->SetupAttachment(skMeshComponent);
+	hpBarWidgetComponent->SetRelativeLocation(FVector(0, 0, 180));
+	hpBarWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LSJ/Blueprints/WBP_HP.WBP_HP_C'"));
+	if (UI_HUD.Succeeded())
+	{
+		hpBarWidgetComponent->SetWidgetClass(UI_HUD.Class);
+		hpBarWidgetComponent->SetDrawSize(FVector2D(150, 50));
+	}
+	hpBarWidget = Cast<UHpBarWidget>(hpBarWidgetComponent->GetUserWidgetObject());
+	if (nullptr != hpBarWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("BindCharacterStat"));
+		hpBarWidget->BindCharacterStat(statComponent);
+	}
 	AIControllerClass = AAIControllerBlaze::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -67,6 +86,13 @@ void AEnemyBlazePawn::BeginPlay()
 	statComponent->SetLevel(FName("Blaze"));
 	bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
 	groundZValue = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation().Z;
+
+	hpBarWidget = Cast<UHpBarWidget>(hpBarWidgetComponent->GetUserWidgetObject());
+	if (nullptr != hpBarWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("BindCharacterStat"));
+		hpBarWidget->BindCharacterStat(statComponent);
+	}
 }
 
 // Called every frame
@@ -179,7 +205,7 @@ void AEnemyBlazePawn::Attack(TArray<FVector>& location)
 float AEnemyBlazePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	statComponent->OnAttacked(damage);
+	statComponent->SetDamage(damage);
 	Hit(DamageCauser);
 	return damage;
 }

@@ -11,6 +11,7 @@
 #include "ActorBlazeBullet.h"
 #include "StatComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "HpBarWidget.h"
 #include "EnemyBlazePawn.generated.h"
 
 UCLASS()
@@ -115,7 +116,7 @@ public:
 	void BlinkRed();
 	void EndBlink();
 
-		UPROPERTY(VisibleAnyWhere, Category = UI)
+	UPROPERTY(VisibleAnyWhere, Category = UI)
 	class UWidgetComponent* hpBarWidgetComponent;
 	UHpBarWidget* hpBarWidget;
 };

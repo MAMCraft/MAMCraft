@@ -28,6 +28,7 @@ void UHpBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	HPProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HPBar")));
+
 	UpdateHPWidget();
 }
 
@@ -40,7 +41,7 @@ void UHpBarWidget::UpdateHPWidget()
 			HPProgressBar->SetPercent(CurrentCharacterStat->GetHPRatio());
 		}
 	}
-	if (HPProgressBar->GetPercent() >= 1.0f)
+	if (HPProgressBar->GetPercent() >= 1.0f || HPProgressBar->GetPercent()<=0.0f)
 		HPProgressBar->SetVisibility(ESlateVisibility::Hidden);
 	else
 		HPProgressBar->SetVisibility(ESlateVisibility::Visible);

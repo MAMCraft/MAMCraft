@@ -38,6 +38,6 @@ void APotal::BeginPlay()
 void APotal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	materialI->SetScalarParameterValue(FName(TEXT("Param")), DeltaTime * 10.0f + 32.0f);
+	//materialI->SetScalarParameterValue(FName(TEXT("Param")), DeltaTime * 10.0f + 32.0f);
 }
 

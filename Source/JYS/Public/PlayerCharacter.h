@@ -222,7 +222,7 @@ public:
 	
 	void HideBowMesh();
 	void ShowSwordMesh();
-	void HandleMontageFinished();
+
 	
 
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "IncreaseHPItem.h"
+#include "Animation/AnimMontage.h"
 #include "TreasureChest.generated.h"
 
 UCLASS()
@@ -29,9 +30,27 @@ public:
 
     UFUNCTION()
     void OnChestClicked();
-	bool OnlyOneTime;
+
+
+
+	UPROPERTY(EditAnywhere)
+	USkeletalMeshComponent* TreasureMesh;
+
+	// 애니메이션 몽타주
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	class UAnimMontage* OpenChestMontage;
 
 private:
+	UPROPERTY(VisibleAnywhere)
     class UBoxComponent* BoxComp;
-    class UStaticMeshComponent* ChestMesh;
+
+	bool OnlyOnce;
+
+
+	// 타이머 핸들
+	FTimerHandle SpawnItemTimerHandle;
+
+	// 아이템 스폰 함수
+	void SpawnItemAfterDelay();
 };

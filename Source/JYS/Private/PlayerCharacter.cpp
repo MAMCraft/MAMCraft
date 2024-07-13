@@ -20,6 +20,7 @@
 #include "ArrowAttack.h"
 #include "ClickMovePlayerController.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
+#include <RespawnWidget.h>
 
 
 
@@ -108,6 +109,12 @@ APlayerCharacter::APlayerCharacter()
 
 	bowState = 0;
 	arrowCount = 100;
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> RespawnWidgetBPClass(TEXT("/Game/UI/RespawnWidgetBP"));
+	if (RespawnWidgetBPClass.Class != nullptr)
+	{
+		RespawnWidgetClass = RespawnWidgetBPClass.Class;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -130,6 +137,22 @@ void APlayerCharacter::BeginPlay()
 	{
 		HPWidget->AddToViewport();
 	}
+
+	if (RespawnWidgetClass)
+	{
+		RespawnWidget = CreateWidget<URespawnWidget>(GetWorld(), RespawnWidgetClass);
+		if (RespawnWidget)
+		{
+			RespawnWidget->AddToViewport();
+			RespawnWidget->SetRespawnCount(RespawnCount, MaxRespawns);
+			UE_LOG(LogTemp, Log, TEXT("RespawnWidget added to viewport with RespawnCount: %d, MaxRespawns: %d"), RespawnCount, MaxRespawns);
+
+
+		}
+		
+	}
+	
+
 	//LSJ 인벤토리
 	inventoryHUD = CreateWidget<class UInventoryWidget>(GetWorld(), inventoryHUDFactory);
 	if (inventoryHUD)
@@ -182,6 +205,7 @@ void APlayerCharacter::BeginPlay()
 
 	// UE_LOG(LogTemp, Log, TEXT("CollisionBox"));
 	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
+
 
 }
 
@@ -425,6 +449,14 @@ void APlayerCharacter::StopFireDamage()
 	UE_LOG(LogTemp, Warning, TEXT("Stopped taking fire damage"));
 }
 
+void APlayerCharacter::UpdateRespawnUI()
+{
+	if (RespawnWidget)
+	{
+		RespawnWidget->SetRespawnCount(RespawnCount, MaxRespawns);
+	}
+}
+
 void APlayerCharacter::ResetHPCooldown()
 {
 	bIsHPCooldownActive = false;
@@ -572,8 +604,14 @@ void APlayerCharacter::comboAttackCheck()
 
 void APlayerCharacter::Respawn()
 {
-	// 부활 횟수를 증가시킴
-	// RespawnCount++;
+
+	if (RespawnCount > 0)
+	{
+		RespawnCount--;
+		UpdateRespawnUI();
+
+		// 부활 로직을 여기서 추가
+	}
 
 	// 캐릭터 위치와 회전을 시작 위치로 설정
 	SetActorLocation(StartLocation);

@@ -113,6 +113,7 @@ public:
 	UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+
 private:
 
 	UPROPERTY(VisibleAnywhere)
@@ -123,6 +124,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UUserWidget> HPWidgetFactory;
+
+	UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<class UUserWidget> RespawnWidgetClass;
+
 
 	UPROPERTY()
 	class UHPWidget* HPWidget;
@@ -163,7 +168,14 @@ private:
 	void StopFireDamage();
 
 	bool bIsHPCooldownActive;
+
 	FTimerHandle HPCooldownTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+    class URespawnWidget* RespawnWidget;
+
+	UFUNCTION()
+	void UpdateRespawnUI();
 
 public:
 	
@@ -238,6 +250,10 @@ public:
 	bool bCanUseIncreaseHPItem = true;
 	FTimerHandle CooldownTimerHandle;
 	void ResetHPCooldown();
+
+
+	//UFUNCTION(BlueprintCallable, Category="Respawn")
+ //   void Respawn();
 
 
 };

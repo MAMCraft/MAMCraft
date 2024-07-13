@@ -55,16 +55,6 @@ void AArrowAttack::BeginPlay()
 
     // 소켓 이름 설정
     static FName SocketName(TEXT("R_Hand_Bow"));
-
-    //// 부모 액터 확인 및 소켓에 부착
-    //if (GetAttachParentActor())
-    //{
-    //    USkeletalMeshComponent* ParentMesh = Cast<USkeletalMeshComponent>(GetAttachParentActor()->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
-    //    if (ParentMesh && ParentMesh->DoesSocketExist("R_Hand_Bow"))
-    //    {
-    //        MeshComp->AttachToComponent(ParentMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
-    //    }
-    //}
 }
 
 // Called every frame

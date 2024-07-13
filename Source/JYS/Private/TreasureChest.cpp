@@ -22,6 +22,8 @@ ATreasureChest::ATreasureChest()
     TreasureMesh->SetupAttachment(RootComponent);
     TreasureMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -50.0f));
 
+    // (X = 540.000000, Y = 1400.000000, Z = 60.000000)
+
     // 애니메이션 몽타주 로드
     static ConstructorHelpers::FObjectFinder<UAnimMontage> MontageAsset(TEXT("/Game/GameResource/Player/GoldChest/AM_GoldChest_Anim_Montage.AM_GoldChest_Anim_Montage"));
     if (MontageAsset.Succeeded())
@@ -30,6 +32,7 @@ ATreasureChest::ATreasureChest()
     }
 
     BoxComp->SetBoxExtent(FVector(90.0f, 50.0f, 50.0f));
+    BoxComp->SetRelativeLocation(FVector(0.0f, 0.0f, 55.0f));
     BoxComp->SetGenerateOverlapEvents(true);
     BoxComp->SetCollisionProfileName(TEXT("TreasureChest"));
 
@@ -118,7 +121,9 @@ void ATreasureChest::SpawnItemAfterDelay()
         FActorSpawnParameters SpawnParams;
         SpawnParams.Owner = this;
 
-        FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 200.0f, 0.0f);
+        // FVector SpawnLocation = GetActorLocation() + FVector(-50.0f, -200.0f, 0.0f);
+        FVector SpawnLocation = GetActorLocation() + GetActorRightVector() * 200.0f;
         AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ItemToSpawn, SpawnLocation, GetActorRotation(), SpawnParams);
     }
 }
+// (X = 766.030739, Y = 1844.202016, Z = 60.000000)

@@ -88,7 +88,6 @@ APlayerCharacter::APlayerCharacter()
 	bComboAttackNext = false;
 	comboAttackNumber = 0;
 
-	//LSJ 콤보 공격 적용
 	MaxCombo = 2;
 	AttackEndComboState();
 
@@ -106,6 +105,9 @@ APlayerCharacter::APlayerCharacter()
 	bIsTakingFireDamage = false;
 	FireDamageTimerHandle.Invalidate();
 	StopFireDamageTimerHandle.Invalidate();
+
+	bowState = 0;
+	arrowCount = 100;
 }
 
 // Called when the game starts or when spawned
@@ -181,25 +183,12 @@ void APlayerCharacter::BeginPlay()
 	// UE_LOG(LogTemp, Log, TEXT("CollisionBox"));
 	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
 
-
-	// ArrowAttackClass = Cast<AActor>(GetMesh());
-
-
 }
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
-	//weapon
-	//if (rightWeaponCollision)
-	//{
-	//	DrawDebugBox(GetWorld(), rightWeaponCollision->GetSocketLocation(FName("R_Arm_armor_end")), rightWeaponCollision->GetScaledBoxExtent(),rightWeaponCollision->GetSocketRotation(FName("R_Arm_armor_end")).Quaternion(), FColor::Red, false, -1.0f, 0, 5.0f);
-	//}
-
-
 }
 
 // Called to bind functionality to input
@@ -311,15 +300,70 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 			}
 		}
 	}
-	//else
-	//{
-	//	OnMyTakeDamage(DamageAmount);
-	//}
 
 	UE_LOG(LogTemp, Warning, TEXT("TakeDamage : %s"), *DamageCauser->GetName());
 	return ActualDamage;
 }
 
+
+void APlayerCharacter::UpgradeSkill()
+{
+
+
+	if (bowState == 0)
+	{
+		UE_LOG(LogTemp, Log, TEXT("%d UpgradeSkill"), bowState);
+		// Fire 1 arrow
+		FireArrow(GetActorForwardVector());
+	}
+	else if (bowState == 1)
+	{
+		UE_LOG(LogTemp, Log, TEXT("%d UpgradeSkill"),bowState);
+		// 현재 방향 벡터를 기준으로 왼쪽으로 30도 회전시키기 위한 Rotator 생성
+		FRotator Left30DegreesRotator = FRotator(0.0f, -30.0f, 0.0f);
+		FRotator Right30DegreesRotator = FRotator(0.0f, 30.0f, 0.0f);
+		// 현재 방향 벡터를 FRotator로 변환
+		FRotator CurrentDirectionRotator = GetActorRotation();
+		CurrentDirectionRotator.Roll=0;
+		CurrentDirectionRotator.Pitch = 0;
+
+		// 현재 방향에 30도 회전을 적용
+		FRotator NewDirectionRotator = UKismetMathLibrary::ComposeRotators(CurrentDirectionRotator, Left30DegreesRotator);
+		FRotator NewDirectionRotator2 = UKismetMathLibrary::ComposeRotators(CurrentDirectionRotator, Right30DegreesRotator);
+		// 회전된 Rotator를 FVector로 변환하고, Normalize하여 반환
+		FVector NewDirection = NewDirectionRotator.Vector();
+		FVector NewDirection2 = NewDirectionRotator2.Vector();
+		//FVector NewDirection = Left30DegreesRotator.Vector();
+
+		FVector t = rightWeaponCollision->GetComponentLocation();
+		//FVector forward = FVector(200.0,0.0f,0.f);
+		//t = t + forward * GetActorForwardVector();
+		AArrowAttack* Arrow1 = GetWorld()->SpawnActor<AArrowAttack>(t, GetActorForwardVector().Rotation());
+		AArrowAttack* Arrow3 = GetWorld()->SpawnActor<AArrowAttack>(t, NewDirection2.Rotation());
+		AArrowAttack* Arrow2 = GetWorld()->SpawnActor<AArrowAttack>(t, NewDirection.Rotation());
+		
+			//FireArrow(GetActorForwardVector());
+			//FireArrow(NewDirection.GetSafeNormal());
+			//FireArrow(GetActorForwardVector() + FVector(0.0f, FMath::RandRange(-0.2f, 0.2f), FMath::RandRange(-0.2f, 0.2f)));
+		
+	}
+
+	arrowCount -= 1;
+}
+
+void APlayerCharacter::FireArrow(const FVector& Direction)
+{
+
+	if (arrowPositionComp)
+	{
+		FTransform ArrowSpawnTransform = arrowPositionComp->GetComponentTransform();
+		AArrowAttack* Arrow = GetWorld()->SpawnActor<AArrowAttack>(ArrowSpawnTransform.GetLocation(), Direction.Rotation());
+		/*	if (Arrow)
+			{
+				Arrow->SetActorRotation(Direction.Rotation());
+			}*/
+	}
+}
 
 void APlayerCharacter::skill()
 {
@@ -328,7 +372,11 @@ void APlayerCharacter::skill()
 	{
 		return;
 	}
-
+	if (arrowCount <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No arrows left!"));
+		return;
+	}
 	
 
 	PlayAnimMontage(bowMontage);
@@ -406,12 +454,16 @@ void APlayerCharacter::OnMyActionArrow()
 	//FVector ArrowSpawnLocation = arrowPositionComp->GetComponentLocation();
 	//ArrowSpawnLocation += arrowPositionComp->GetForwardVector() * 30.f;
 	FTransform t = arrowPositionComp->GetComponentTransform();
+	FVector a = t.GetLocation();
+	a.Y+= 50.0f;
+	t.SetLocation(a);
 	GetWorld()->SpawnActor<AArrowAttack>(arrowFactory, t);
 }
 
 void APlayerCharacter::DelayedArrowAttack()
 {
-	OnMyActionArrow();
+	UpgradeSkill();
+	//OnMyActionArrow();
 }
 
 void APlayerCharacter::RotateToMouseDirection()
@@ -433,8 +485,7 @@ void APlayerCharacter::RotateToMouseDirection()
 
 			// 화살 공격을 지연시킴
 			GetWorldTimerManager().SetTimer(SkillTimerHandle, this, &APlayerCharacter::DelayedArrowAttack, 0.5f, false);
-		}
-	
+		}	
 	}
 }
 

@@ -44,5 +44,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* arrowMesh;
+
+
+
+
+
 };
 

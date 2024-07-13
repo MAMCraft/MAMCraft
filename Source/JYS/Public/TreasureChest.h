@@ -25,8 +25,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Items")
-    TSubclassOf<AIncreaseHPItem> ItemToSpawn; // IncreaseHPItem 클래스 타입의 변수
+    //UPROPERTY(EditDefaultsOnly, Category = "Items")
+    //TSubclassOf<AIncreaseHPItem> ItemToSpawn; // IncreaseHPItem 클래스 타입의 변수
 
     UFUNCTION()
     void OnChestClicked();
@@ -41,12 +41,24 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	class UAnimMontage* OpenChestMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Items")
+    int32 itemState;
+
+	//UPROPERTY(EditAnywhere, Category = "Items")
+ //   TArray<TSubclassOf<AActor>> ItemClasses;
+
+	
+    UPROPERTY(EditAnywhere, Category = "Items")
+    TArray<TSubclassOf<AActor>> IncreaseHPItems;
+
+    UPROPERTY(EditAnywhere, Category = "Items")
+    TArray<TSubclassOf<AActor>> ArrowItems;
+
 private:
 	UPROPERTY(VisibleAnywhere)
     class UBoxComponent* BoxComp;
 
 	bool OnlyOnce;
-
 
 	// 타이머 핸들
 	FTimerHandle SpawnItemTimerHandle;

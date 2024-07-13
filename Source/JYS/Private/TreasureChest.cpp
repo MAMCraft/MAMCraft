@@ -1,21 +1,18 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "TreasureChest.h"
 #include "IncreaseHPItem.h"
+#include "ArrowItem.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
-#include <GameFramework/Character.h>
+#include "GameFramework/Character.h"
 
 // Sets default values
 ATreasureChest::ATreasureChest()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true;
 
     BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
     SetRootComponent(BoxComp);
@@ -25,15 +22,8 @@ ATreasureChest::ATreasureChest()
     TreasureMesh->SetupAttachment(RootComponent);
     TreasureMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -50.0f));
 
-    // 스켈레탈 메쉬 로드
-    //static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Path/To/Your/SkeletalMesh.SkeletalMesh"));
-    //if (MeshAsset.Succeeded())
-    //{
-    //    TreasureMesh->SetSkeletalMesh(MeshAsset.Object);
-    //}
-
     // 애니메이션 몽타주 로드
-    static ConstructorHelpers::FObjectFinder<UAnimMontage> MontageAsset(TEXT("/Script/Engine.AnimMontage'/Game/GameResource/Player/GoldChest/AM_GoldChest_Anim_Montage.AM_GoldChest_Anim_Montage'"));
+    static ConstructorHelpers::FObjectFinder<UAnimMontage> MontageAsset(TEXT("/Game/GameResource/Player/GoldChest/AM_GoldChest_Anim_Montage.AM_GoldChest_Anim_Montage"));
     if (MontageAsset.Succeeded())
     {
         OpenChestMontage = MontageAsset.Object;
@@ -45,10 +35,16 @@ ATreasureChest::ATreasureChest()
 
     BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-    static ConstructorHelpers::FClassFinder<AIncreaseHPItem> increaseHPItem(TEXT("/Script/Engine.Blueprint'/Game/JYS/Blueprints/BP_IncreaseHPItem.BP_IncreaseHPItem_C'"));
+    static ConstructorHelpers::FClassFinder<AIncreaseHPItem> increaseHPItem(TEXT("/Game/JYS/Blueprints/BP_IncreaseHPItem.BP_IncreaseHPItem_C"));
     if (increaseHPItem.Succeeded())
-    {  
-        ItemToSpawn = increaseHPItem.Class;
+    {
+        IncreaseHPItems.Add(increaseHPItem.Class);
+    }
+
+    static ConstructorHelpers::FClassFinder<AArrowItem> arrowItem(TEXT("/Game/JYS/Blueprints/BP_ArrowItem.BP_ArrowItem_C"));
+    if (arrowItem.Succeeded())
+    {
+        ArrowItems.Add(arrowItem.Class);
     }
 
     OnlyOnce = false;
@@ -57,28 +53,22 @@ ATreasureChest::ATreasureChest()
 // Called when the game starts or when spawned
 void ATreasureChest::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
 
-    // 초기 상태를 Idle로 설정
     if (TreasureMesh)
     {
         UAnimInstance* AnimInstance = TreasureMesh->GetAnimInstance();
         if (AnimInstance && OpenChestMontage)
         {
-            // 애니메이션 초기화를 위해 애니메이션 몽타주를 일시적으로 멈춤
             AnimInstance->Montage_Stop(0.0f, OpenChestMontage);
         }
     }
-
 }
 
 // Called every frame
 void ATreasureChest::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
-    
+    Super::Tick(DeltaTime);
 }
 
 void ATreasureChest::OnChestClicked()
@@ -87,7 +77,7 @@ void ATreasureChest::OnChestClicked()
         return;
     }
     OnlyOnce = true;
-    // 애니메이션 몽타주 재생
+
     if (OpenChestMontage && TreasureMesh)
     {
         UAnimInstance* AnimInstance = TreasureMesh->GetAnimInstance();
@@ -100,20 +90,35 @@ void ATreasureChest::OnChestClicked()
     UE_LOG(LogTemp, Warning, TEXT("Item Spawn!!!!!!!!!!!!!!!!"));
     UE_LOG(LogTemp, Warning, TEXT("Item!!!!!!!!!!!!!"));
 
-    GetWorldTimerManager().SetTimer(SpawnItemTimerHandle, this, &ATreasureChest::SpawnItemAfterDelay, 1.0f, false);
+    // ItemState를 클릭 시 무작위로 설정
+    itemState = FMath::RandRange(0, 1);
+    UE_LOG(LogTemp, Warning, TEXT("Random ItemState: %d"), itemState);
 
+    GetWorldTimerManager().SetTimer(SpawnItemTimerHandle, this, &ATreasureChest::SpawnItemAfterDelay, 1.0f, false);
 }
 
 void ATreasureChest::SpawnItemAfterDelay()
 {
-    // 아이템 스폰
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.Owner = this;
+    TSubclassOf<AActor> ItemToSpawn = nullptr;
 
-    FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 200.0f, 0.0f);
-    AActor* SpawnedActor = GetWorld()->SpawnActor<AIncreaseHPItem>(ItemToSpawn, SpawnLocation, GetActorRotation(), SpawnParams);
+    // ItemState에 따라 아이템 리스트에서 랜덤으로 아이템 선택
+    if (itemState == 0 && IncreaseHPItems.Num() > 0)
+    {
+        int32 RandomIndex = FMath::RandRange(0, IncreaseHPItems.Num() - 1);
+        ItemToSpawn = IncreaseHPItems[RandomIndex];
+    }
+    else if (itemState == 1 && ArrowItems.Num() > 0)
+    {
+        int32 RandomIndex = FMath::RandRange(0, ArrowItems.Num() - 1);
+        ItemToSpawn = ArrowItems[RandomIndex];
+    }
 
-    UE_LOG(LogTemp, Warning, TEXT("Item Spawned after delay!"));
+    if (ItemToSpawn)
+    {
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Owner = this;
+
+        FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 200.0f, 0.0f);
+        AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ItemToSpawn, SpawnLocation, GetActorRotation(), SpawnParams);
+    }
 }
-
-

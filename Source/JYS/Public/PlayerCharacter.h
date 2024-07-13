@@ -86,9 +86,18 @@ public:
 	UPlayerAnim* AnimInstance;
 	/// /////////////////////////////////////////////////
 	int ComboAttackIndex = 0;
-	// 데미지 처리
-	//UFUNCTION()
-	//void Hit(AActor* OtherActor);
+
+	UPROPERTY(EditAnywhere, Category = "Arrow")
+    int32 bowState;
+
+    UPROPERTY(EditAnywhere, Category = "Arrow")
+    int32 arrowCount;
+
+	UFUNCTION()
+	void UpgradeSkill();
+
+	UFUNCTION()
+	void FireArrow(const FVector& Direction);
 
 	void skill();
 

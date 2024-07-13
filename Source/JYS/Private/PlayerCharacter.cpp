@@ -226,14 +226,29 @@ void APlayerCharacter::Rolling()
 
 void APlayerCharacter::IncreaseHP(int32 Amount)
 {
+	// Check if cooldown is active
+	if (bIsHPCooldownActive)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HP item is on cooldown."));
+		return;
+	}
+
+	// Increase HP
 	playerHP = FMath::Clamp(playerHP + Amount, 0, playerMaxHP);
 
+	// Update HP widget if available
 	if (HPWidget)
 	{
 		HPWidget->SetHP(playerHP, playerMaxHP);
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("HP Increased: %d / %d"), playerHP, playerMaxHP);
+
+	// Start cooldown
+	bIsHPCooldownActive = true;
+	GetWorld()->GetTimerManager().SetTimer(HPCooldownTimerHandle, this, &APlayerCharacter::ResetHPCooldown, 60.0f, false);
+
+	UE_LOG(LogTemp, Log, TEXT("HP item used. Cooldown started."));
 }
 
 void APlayerCharacter::IncreaseAttackDamage(float Amount)
@@ -408,6 +423,12 @@ void APlayerCharacter::StopFireDamage()
 
 	// 로그 남기기
 	UE_LOG(LogTemp, Warning, TEXT("Stopped taking fire damage"));
+}
+
+void APlayerCharacter::ResetHPCooldown()
+{
+	bIsHPCooldownActive = false;
+	UE_LOG(LogTemp, Log, TEXT("HP item cooldown finished."));
 }
 
 

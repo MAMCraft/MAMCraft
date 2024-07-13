@@ -165,11 +165,6 @@ private:
 	bool bIsHPCooldownActive;
 	FTimerHandle HPCooldownTimerHandle;
 
-
-	bool bCanUseIncreaseHPItem = true;
-	FTimerHandle CooldownTimerHandle;
-	void ResetHPCooldown();
-
 public:
 	
 
@@ -240,7 +235,9 @@ public:
 	void HideBowMesh();
 	void ShowSwordMesh();
 
-	
+	bool bCanUseIncreaseHPItem = true;
+	FTimerHandle CooldownTimerHandle;
+	void ResetHPCooldown();
 
 
 };

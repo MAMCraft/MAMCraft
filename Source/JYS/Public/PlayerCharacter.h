@@ -169,7 +169,7 @@ private:
 
 	bool bIsHPCooldownActive;
 
-	FTimerHandle HPCooldownTimerHandle;
+
 
 	UPROPERTY(EditAnywhere)
     class URespawnWidget* RespawnWidget;
@@ -179,6 +179,7 @@ private:
 
 public:
 	
+	FTimerHandle HPCooldownTimerHandle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UArrowComponent* arrowPositionComp;

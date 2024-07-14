@@ -7,14 +7,20 @@
 #include "Engine/DamageEvents.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/OverlapResult.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 AActorBlazeBullet::AActorBlazeBullet()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	root = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ROOT"));
+	RootComponent = root;
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
-	RootComponent = mesh;
+	mesh->SetupAttachment(RootComponent);
+	//RootComponent = mesh;
+
 	ConstructorHelpers::FObjectFinder<UStaticMesh>sphereMesh(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	if (sphereMesh.Succeeded())
 	{
@@ -27,12 +33,23 @@ AActorBlazeBullet::AActorBlazeBullet()
 	{
 		fireFloor = (fireFloorBP.Class);
 	}
-	//Effect
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> Fire(TEXT("/Script/Engine.ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Ambient/Fire/P_LavaDrips.P_LavaDrips'"));
-	if (Fire.Succeeded())
+	//Effect UNiagaraSystem
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ParticleAsset1(TEXT("/Script/Niagara.NiagaraSystem'/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_ROCKET_Trail.NS_ROCKET_Trail'"));
+	if (ParticleAsset1.Succeeded())
 	{
-		FireParticle = Fire.Object;
+		FireEffectMuzzle = ParticleAsset1.Object;
 	}
+	//Effect UParticleSystemComponent
+	//particleComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MovementParticles"));
+	//particleComponent->SetupAttachment(RootComponent);
+	//particleComponent->bAutoActivate = false;
+	//particleComponent->SetRelativeLocation(FVector(-20.0f, 0.0f, 20.0f));
+
+	//		static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("/Script/Niagara.NiagaraSystem'/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_ROCKET_Trail.NS_ROCKET_Trail'"));
+	//if (ParticleAsset.Succeeded())
+	//{particleComponent->SetTemplate(ParticleAsset.Object);
+	//	particleComponent->SetTemplate(FireParticle);
+	//}
 
 	mesh->OnComponentHit.AddDynamic(this, &AActorBlazeBullet::OnHit);
 }
@@ -42,7 +59,10 @@ void AActorBlazeBullet::BeginPlay()
 {
 	Super::BeginPlay();
 	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
-	GameStatic->SpawnEmitterAttached(FireParticle, RootComponent);
+	//Effect UParticleSystemComponent
+	//particleComponent->ToggleActive();
+	mesh->SetVisibility(false);
+	UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(FireEffectMuzzle, mesh, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
 	//회전
 	//파티클 변수로 저장해서 TICK에서 회전
 	//옷 가져가기
@@ -58,6 +78,13 @@ void AActorBlazeBullet::Tick(float DeltaTime)
 		currentTime = 0;
 		Destroy();
 	}
+	//rotation
+	//mesh->SetRelativeRotation(outVelocity.Rotation());
+	/*FVector angularVelocityDelta = mesh->GetPhysicsAngularVelocityInDegrees();
+	FVector forwardVector = angularVelocityDelta.ToOrientationQuat().GetForwardVector();
+	FVector rotate = FVector::CrossProduct(angularVelocityDelta, forwardVector);*/
+	//particleComponent->SetRelativeRotation(outVelocity.Rotation());
+	//SetActorRelativeRotation(outVelocity.Rotation());
 }
 
 void AActorBlazeBullet::SetAttacklocation(FVector location)
@@ -71,6 +98,7 @@ void AActorBlazeBullet::SetAttacklocation(FVector location)
 	outVelocity = FVector::ZeroVector;   // 결과 Velocity
 	if (UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, outVelocity, startLoc, targetLoc, GetWorld()->GetGravityZ(), arcValue)) //GetWorld()->GetGravityZ()
 	{
+		SetActorRelativeRotation(outVelocity.Rotation());
 		//FPredictProjectilePathParams predictParams(20.0f, startLoc, outVelocity, 15.0f);   // 20: tracing 보여질 프로젝타일 크기, 15: 시물레이션되는 Max 시간(초)
 		//predictParams.DrawDebugTime = 15.0f;     //디버그 라인 보여지는 시간 (초)
 		//predictParams.DrawDebugType = EDrawDebugTrace::Type::ForDuration;  // DrawDebugTime 을 지정하면 EDrawDebugTrace::Type::ForDuration 필요.
@@ -78,6 +106,7 @@ void AActorBlazeBullet::SetAttacklocation(FVector location)
 		//FPredictProjectilePathResult result;
 		//UGameplayStatics::PredictProjectilePath(this, predictParams, result);
 		mesh->AddImpulse(outVelocity*20.0f); // objectToSend는 발사체 * 질량 해줘야되는거 같다.
+		
 	}
 }
 

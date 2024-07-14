@@ -21,6 +21,7 @@ public:
 	virtual void OnUnPossess() override;
 	virtual void PostInitializeComponents() override;
 	void RunAI();
+	virtual FPathFollowingRequestResult MoveTo(const FAIMoveRequest& MoveRequest, FNavPathSharedPtr* OutPath /* = nullptr */);
 private:
 	class UBehaviorTreeComponent* behavior_tree_component;
 	class UBehaviorTree* btree;

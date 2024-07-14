@@ -6,12 +6,12 @@
 void UHpBarWidget::SetHPBar(float percent)
 {
 	hpPercent = percent;
-	HPProgressBar->SetPercent(hpPercent);
+	HPBar->SetPercent(hpPercent);
 }
 
 float UHpBarWidget::GetHPBar()
 {
-	return HPProgressBar->GetPercent();
+	return HPBar->GetPercent();
 }
 
 void UHpBarWidget::BindCharacterStat(UStatComponent* NewCharacterStat)
@@ -24,10 +24,11 @@ void UHpBarWidget::BindCharacterStat(UStatComponent* NewCharacterStat)
 	}
 }
 
+
 void UHpBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	HPProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HPBar")));
+	//HPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HPBar")));
 
 	UpdateHPWidget();
 }
@@ -36,13 +37,13 @@ void UHpBarWidget::UpdateHPWidget()
 {
 	if (CurrentCharacterStat.IsValid())
 	{
-		if (nullptr != HPProgressBar)
+		if (nullptr != HPBar)
 		{
-			HPProgressBar->SetPercent(CurrentCharacterStat->GetHPRatio());
+			HPBar->SetPercent(CurrentCharacterStat->GetHPRatio());
 		}
 	}
-	if (HPProgressBar->GetPercent() >= 1.0f || HPProgressBar->GetPercent()<=0.0f)
-		HPProgressBar->SetVisibility(ESlateVisibility::Hidden);
+	if (HPBar->GetPercent() >= 1.0f || HPBar->GetPercent()<=0.0f)
+		HPBar->SetVisibility(ESlateVisibility::Hidden);
 	else
-		HPProgressBar->SetVisibility(ESlateVisibility::Visible);
+		HPBar->SetVisibility(ESlateVisibility::Visible);
 }

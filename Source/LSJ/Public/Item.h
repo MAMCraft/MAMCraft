@@ -4,7 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ItemUserWidget.h"
 #include "Item.generated.h"
+
+UENUM()
+enum class EItemCategroy : int
+{
+	posion,
+	sword,
+	bow,
+	arrow
+};
 
 UCLASS()
 class LSJ_API AItem : public AActor
@@ -40,8 +50,14 @@ public:
 	float Weght;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ITEM",meta = (ClampMin = 0.0))
 	int count;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ITEM",meta = (ClampMin = 0.0))
+	int category;
 	UPROPERTY()
 	class UInventoryComponent* OwningInventory;
 	//아이템 사용
 	virtual void Use() PURE_VIRTUAL(AItem,);
+	//widget
+	UPROPERTY(VisibleAnyWhere, Category = UI)
+	class UWidgetComponent* itemWidgetComponent;
+	UItemUserWidget* itemWidget;
 };

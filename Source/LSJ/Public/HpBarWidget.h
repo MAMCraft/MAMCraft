@@ -22,11 +22,12 @@ public:
 	void SetHPBar(float percent);
 	float GetHPBar();
 protected:
+
 	virtual void NativeConstruct() override;
 	void UpdateHPWidget();
 private:
 	TWeakObjectPtr<class UStatComponent> CurrentCharacterStat;
-		UPROPERTY()
-		class UProgressBar* HPProgressBar;
+		UPROPERTY(VisibleAnywhere,Category="Drag Item Visual",meta=(BindWidget))
+		class UProgressBar* HPBar;
 
 };

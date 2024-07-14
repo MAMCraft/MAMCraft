@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Item.h"
+#include "IncreaseHPItem.h"
+#include "ItemSword.h"
+#include "ItemBowBasic.h"
 #include "InventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdated);
@@ -13,7 +16,13 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LSJ_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
+	void StartItem();
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf <AIncreaseHPItem> itemHp;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf <AItemSword> itemSword;
+	UPROPERTY(EditDefaultsOnly)	  
+	TSubclassOf <AItemBowBasic> itemBowBasic;
 public:	
 	// Sets default values for this component's properties
 	UInventoryComponent();

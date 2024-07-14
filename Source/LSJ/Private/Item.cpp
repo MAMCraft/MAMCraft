@@ -2,7 +2,8 @@
 
 
 #include "Item.h"
-
+#include "Components/WidgetComponent.h"
+#include <Kismet/KismetMathLibrary.h>
 // Sets default values
 AItem::AItem()
 {
@@ -12,13 +13,51 @@ AItem::AItem()
 	ItemDisplayName = FText::FromString("Item");
 	UseActionText = FText::FromString("Use");
 
+	itemWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
+	itemWidgetComponent->SetupAttachment(RootComponent);
+	itemWidgetComponent->SetRelativeLocation(FVector(0, 0, 0));
+	//itemWidgetComponent->SetRelativeRotation();
+	itemWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LSJ/Blueprints/Inventory/WBP_Item.WBP_Item_C'"));
+	if (UI_HUD.Succeeded())
+	{
+		itemWidgetComponent->SetWidgetClass(UI_HUD.Class);
+		//itemWidgetComponent->SetDrawSize(FVector2D(1500, 1500));
+	}
+	itemWidgetComponent->SetCollisionProfileName(TEXT("Item"));
+
+
 }
 
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
+	itemWidget = Cast<UItemUserWidget>(itemWidgetComponent->GetUserWidgetObject());
+
+	if (nullptr != itemWidget)
+	{
+		itemWidget->BindItemImage(ItemDisplayName, Thumnail);
+		APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+		FVector end = PlayerCamera->GetCameraLocation();
+
+		//FRotator lookRotation = UKismetMathLibrary::FindRelativeLookAtRotation(GetActorTransform(), PlayerCamera->GetCameraLocation());
+		FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCamera->GetCameraLocation());
+		SetActorRotation(lookRotation);
+		//itemWidgetComponent->SetRelativeRotation(lookRotation);
 	
+		//FVector newForward = PlayerCamera->GetCameraLocation() - GetActorLocation();
+		//newForward.Normalize();
+
+		//const FVector WorldUp(0.0f, 0.0f, 1.0f);
+
+		//FVector newRight = FMath::Cross(PlayerCamera->GetCameraLocation(), WorldUp);
+		//FVector newUp = FVector::Cross(newRight, newForward);
+
+		//return FTransform(newForward, newRight, newUp, Source);
+	}
+
 }
 
 // Called every frame

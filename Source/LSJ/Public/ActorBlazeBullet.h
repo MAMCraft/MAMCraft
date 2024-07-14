@@ -9,6 +9,7 @@
 #include <GameFramework/ProjectileMovementComponent.h>
 #include "ActorFireFloor.h"
 #include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "ActorBlazeBullet.generated.h"
 
@@ -60,10 +61,13 @@ public:
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
-	UPROPERTY()
+	//Effect UParticleSystemComponent
+	/*UPROPERTY()
 	class UGameplayStatics* GameStatic;
 	UPROPERTY(EditAnywhere, Category = "Firing")
-	class UParticleSystem * FireParticle;
+	class UParticleSystem* FireParticle;
+	UParticleSystemComponent* particleComponent;*/
+	USceneComponent* root;
 	UPROPERTY(EditAnywhere, Category = "Firing")
-	class UParticleSystem * ExplosionParticle;
+	class UNiagaraSystem* FireEffectMuzzle;
 };

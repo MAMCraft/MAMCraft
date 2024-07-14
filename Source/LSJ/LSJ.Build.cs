@@ -6,7 +6,7 @@ public class LSJ : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine","NavigationSystem","AIModule", "GamePlayTasks", "UMG", "JYS" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine","NavigationSystem","AIModule", "GamePlayTasks", "UMG", "JYS", "Niagara" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
     }

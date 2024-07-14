@@ -5,7 +5,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "EnemyBlazePawn.h"
-
+#include "Navigation/PathFollowingComponent.h"
 AAIControllerBlaze::AAIControllerBlaze(FObjectInitializer const& objectInitializer)
 {
 	/*static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT(""));
@@ -46,4 +46,11 @@ void AAIControllerBlaze::PostInitializeComponents()
 void AAIControllerBlaze::RunAI()
 {
 	
+}
+
+FPathFollowingRequestResult AAIControllerBlaze::MoveTo(const FAIMoveRequest& MoveRequest, FNavPathSharedPtr* OutPath)
+{
+	FPathFollowingRequestResult ResultData = Super::MoveTo(MoveRequest, OutPath);
+
+	return ResultData;
 }

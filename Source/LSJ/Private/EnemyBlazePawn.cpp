@@ -62,12 +62,7 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 		hpBarWidgetComponent->SetWidgetClass(UI_HUD.Class);
 		hpBarWidgetComponent->SetDrawSize(FVector2D(150, 50));
 	}
-	hpBarWidget = Cast<UHpBarWidget>(hpBarWidgetComponent->GetUserWidgetObject());
-	if (nullptr != hpBarWidget)
-	{
-		UE_LOG(LogTemp, Error, TEXT("BindCharacterStat"));
-		hpBarWidget->BindCharacterStat(statComponent);
-	}
+
 	//Effect
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> Fire(TEXT("/Script/Engine.ParticleSystem'/Game/M5VFXVOL2/Particles/Fire/Fire_02.Fire_02'"));
 	if (Fire.Succeeded())
@@ -93,7 +88,8 @@ void AEnemyBlazePawn::BeginPlay()
 	statComponent->SetLevel(FName("Blaze"));
 	bc = UAIBlueprintHelperLibrary::GetBlackboard(this);
 	groundZValue = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation().Z;
-
+	//hpUI
+	//hpbar
 	hpBarWidget = Cast<UHpBarWidget>(hpBarWidgetComponent->GetUserWidgetObject());
 	if (nullptr != hpBarWidget)
 	{

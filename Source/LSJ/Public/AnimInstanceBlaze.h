@@ -28,6 +28,8 @@ class LSJ_API UAnimInstanceBlaze : public UAnimInstance
 	UAnimMontage* attackMontage;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MOVEMENT", meta = (allowprivateaccess = true))
 	UAnimMontage* dieMontage;
+
+
 protected:
 	//virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void NativeInitializeAnimation();
@@ -41,4 +43,6 @@ public:
 	void AnimNotify_Fire();
 
 	FBulletFire BulletFire;
+	//move check
+	FVector previousLocation;
 };

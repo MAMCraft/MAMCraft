@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
+#include "AIControllerBlaze.h"
 #include "BTTaskNode_RunAway.generated.h"
 
 /**
@@ -16,11 +17,16 @@ class LSJ_API UBTTaskNode_RunAway : public UBTTaskNode
 private:
 	float currentTime=0.f;
 	UPROPERTY(EditAnywhere, Category = "MOVINGTIME")
-	float movingTime = 1.f;
+	float movingTime = 1.3f;
 		UPROPERTY(EditAnywhere, Category = "MOVINGTIME")
 	float runAwaySpeed = 300.f;
+	bool IsGround = true;
+	APawn* ControllingPawn;
+	FNavLocation NextPatrol;
+	FVector start;
 public:
 	UBTTaskNode_RunAway();
+
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

@@ -31,6 +31,30 @@ void UAnimInstanceBlaze::NativeInitializeAnimation()
 }
 void UAnimInstanceBlaze::UpdateProperties()
 {
+	// 폰이 없어졌다면?
+	if (pawn == nullptr)
+	{
+		// 다시 폰을 가져온다.
+		pawn = TryGetPawnOwner();
+	}
+
+	// 폰이 존재한다면,
+		// 애님이 실행되기 전 폰이 삭제된다면, 
+		// 없는 객체를 참조할 수 있기에 아래와 같이 if문으로 묶어주었다.
+	if (pawn)
+	{
+		// Movement Speed Check
+		FVector Velocity = pawn->GetVelocity();
+
+		// Z축은 필요가 없으니, 0으로 초기화해준다.
+		FVector NewVelocity = FVector(Velocity.X, Velocity.Y, 0.f);
+		if (pawn->GetActorLocation() != previousLocation)
+			movementSpeed = 2;
+		else
+			movementSpeed = 0;
+		//movementSpeed = NewVelocity.Size();
+		previousLocation = pawn->GetActorLocation();
+	}
 }
 
 void UAnimInstanceBlaze::PlayAttackMontage()

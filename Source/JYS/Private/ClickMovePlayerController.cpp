@@ -104,26 +104,51 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	if (Target == nullptr)
 		return;
 	// tag 넣어서 아이템별 각 기능 넣어주기
-	if (Target->ActorHasTag(FName(TEXT("ArrowItem"))))
+	if (Target->ActorHasTag(FName(TEXT("ItemBowBubble"))))
 	{
 		// do something
-		UE_LOG(LogTemp,Warning,TEXT("Arrow Item"));
+		UE_LOG(LogTemp, Warning, TEXT("ItemBowBubble"));
 		Target->Destroy();
 
-	}else if (Target->ActorHasTag(FName(TEXT("IncreaseHPItem"))))
+	}
+	else if (Target->ActorHasTag(FName(TEXT("ItemBowBasic"))))
+	{
+		// do something
+		UE_LOG(LogTemp, Warning, TEXT("ItemBowBasic"));
+		Target->Destroy();
+
+	}
+	else if (Target->ActorHasTag(FName(TEXT("ItemSword"))))
+	{
+		// do something
+		UE_LOG(LogTemp, Warning, TEXT("ItemSword"));
+		Target->Destroy();
+
+	}
+	else if (Target->ActorHasTag(FName(TEXT("ArrowItem"))))
+	{
+		// do something
+		UE_LOG(LogTemp, Warning, TEXT("Arrow Item"));
+		Target->Destroy();
+
+	}
+	else if (Target->ActorHasTag(FName(TEXT("IncreaseHPItem"))))
 	{
 		//LSJ 인벤토리
 		AItem* item = Cast<AItem>(Target);
 		PlayerCharacter2->inventoryComponent->AddItem(item);
+		PlayerCharacter2->IncreaseHP(10);
 		Target->Destroy();
 
-	}else if (Target->ActorHasTag(FName(TEXT("FirstEquipmentItem"))))
+	}
+	else if (Target->ActorHasTag(FName(TEXT("FirstEquipmentItem"))))
 	{
 		// do something
 		UE_LOG(LogTemp, Warning, TEXT("First Equipment Item"));
 		Target->Destroy();
 
-	}else if (Target->ActorHasTag(FName(TEXT("SecondEquipmentItem"))))
+	}
+	else if (Target->ActorHasTag(FName(TEXT("SecondEquipmentItem"))))
 	{
 		// do something
 		UE_LOG(LogTemp, Warning, TEXT("Second Equipment Item"));
@@ -138,7 +163,7 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	else if (Target->ActorHasTag(FName("TreasureChest")))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Item Spawn22222222222222222222222222222"))
-		ATreasureChest* Chest = Cast<ATreasureChest>(Target);
+			ATreasureChest* Chest = Cast<ATreasureChest>(Target);
 		if (Chest)
 		{
 			Chest->OnChestClicked();
@@ -148,7 +173,7 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	if (hit.bBlockingHit)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Iclick"))
-		SetNewDestination(hit.ImpactPoint);
+			SetNewDestination(hit.ImpactPoint);
 	}
 }
 

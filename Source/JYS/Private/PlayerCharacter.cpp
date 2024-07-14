@@ -270,7 +270,8 @@ void APlayerCharacter::IncreaseHP(int32 Amount)
 
 	// Start cooldown
 	bIsHPCooldownActive = true;
-	GetWorld()->GetTimerManager().SetTimer(HPCooldownTimerHandle, this, &APlayerCharacter::ResetHPCooldown, 60.0f, false);
+	if (Amount != 10)
+		GetWorld()->GetTimerManager().SetTimer(HPCooldownTimerHandle, this, &APlayerCharacter::ResetHPCooldown, 60.0f, false);
 
 	UE_LOG(LogTemp, Log, TEXT("HP item used. Cooldown started."));
 }

@@ -8,16 +8,16 @@
 void AMAMCGameModeBase::BeginPlay()
 {
     Super::BeginPlay();
-    if (IsValid(MainHUDWidgetClass))
-    {
-        MainHUDWidget = Cast<UUIStartMenu>(CreateWidget(GetWorld(), MainHUDWidgetClass));
+    //if (IsValid(MainHUDWidgetClass))
+    //{
+    //    MainHUDWidget = Cast<UUIStartMenu>(CreateWidget(GetWorld(), MainHUDWidgetClass));
 
-        if (IsValid(MainHUDWidget))
-        {
-            MainHUDWidget->AddToViewport();
-           // MainHUDWidget->OnButtonLevelUpdated.AddDynamic(this,&AMAMCGameModeBase::EndViewport);
-        }
-    }
+    //    if (IsValid(MainHUDWidget))
+    //    {
+    //        MainHUDWidget->AddToViewport();
+    //       // MainHUDWidget->OnButtonLevelUpdated.AddDynamic(this,&AMAMCGameModeBase::EndViewport);
+    //    }
+    //}
 }
 
 AMAMCGameModeBase::AMAMCGameModeBase()
@@ -25,8 +25,8 @@ AMAMCGameModeBase::AMAMCGameModeBase()
     static ConstructorHelpers::FClassFinder<UUserWidget> MainHUDWidgetAsset(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KYH/Blueprint/BP_StartMenu.BP_StartMenu_C'"));
 
     // TSubclassOf 템플릿 클래스 객체에 블루프린트 클래스를 넣어준다
-    if (MainHUDWidgetAsset.Succeeded())
-        MainHUDWidgetClass = MainHUDWidgetAsset.Class;
+    //if (MainHUDWidgetAsset.Succeeded())
+    //    MainHUDWidgetClass = MainHUDWidgetAsset.Class;
 
 }
 

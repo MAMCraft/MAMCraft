@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "UIStartMenu.h"
 #include "MAMCGameModeBase.generated.h"
 
 /**
@@ -16,9 +15,9 @@ class JYS_API AMAMCGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 protected:
     virtual void BeginPlay() override;
-	UPROPERTY()
-	TSubclassOf<UUserWidget> MainHUDWidgetClass;
-	UUIStartMenu* MainHUDWidget;
+	//UPROPERTY()
+	//TSubclassOf<UUserWidget> MainHUDWidgetClass;
+	//UUIStartMenu* MainHUDWidget;
 public:
     AMAMCGameModeBase();
 	UFUNCTION()

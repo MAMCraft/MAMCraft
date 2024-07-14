@@ -13,5 +13,12 @@ UCLASS()
 class JYS_API AMAMCGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+	protected:
+    virtual void BeginPlay() override;
+
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<class UUserWidget> StartMenuClass;
+
+    UPROPERTY()
+    UUserWidget* StartMenu;
 };

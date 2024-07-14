@@ -2,4 +2,19 @@
 
 
 #include "MAMCGameModeBase.h"
+#include "Blueprint/UserWidget.h"
 
+
+void AMAMCGameModeBase::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (StartMenuClass)
+    {
+        StartMenu = CreateWidget<UUserWidget>(GetWorld(), StartMenuClass);
+        if (StartMenu)
+        {
+            StartMenu->AddToViewport();
+        }
+    }
+}

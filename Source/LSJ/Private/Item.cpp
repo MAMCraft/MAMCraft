@@ -26,8 +26,6 @@ AItem::AItem()
 		//itemWidgetComponent->SetDrawSize(FVector2D(1500, 1500));
 	}
 	itemWidgetComponent->SetCollisionProfileName(TEXT("Item"));
-
-
 }
 
 // Called when the game starts or when spawned

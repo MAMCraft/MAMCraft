@@ -2,19 +2,37 @@
 
 
 #include "MAMCGameModeBase.h"
-#include "Blueprint/UserWidget.h"
+
 
 
 void AMAMCGameModeBase::BeginPlay()
 {
     Super::BeginPlay();
-
-    if (StartMenuClass)
+    if (IsValid(MainHUDWidgetClass))
     {
-        StartMenu = CreateWidget<UUserWidget>(GetWorld(), StartMenuClass);
-        if (StartMenu)
+        MainHUDWidget = Cast<UUIStartMenu>(CreateWidget(GetWorld(), MainHUDWidgetClass));
+
+        if (IsValid(MainHUDWidget))
         {
-            StartMenu->AddToViewport();
+            MainHUDWidget->AddToViewport();
+           // MainHUDWidget->OnButtonLevelUpdated.AddDynamic(this,&AMAMCGameModeBase::EndViewport);
         }
     }
 }
+
+AMAMCGameModeBase::AMAMCGameModeBase()
+{
+    static ConstructorHelpers::FClassFinder<UUserWidget> MainHUDWidgetAsset(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KYH/Blueprint/BP_StartMenu.BP_StartMenu_C'"));
+
+    // TSubclassOf 템플릿 클래스 객체에 블루프린트 클래스를 넣어준다
+    if (MainHUDWidgetAsset.Succeeded())
+        MainHUDWidgetClass = MainHUDWidgetAsset.Class;
+
+}
+
+void AMAMCGameModeBase::EndViewport()
+{
+    UE_LOG(LogTemp, Log, TEXT("EndViewport"));
+    //MainHUDWidget->FinishDestroy();
+}
+

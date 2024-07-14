@@ -60,10 +60,10 @@ void AClickMovePlayerController::BeginPlay()
 
 void AClickMovePlayerController::UsePosionItem()
 {
-	if (PlayerCharacter2->inventoryComponent->Items.IsEmpty())
-		return;
-	PlayerCharacter2->IncreaseHP(3);
-	PlayerCharacter2->inventoryComponent->RemoveItem(PlayerCharacter2->inventoryComponent->Items[0]);
+	//if (PlayerCharacter2->inventoryComponent->Items.IsEmpty())
+	//	return;
+	PlayerCharacter2->IncreaseHP(80);
+	//PlayerCharacter2->inventoryComponent->RemoveItem(PlayerCharacter2->inventoryComponent->Items[0]);
 }
 
 void AClickMovePlayerController::InputLeftMouseButtonPressed()
@@ -108,6 +108,8 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	{
 		// do something
 		UE_LOG(LogTemp, Warning, TEXT("ItemBowBubble"));
+		AItem* item = Cast<AItem>(Target);
+		PlayerCharacter2->inventoryComponent->AddItem(item);
 		Target->Destroy();
 
 	}
@@ -128,6 +130,7 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	else if (Target->ActorHasTag(FName(TEXT("ArrowItem"))))
 	{
 		// do something
+		PlayerCharacter2->inventoryComponent->AddArrow(5);
 		UE_LOG(LogTemp, Warning, TEXT("Arrow Item"));
 		Target->Destroy();
 

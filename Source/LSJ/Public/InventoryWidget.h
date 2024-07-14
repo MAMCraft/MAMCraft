@@ -9,6 +9,7 @@
 #include <Components/TextBlock.h>
 #include <Components/Border.h>
 #include <Components/ProgressBar.h>
+#include "Animation/WidgetAnimation.h"
 #include "InventoryWidget.generated.h"
 
 /**
@@ -53,6 +54,37 @@ public:
 	UImage* ItemIconBow;
 		UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
 	UTextBlock* ItemQuantityBow;
+	//Arrow
+		UPROPERTY(VisibleAnywhere,Category="Drag Item Visual",meta=(BindWidget))
+	UBorder* ArrowBackground;
+	UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UImage* ItemIconArrow_1;
+		UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UImage* ItemIconArrow_2;
+		UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UImage* ItemIconArrow_3;
+		UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UImage* ItemIconArrow_4;
+		UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UImage* ItemIconArrow_5;
+		UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UTextBlock* ItemQuantityArrow;
+	UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UImage* ArrowEmptyImage;
+		UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UImage* ArrowRedFrame;
+	//Arrow Anim
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "GsUI",meta=(BindWidgetAnim))
+	UWidgetAnimation* arrow1;
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "GsUI",meta = (BindWidgetAnim))
+	UWidgetAnimation* arrow2;
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "GsUI",meta = (BindWidgetAnim))
+	UWidgetAnimation* arrow3;
+		UPROPERTY(BlueprintReadOnly, Transient, Category = "GsUI",meta = (BindWidgetAnim))
+	UWidgetAnimation* arrow4;
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "GsUI",meta = (BindWidgetAnim))
+	UWidgetAnimation* arrow5;
+	void ArrowPlayAnimation(int count);
 	bool bIsPickingUp = false;
 
 	UFUNCTION(BlueprintCallable)

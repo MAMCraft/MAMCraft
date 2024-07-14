@@ -269,9 +269,13 @@ void APlayerCharacter::IncreaseHP(int32 Amount)
 	UE_LOG(LogTemp, Log, TEXT("HP Increased: %d / %d"), playerHP, playerMaxHP);
 
 	// Start cooldown
-	bIsHPCooldownActive = true;
+	
 	if (Amount != 10)
+	{
+		bIsHPCooldownActive = true;
 		GetWorld()->GetTimerManager().SetTimer(HPCooldownTimerHandle, this, &APlayerCharacter::ResetHPCooldown, 60.0f, false);
+	}
+		
 
 	UE_LOG(LogTemp, Log, TEXT("HP item used. Cooldown started."));
 }
@@ -407,6 +411,8 @@ void APlayerCharacter::FireArrow(const FVector& Direction)
 
 void APlayerCharacter::skill()
 {
+	if (inventoryComponent->GetArrow() <= 0)
+		return;
 	UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
 	if (OnSkill)
 	{
@@ -417,12 +423,12 @@ void APlayerCharacter::skill()
 		UE_LOG(LogTemp, Warning, TEXT("No arrows left!"));
 		return;
 	}
-	
-
+	bowState = (int)inventoryComponent->GetCurrentBow();
 	PlayAnimMontage(bowMontage);
 
 	// Rotate to mouse direction
 	RotateToMouseDirection();
+	inventoryComponent->ArrowUsed(1);
 }
 
 

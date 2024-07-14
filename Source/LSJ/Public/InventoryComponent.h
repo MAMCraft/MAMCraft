@@ -8,9 +8,16 @@
 #include "IncreaseHPItem.h"
 #include "ItemSword.h"
 #include "ItemBowBasic.h"
+#include "ArrowItem.h"
 #include "InventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdated);
+UENUM()
+enum class EBowCategory : int
+{
+	basic,
+	bubble,
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LSJ_API UInventoryComponent : public UActorComponent
@@ -23,6 +30,8 @@ class LSJ_API UInventoryComponent : public UActorComponent
 	TSubclassOf <AItemSword> itemSword;
 	UPROPERTY(EditDefaultsOnly)	  
 	TSubclassOf <AItemBowBasic> itemBowBasic;
+	UPROPERTY(EditDefaultsOnly)	  
+	TSubclassOf <AArrowItem> itemArrow;
 public:	
 	// Sets default values for this component's properties
 	UInventoryComponent();
@@ -43,5 +52,10 @@ public:
 	FOnInventoryUpdated OnInventoryUpdated;
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="ITEMS")
 	TArray<AItem*> Items;
+
+	EBowCategory GetCurrentBow();
+	void ArrowUsed(int amount);
+	int GetArrow();
+	void AddArrow(int amount);
 };
 

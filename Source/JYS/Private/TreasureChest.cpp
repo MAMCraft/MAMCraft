@@ -8,7 +8,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
 #include "GameFramework/Character.h"
-
+#include "ItemBowBubble.h"
 // Sets default values
 ATreasureChest::ATreasureChest()
 {
@@ -49,7 +49,11 @@ ATreasureChest::ATreasureChest()
     {
         ArrowItems.Add(arrowItem.Class);
     }
-
+    static ConstructorHelpers::FClassFinder<AItemBowBubble> bowItemFinder(TEXT("/Game/LSJ/Blueprints/Inventory/BP_BowBubble.BP_BowBubble_C"));
+    if (bowItemFinder.Succeeded())
+    {
+        bowItem =(bowItemFinder.Class);
+    }
     OnlyOnce = false;
 }
 
@@ -93,8 +97,9 @@ void ATreasureChest::OnChestClicked()
     UE_LOG(LogTemp, Warning, TEXT("Item Spawn!!!!!!!!!!!!!!!!"));
     UE_LOG(LogTemp, Warning, TEXT("Item!!!!!!!!!!!!!"));
 
-    // ItemState를 클릭 시 무작위로 설정
-    itemState = FMath::RandRange(0, 1);
+    if(itemState!=2)
+        // ItemState를 클릭 시 무작위로 설정
+        itemState = FMath::RandRange(0, 1);
     UE_LOG(LogTemp, Warning, TEXT("Random ItemState: %d"), itemState);
 
     GetWorldTimerManager().SetTimer(SpawnItemTimerHandle, this, &ATreasureChest::SpawnItemAfterDelay, 1.0f, false);
@@ -114,6 +119,10 @@ void ATreasureChest::SpawnItemAfterDelay()
     {
         int32 RandomIndex = FMath::RandRange(0, ArrowItems.Num() - 1);
         ItemToSpawn = ArrowItems[RandomIndex];
+    }
+    else if(itemState == 2)
+    {
+        ItemToSpawn = bowItem;
     }
 
     if (ItemToSpawn)

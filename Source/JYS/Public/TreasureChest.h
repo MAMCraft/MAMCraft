@@ -53,6 +53,9 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "Items")
     TArray<TSubclassOf<AActor>> ArrowItems;
+	
+   UPROPERTY(EditAnywhere, Category = "Items")
+   TSubclassOf<AActor> bowItem;
 
 private:
 	UPROPERTY(VisibleAnywhere)

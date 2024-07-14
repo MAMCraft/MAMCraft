@@ -8,6 +8,8 @@ void UInventoryComponent::StartItem()
 	DefaultItems.Add(GetWorld()->SpawnActor<AIncreaseHPItem>(itemHp));
 	DefaultItems.Add(GetWorld()->SpawnActor<AItemSword>(itemSword));
 	DefaultItems.Add(GetWorld()->SpawnActor<AItemBowBasic>(itemBowBasic));
+	DefaultItems.Add(GetWorld()->SpawnActor<AArrowItem>(itemArrow));
+	DefaultItems[3]->count = 9;
 }
 
 // Sets default values for this component's properties
@@ -32,6 +34,11 @@ UInventoryComponent::UInventoryComponent()
 	{
 		itemSword = itemSwordClassFinder.Class;
 	}
+	ConstructorHelpers::FClassFinder<AArrowItem> itemArrowClassFinder(TEXT("/Script/Engine.Blueprint'/Game/JYS/Blueprints/BP_ArrowItem.BP_ArrowItem_C'"));
+	if (itemArrowClassFinder.Succeeded())
+	{
+		itemArrow = itemArrowClassFinder.Class;
+	}
 	// ...
 }
 
@@ -50,21 +57,35 @@ void UInventoryComponent::BeginPlay()
 
 bool UInventoryComponent::AddItem(AItem* Item)
 {
-
 	for (AItem* findItem : Items)
 	{
-		if (findItem->ItemDisplayName.EqualTo(Item->ItemDisplayName))
+		if (nullptr == findItem)
+			continue;
+		if (findItem->category==Item->category) //ItemDisplayName 으로 검색
 		{
+			//아이템설명
+			findItem->UseActionText = Item->UseActionText;
+			//텍스트 지정
+			findItem->Thumnail = Item->Thumnail;
+			//아이템명 으로 탐색 for문
+			findItem->ItemDisplayName = Item->ItemDisplayName;
+			findItem->Tags = Item->Tags;
+			findItem->category = Item->category;
 			findItem->count++;
 			OnInventoryUpdated.Broadcast();
 			return true;
 		}
+		//if (findItem->ItemDisplayName.EqualTo(Item->ItemDisplayName)) //ItemDisplayName 으로 검색
+		//{
+		//	findItem->count++;
+		//	OnInventoryUpdated.Broadcast();
+		//	return true;
+		//}
 	}
 	Item->OwningInventory = this;
 	Item->World = GetWorld();
 	Item->count++;
 	Items.Add(Item);
-	UE_LOG(LogTemp, Error, TEXT("%s"), *Items[0]->UseActionText.ToString());
 	OnInventoryUpdated.Broadcast();
 	return true;
 }
@@ -89,6 +110,36 @@ bool UInventoryComponent::RemoveItem(AItem* Item)
 	//	return true;
 	//}
 	//return false;
+}
+
+EBowCategory UInventoryComponent::GetCurrentBow()
+{
+
+	if(Items[(int)EItemCategroy::bow]->ItemDisplayName.EqualTo(FText::FromString("ItemBowBasic")))
+		return EBowCategory::basic;
+	else
+		return EBowCategory::bubble;
+}
+
+void UInventoryComponent::ArrowUsed(int amount)
+{
+	Items[(int)EItemCategroy::arrow]->count -= amount;
+	OnInventoryUpdated.Broadcast();
+	if (Items[(int)EItemCategroy::arrow]->count == 0)
+		Items[(int)EItemCategroy::arrow]->count = -1;
+}
+
+void UInventoryComponent::AddArrow(int amount)
+{
+	if (Items[(int)EItemCategroy::arrow]->count == -1)
+		Items[(int)EItemCategroy::arrow]->count = 0;
+	Items[(int)EItemCategroy::arrow]->count += amount;
+	OnInventoryUpdated.Broadcast();
+}
+
+int UInventoryComponent::GetArrow()
+{
+	return Items[(int)EItemCategroy::arrow]->count;
 }
 
 

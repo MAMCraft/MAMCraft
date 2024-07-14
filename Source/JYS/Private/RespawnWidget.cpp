@@ -11,7 +11,7 @@ void URespawnWidget::SetRespawnCount(int32 CurrentRespawns, int32 MaxRespawns)
 {
 	if (RespawnSlider)
 	{
-		float RespawnRatio = static_cast<int32>(CurrentRespawns) / static_cast<float>(MaxRespawns);
+		float RespawnRatio = static_cast<int32>(CurrentRespawns) / (static_cast<float>(MaxRespawns)-1);
 		RespawnSlider->SetValue(RespawnRatio);
 	}
 }

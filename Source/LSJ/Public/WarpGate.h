@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/BoxComponent.h"
 #include "WarpGate.generated.h"
 
 UCLASS()
@@ -12,6 +13,8 @@ class LSJ_API AWarpGate : public AActor
 	GENERATED_BODY()
 	UPROPERTY(VisibleAnywhere, Category = "MESH")
 	UStaticMeshComponent* mesh;
+	UPROPERTY(VisibleAnywhere, Category = "MESH")
+	UBoxComponent* boxCollision;
 public:	
 	// Sets default values for this actor's properties
 	AWarpGate();

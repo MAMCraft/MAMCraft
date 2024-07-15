@@ -2,11 +2,12 @@
 
 
 #include "WarpGate.h"
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AWarpGate::AWarpGate()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
 	mesh->SetupAttachment(RootComponent);
@@ -15,17 +16,23 @@ AWarpGate::AWarpGate()
 	{
 		mesh->SetStaticMesh(sphereMesh.Object);
 	}
+
+	boxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BOXCOMPONENT"));
+	boxCollision->SetRelativeScale3D_Direct(FVector(5.f, 10.f, 10.f));
+	boxCollision->SetRelativeLocation(FVector(-145.f, 0.f, 310.0f));
+	boxCollision->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
 void AWarpGate::BeginPlay()
 {
 	Super::BeginPlay();
-	mesh->OnComponentBeginOverlap.AddDynamic(this, &AWarpGate::OverlapBegin);
+	boxCollision->OnComponentBeginOverlap.AddDynamic(this, &AWarpGate::OverlapBegin);
 }
 
 void AWarpGate::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Error, TEXT("AWarpGate OverlapBegin"));
 	if(OtherActor->ActorHasTag("Player"))
 		if(state==0)
 			UGameplayStatics::OpenLevel(this, TEXT("Hell"));

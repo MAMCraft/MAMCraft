@@ -19,8 +19,8 @@ void UUIStartMenu::StartButtonCallback()
 void UUIStartMenu::EndButtonCallback()
 {
 	// 게임 종료 함수
-	//UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
-	RemoveFromParent();
+	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
+	//RemoveFromParent();
 }
 
 void UUIStartMenu::NativeConstruct()

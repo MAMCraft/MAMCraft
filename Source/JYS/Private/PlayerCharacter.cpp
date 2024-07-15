@@ -358,7 +358,9 @@ void APlayerCharacter::UpgradeSkill()
 	{
 		UE_LOG(LogTemp, Log, TEXT("%d UpgradeSkill"), bowState);
 		// Fire 1 arrow
-		FireArrow(GetActorForwardVector());
+		FVector t = rightWeaponCollision->GetComponentLocation();
+		AArrowAttack* Arrow = GetWorld()->SpawnActor<AArrowAttack>(t, GetActorForwardVector().Rotation());
+		//FireArrow(GetActorForwardVector());
 	}
 	else if (bowState == 1)
 	{

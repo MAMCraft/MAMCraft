@@ -113,12 +113,12 @@ void ATreasureChest::SpawnItemAfterDelay()
     if (itemState == 0 && IncreaseHPItems.Num() > 0)
     {
         int32 RandomIndex = FMath::RandRange(0, IncreaseHPItems.Num() - 1);
-        ItemToSpawn = IncreaseHPItems[RandomIndex];
+        ItemToSpawn = IncreaseHPItems[0];
     }
     else if (itemState == 1 && ArrowItems.Num() > 0)
     {
         int32 RandomIndex = FMath::RandRange(0, ArrowItems.Num() - 1);
-        ItemToSpawn = ArrowItems[RandomIndex];
+        ItemToSpawn = ArrowItems[0];
     }
     else if(itemState == 2)
     {

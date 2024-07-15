@@ -21,6 +21,7 @@
 #include "ClickMovePlayerController.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 #include <RespawnWidget.h>
+#include "MAMCraft/Public/FailScreen.h"
 
 
 
@@ -206,7 +207,20 @@ void APlayerCharacter::BeginPlay()
 	// UE_LOG(LogTemp, Log, TEXT("CollisionBox"));
 	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
 
-
+	//if (FailScreenWidgetClass)
+	//{
+	//	FailScreenWidget = CreateWidget<UFailScreen>(GetWorld(), FailScreenWidgetClass);
+	//	if (FailScreenWidget)
+	//	{
+	//		FailScreenWidget->AddToViewport();
+	//		// 기본 이미지 설정 (프로젝트에 맞는 이미지를 가져와야 함)
+	//		UTexture2D* YouDiedImage = LoadObject<UTexture2D>(nullptr, TEXT("/Game/YourPath/YouDiedImage"));
+	//		if (YouDiedImage)
+	//		{
+	//			FailScreenWidget->SetDeathImage(YouDiedImage);
+	//		}
+	//	}
+	//}
 }
 
 // Called every frame
@@ -614,14 +628,26 @@ void APlayerCharacter::comboAttackCheck()
 void APlayerCharacter::Respawn()
 {
 
-	if (RespawnCount > 0)
-	{
-		RespawnCount--;
-		UpdateRespawnUI();
-
-		// 부활 로직을 여기서 추가
-	}
-
+	//if (RespawnCount == 0)
+	//{
+	//	// 실패 화면 위젯에 'YouDied' 이미지 설정
+	//	// 프로젝트에 맞는 이미지를 가져와서 설정해야 함
+	//	UTexture2D* YouDiedImage = LoadObject<UTexture2D>(nullptr, TEXT("/Game/YourPath/YouDiedImage"));
+	//	if (FailScreenWidget && YouDiedImage)
+	//	{
+	//		FailScreenWidget->SetDeathImage(YouDiedImage);
+	//	}
+	//}
+	//else if (RespawnCount == 1)
+	//{
+	//	// 실패 화면 위젯에 'LastChance' 이미지 설정
+	//	// 프로젝트에 맞는 이미지를 가져와서 설정해야 함
+	//	UTexture2D* LastChanceImage = LoadObject<UTexture2D>(nullptr, TEXT("/Game/YourPath/LastChanceImage"));
+	//	if (FailScreenWidget && LastChanceImage)
+	//	{
+	//		FailScreenWidget->SetDeathImage(LastChanceImage);
+	//	}
+	//}
 	// 캐릭터 위치와 회전을 시작 위치로 설정
 	SetActorLocation(StartLocation);
 	SetActorRotation(StartRotation);

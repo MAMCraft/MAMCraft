@@ -11,6 +11,7 @@
 #include "InventoryComponent.h"
 #include "PlayerCharacter.generated.h"
 
+
 UCLASS()
 class JYS_API APlayerCharacter : public ACharacter
 {
@@ -231,8 +232,14 @@ public:
 	bool OnSkill;
 	float characterSpeed;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "Respawn")
 	void Respawn();
+
+	//UPROPERTY(EditAnywhere, Category = "Widgets")
+ //   TSubclassOf<UUserWidget> FailScreenWidgetClass;
+
+ //   UPROPERTY(BlueprintReadOnly)
+ //   class UFailScreen* FailScreenWidget;
 
 	UPROPERTY(EditDefaultsOnly)
 	class AClickMovePlayerController* char_controller;
@@ -251,10 +258,4 @@ public:
 	bool bCanUseIncreaseHPItem = true;
 	FTimerHandle CooldownTimerHandle;
 	void ResetHPCooldown();
-
-
-	//UFUNCTION(BlueprintCallable, Category="Respawn")
- //   void Respawn();
-
-
 };

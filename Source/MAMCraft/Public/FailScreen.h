@@ -13,5 +13,11 @@ UCLASS()
 class MAMCRAFT_API UFailScreen : public UUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+    UFUNCTION(BlueprintCallable)
+    void SetDeathText(const FText& DeathText);
+
+protected:
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UTextBlock* DeathMessageTextBlock;
 };

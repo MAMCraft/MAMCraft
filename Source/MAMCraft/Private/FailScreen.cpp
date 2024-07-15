@@ -3,3 +3,12 @@
 
 #include "FailScreen.h"
 
+#include "Components/TextBlock.h"
+
+void UFailScreen::SetDeathText(const FText& DeathText)
+{
+    if (DeathMessageTextBlock)
+    {
+        DeathMessageTextBlock->SetText(DeathText);
+    }
+}

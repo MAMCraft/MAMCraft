@@ -42,14 +42,14 @@ void UBTTaskNode_RunAway::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	if (OwnerComp.GetBlackboardComponent()->GetValueAsBool(FName("IsGround")))
 	{
 		//가려는 방향에 땅이 있을 경우 그대로 이동
-		DrawDebugLine(
+		/*DrawDebugLine(
 			GetWorld(),
 			start,
 			start + ControllingPawn->GetRootComponent()->GetForwardVector() * 100.0f + ControllingPawn->GetRootComponent()->GetUpVector() * -1.f * 100.0f,
 			FColor(255, 0, 0),
 			false, -1, 0,
 			12.333
-		);
+		);*/
 		target = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("Player")));
 		if (target == nullptr)
 		{

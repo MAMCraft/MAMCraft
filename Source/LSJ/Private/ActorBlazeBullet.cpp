@@ -142,7 +142,7 @@ void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		FCollisionShape::MakeBox(attackExplosionBox),
 		Params
 	);
-	DrawDebugBox(GetWorld(), Center, attackExplosionBox, FColor::Blue, false, -1, 0, 20);
+	//DrawDebugBox(GetWorld(), Center, attackExplosionBox, FColor::Blue, false, -1, 0, 20);
 	if (bResult)
 	{
 		for (auto overlapResults : OverlapResults)

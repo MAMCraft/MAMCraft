@@ -21,7 +21,7 @@ void UBTService_FindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectType;
 	objectType.Emplace(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3));
 	AActor* target = nullptr;
-	const bool hit = UKismetSystemLibrary::SphereTraceMultiForObjects(controllingPawn, startLocation, endLocation, traceRadius, objectType, false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, hitArray, true);
+	const bool hit = UKismetSystemLibrary::SphereTraceMultiForObjects(controllingPawn, startLocation, endLocation, traceRadius, objectType, false, actorsToIgnore, EDrawDebugTrace::None, hitArray, true, FLinearColor(0,0,0,0), FLinearColor(0, 0, 0, 0));
 	if (hit)
 	{
 		for (auto i = 0; i < hitArray.Num(); i++)

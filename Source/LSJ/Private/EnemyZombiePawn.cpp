@@ -154,10 +154,11 @@ void AEnemyZombiePawn::Tick(float DeltaTime)
 	pawnLocation = GetActorLocation();
 	if (bHit)
 	{
+		
 		hitCurrentTime += DeltaTime;
 
 		//SetActorLocation(GetActorLocation() + direction * FMath::Lerp(4.0f,6.0f,0.8f));
-		capsuleComponent->SetWorldLocation(GetActorLocation()+direction * FMath::Lerp(4.0f, 6.0f, 0.8f));
+		capsuleComponent->SetWorldLocation(GetActorLocation()+direction * FMath::Lerp(4.0f, 6.0f, 0.8f),true);
 		if (hitCurrentTime > hitTime)
 		{
 			hitCurrentTime = 0;
@@ -203,7 +204,7 @@ void AEnemyZombiePawn::Tick(float DeltaTime)
 			FVector currentLocation = GetActorLocation();
 			currentLocation.Z = FMath::Lerp(currentLocation.Z,groundZValue + -80.0f,0.5f);
 			//SetActorLocation( currentLocation);
-			capsuleComponent->SetWorldLocation(currentLocation);
+			capsuleComponent->SetWorldLocation(currentLocation,true);
 		}
 		
 		if (dieCurrentTime > dieDestroyTime)

@@ -13,12 +13,5 @@ UCLASS()
 class MAMCRAFT_API UStartMenu : public UUserWidget
 {
 	GENERATED_BODY()
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	class UButton* StartButton;
 
-	virtual void NativeConstruct() override; // NativeConstruct 함수 선언 추가
-private:
-	UFUNCTION(BlueprintCallable)
-	void StartButtonCallback();
 };

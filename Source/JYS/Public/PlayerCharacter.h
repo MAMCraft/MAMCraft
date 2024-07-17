@@ -7,7 +7,6 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Components/BoxComponent.h"
 #include "PlayerAnim.h"
-#include "InventoryWidget.h"
 #include "InventoryComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "FailScreen.h"
@@ -226,9 +225,6 @@ public:
 	void comboAttackCheck();
 
 	//LSJ 인벤토리
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> inventoryHUDFactory;
-	UInventoryWidget* inventoryHUD;
 	UInventoryComponent* inventoryComponent;
 
 	bool OnSkill;

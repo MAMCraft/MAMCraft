@@ -4,7 +4,8 @@
 #include "InventoryWidget.h"
 #include <Kismet/GameplayStatics.h>
 #include "PlayerCharacter.h"
-
+#include "MAMCGameInstance.h"
+#include "MAMCGameModeBase.h"
 void UInventoryWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
@@ -24,7 +25,18 @@ void UInventoryWidget::UpdatePosionCoolTimeUpdate()
 void UInventoryWidget::AddToViewport()
 {
 	Super::AddToViewport();
-	UpdateInventory();
+	//FString CurrentMapName = GetWorld()->GetMapName();
+	////if (CurrentMapName.Equals(TEXT("UEDPIE_0_HMap")))
+	////{
+	////	/*	UMAMCGameInstance* GI = Cast<UMAMCGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	////		if (GI)
+	////			DefaultItems = GI->LoadInventory();*/
+	////	AMAMCGameModeBase* gamemode = Cast<AMAMCGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	////	gamemode->Load();
+	////}
+	
+	if(GetVisibility()!=ESlateVisibility::Hidden)
+		UpdateInventory();
 }
 
 void UInventoryWidget::ArrowPlayAnimation(int count)
@@ -51,16 +63,12 @@ void UInventoryWidget::ArrowPlayAnimation(int count)
 void UInventoryWidget::UpdateInventory()
 {
 	Items = inventoryComponent->Items;
+
 	if (Items.IsEmpty())
 	{
-		ItemQuantity1->SetText(FText::AsNumber(0));
+		//ItemQuantity1->SetText(FText::AsNumber(0));
 		//FSlateColor InvertedForeground = FLinearColor(0, 0, 0);
 		//ItemIcon1->SetBrushTintColor(InvertedForeground);
-		return;
-	}
-	//count가 리턴
-	if (Items[0]->count <= 0)
-	{
 		return;
 	}
 	//인벤토리에 넣어주기
@@ -70,15 +78,18 @@ void UInventoryWidget::UpdateInventory()
 		{
 		case (int)EItemCategroy::posion:
 			ItemQuantity1->SetText(FText::AsNumber(Items[0]->count)); //??
-			ItemIconHp->SetBrushFromTexture(Items[0]->Thumnail);
+			ItemIconHp->SetBrushFromTexture(posionTexture);
 			break;
 		case (int)EItemCategroy::sword:
 			ItemQuantitySword->SetText(FText::AsNumber(Items[1]->count));
-			ItemIconSword->SetBrushFromTexture(Items[1]->Thumnail);
+			ItemIconSword->SetBrushFromTexture(swordTexture);
 			break;
 		case (int)EItemCategroy::bow:
 			ItemQuantityBow->SetText(FText::AsNumber(Items[2]->count));
-			ItemIconBow->SetBrushFromTexture(Items[2]->Thumnail);
+			if(item->itemID==1)
+				ItemIconBow->SetBrushFromTexture(bowBasicTexture);
+			else
+				ItemIconBow->SetBrushFromTexture(bowBubbleTexture);
 			break;
 		case (int)EItemCategroy::arrow:
 			if (Items[3]->count == -1)
@@ -108,7 +119,9 @@ void UInventoryWidget::UpdateInventory()
 
 	//FSlateColor InvertedForeground = FLinearColor(1, 1, 1);
 	//ItemIcon1->SetBrushTintColor(InvertedForeground);
-	
+	//UMAMCGameInstance* GI = Cast<UMAMCGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	//if (GI)
+	//	GI->SaveInventory(Items);
 }
 
 void UInventoryWidget::NativeOnInitialized()
@@ -143,15 +156,20 @@ void UInventoryWidget::NativeConstruct()
 	ItemBorderHp->SetBrushFromTexture(itemSlotFrameT);
 	PosionCoolTimeBar->SetVisibility(ESlateVisibility::Hidden);
 	ItemQuantity1->SetVisibility(ESlateVisibility::Hidden);
-
+	FString Path5 = TEXT("/Script/Engine.Texture2D'/Game/GameResource/Player/UI/Hp/potion_empty.potion_empty'");
+	posionTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path5));
 	//Sword
 	ItemBorderSword->SetBrushFromTexture(itemSlotFrameT);
 	ItemQuantitySword->SetVisibility(ESlateVisibility::Hidden);
-
+	FString Path1 = TEXT("/Script/Engine.Texture2D'/Game/GameResource/Player/Sword/T_Sword_Steel_Icon_inventory.T_Sword_Steel_Icon_inventory'");
+	swordTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path1));
 	//Bow
 	ItemBorderBow->SetBrushFromTexture(itemSlotFrameT);
 	ItemQuantityBow->SetVisibility(ESlateVisibility::Hidden);
-
+	FString Path2 = TEXT("/Script/Engine.Texture2D'/Game/GameResource/Player/Bow/T_Bow_Icon_inventory.T_Bow_Icon_inventory'");
+	bowBasicTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path2));
+	FString Path4 = TEXT("/Script/Engine.Texture2D'/Game/GameResource/Player/Bow/T_BubbleBow_Spooky2_Icon_Inventory.T_BubbleBow_Spooky2_Icon_Inventory'");
+	bowBubbleTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path4));
 	//Arrow
 	ArrowBackground->SetBrushFromTexture(arrowSlotFrameT);
 	ItemQuantityArrow->SetVisibility(ESlateVisibility::Visible);
@@ -159,5 +177,6 @@ void UInventoryWidget::NativeConstruct()
 	ArrowEmptyImage->SetVisibility(ESlateVisibility::Hidden);
 	ArrowRedFrame->SetBrushFromTexture(ItemArrowRedFrameT);
 	ArrowRedFrame->SetVisibility(ESlateVisibility::Hidden);
-	//ItemIconArrow->SetBrushFromTexture(ItemIconArrowT);
+	FString Path3 = TEXT("/Script/Engine.Texture2D'/Game/GameResource/Player/UI/arrow.arrow'");
+	arrowTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path3));
 }

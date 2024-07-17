@@ -157,12 +157,6 @@ void APlayerCharacter::BeginPlay()
 	}
 	
 
-	//LSJ 인벤토리
-	inventoryHUD = CreateWidget<class UInventoryWidget>(GetWorld(), inventoryHUDFactory);
-	if (inventoryHUD)
-	{
-		inventoryHUD->AddToViewport();
-	}
 	// Combo Anim 
 	AnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance()); //LSJ 콤보 공격 적용
 	if (AnimInstance != nullptr)

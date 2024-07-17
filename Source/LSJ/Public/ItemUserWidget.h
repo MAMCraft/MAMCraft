@@ -21,6 +21,6 @@ public:
 	virtual void NativeConstruct();
 	UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
 	UImage* ItemImage;
-	void BindItemImage(FText& name, UTexture2D* texture);
+	void BindItemImage(UTexture2D* texture);
 	FPointerEventHandler imageHandler;
 };

@@ -9,8 +9,7 @@ AItem::AItem()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	Weght = 1.f;
-	ItemDisplayName = FText::FromString("Item");
+	itemID = 0;
 	UseActionText = FText::FromString("Use");
 
 	itemWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
@@ -28,15 +27,15 @@ AItem::AItem()
 	itemWidgetComponent->SetCollisionProfileName(TEXT("Item"));
 }
 
+
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 	itemWidget = Cast<UItemUserWidget>(itemWidgetComponent->GetUserWidgetObject());
-
 	if (nullptr != itemWidget)
 	{
-		itemWidget->BindItemImage(ItemDisplayName, Thumnail);
+		itemWidget->BindItemImage(Thumnail);
 		APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 		FVector end = PlayerCamera->GetCameraLocation();
 

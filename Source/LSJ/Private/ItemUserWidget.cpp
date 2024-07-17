@@ -15,7 +15,7 @@ void UItemUserWidget::NativeConstruct()
 	//tBowBubble = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *tBowBubblePath));
 }
 
-void UItemUserWidget::BindItemImage(FText& name, UTexture2D* texture)
+void UItemUserWidget::BindItemImage(UTexture2D* texture)
 {
 	ItemImage->SetBrushFromTexture(texture);
 	//if (name.EqualTo(FText::FromString("ItemSword")))

@@ -20,13 +20,14 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CAPSULECOMPONENT"));
 	capsuleComponent->SetCapsuleHalfHeight(90.0f);
 	capsuleComponent->SetCapsuleRadius(50.0f);
-	capsuleComponent->SetupAttachment(GetRootComponent());
+	capsuleComponent->SetupAttachment(RootComponent);
 	//rootComp = CreateDefaultSubobject<USceneComponent>(TEXT("ROOT"));
 	skMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESHCOMPONENT"));
 	skMeshComponent->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 	skMeshComponent->SetupAttachment(capsuleComponent);
 	handAttackComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("HANDATTACKCOMPONENT"));
 	movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MOVEMENT"));
+
 	statComponent = CreateDefaultSubobject<UStatComponent>(TEXT("STAT"));
 
 	//RootComponent = capsuleComponent;
@@ -285,6 +286,7 @@ float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	//statComponent->OnAttacked(damage);
 	statComponent->SetDamage(damage);
 	Hit(DamageCauser);
+	//statComponent->SetDamage(damage);
 	return damage;
 }
 

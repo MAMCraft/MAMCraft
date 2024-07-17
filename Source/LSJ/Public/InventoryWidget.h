@@ -22,7 +22,6 @@ class LSJ_API UInventoryWidget : public UUserWidget
 	
 	UTexture2D* itemSlotFrameT;
 	UTexture2D* itemSlotEmptyT;
-
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
 	virtual void NativeOnInitialized();
@@ -92,7 +91,13 @@ public:
 	virtual void NativeConstruct();
 	UPROPERTY()
 	UInventoryComponent* inventoryComponent;
+	UPROPERTY()
 	TArray<AItem*> Items;
 	class APlayerCharacter* player;
+	UTexture2D* bowBasicTexture;
+	UTexture2D* bowBubbleTexture;
+	UTexture2D* swordTexture;
+	UTexture2D* arrowTexture;
+	UTexture2D* posionTexture;
 };
 

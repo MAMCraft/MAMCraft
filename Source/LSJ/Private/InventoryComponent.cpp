@@ -2,14 +2,26 @@
 
 
 #include "InventoryComponent.h"
-
+#include "MAMCGameInstance.h"
+#include "MAMCGameModeBase.h"
+#include <Kismet/GameplayStatics.h>
+//시작 아이템 가져오기
 void UInventoryComponent::StartItem()
 {
-	DefaultItems.Add(GetWorld()->SpawnActor<AIncreaseHPItem>(itemHp));
-	DefaultItems.Add(GetWorld()->SpawnActor<AItemSword>(itemSword));
-	DefaultItems.Add(GetWorld()->SpawnActor<AItemBowBasic>(itemBowBasic));
-	DefaultItems.Add(GetWorld()->SpawnActor<AArrowItem>(itemArrow));
-	DefaultItems[3]->count = 9;
+	if (Items.IsEmpty())
+	{
+		Items.Add(GetWorld()->SpawnActor<AIncreaseHPItem>(itemHp));
+		Items.Add(GetWorld()->SpawnActor<AItemSword>(itemSword));
+		Items.Add(GetWorld()->SpawnActor<AItemBowBasic>(itemBowBasic));
+		Items.Add(GetWorld()->SpawnActor<AArrowItem>(itemArrow));
+		Items[3]->count = 10;
+		FString CurrentMapName = GetWorld()->GetMapName();
+		if (CurrentMapName.Equals(TEXT("UEDPIE_0_HMap")))
+		{
+			UMAMCGameInstance* gi = Cast<UMAMCGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+			gi->Load(Items);
+		}
+	}
 }
 
 // Sets default values for this component's properties
@@ -49,10 +61,14 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 	// ...
 	StartItem();
-	for (auto* Item : DefaultItems)
-	{
-		AddItem(Item);
-	}
+	AMAMCGameModeBase* gamemode = Cast<AMAMCGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	gamemode->VisibleInventoryWidget();
+	//OnInventoryUpdated.Broadcast();
+	//for (auto* Item : DefaultItems)
+	//{
+	//	AddItem(Item);
+	//}
+	
 }
 
 bool UInventoryComponent::AddItem(AItem* Item)
@@ -61,17 +77,17 @@ bool UInventoryComponent::AddItem(AItem* Item)
 	{
 		if (nullptr == findItem)
 			continue;
-		if (findItem->category==Item->category) //ItemDisplayName 으로 검색
+		if (findItem->category == Item->category) //ItemDisplayName 으로 검색
 		{
 			//아이템설명
 			findItem->UseActionText = Item->UseActionText;
 			//텍스트 지정
 			findItem->Thumnail = Item->Thumnail;
 			//아이템명 으로 탐색 for문
-			findItem->ItemDisplayName = Item->ItemDisplayName;
 			findItem->Tags = Item->Tags;
 			findItem->category = Item->category;
 			findItem->count++;
+			findItem->itemID = Item->itemID;
 			OnInventoryUpdated.Broadcast();
 			return true;
 		}
@@ -115,7 +131,7 @@ bool UInventoryComponent::RemoveItem(AItem* Item)
 EBowCategory UInventoryComponent::GetCurrentBow()
 {
 
-	if(Items[(int)EItemCategroy::bow]->ItemDisplayName.EqualTo(FText::FromString("ItemBowBasic")))
+	if(Items[(int)EItemCategroy::bow]->itemID == 1)//EqualTo(FText::FromString("ItemBowBasic")))
 		return EBowCategory::basic;
 	else
 		return EBowCategory::bubble;

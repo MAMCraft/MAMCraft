@@ -17,8 +17,6 @@ AItemSword::AItemSword()
 	FString Path = FString("/Script/Engine.Texture2D'/Game/GameResource/Player/Sword/T_Sword_Steel_Icon_inventory.T_Sword_Steel_Icon_inventory'");
 	UTexture2D* Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path));
 	Thumnail = Texture;
-	//아이템명 으로 탐색 for문
-	ItemDisplayName = FText::FromString("ItemSword");
 	Tags.Add(FName("ItemSword"));
 	category = (int)EItemCategroy::sword;
 }

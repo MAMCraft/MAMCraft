@@ -2,44 +2,62 @@
 
 
 #include "WarpGate.h"
+#include "MAMCGameInstance.h"
 #include <Kismet/GameplayStatics.h>
-
+#include "MAMCGameModeBase.h"
+#include "PlayerCharacter.h"
 // Sets default values
 AWarpGate::AWarpGate()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	boxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BOXCOMPONENT"));
+	boxCollision->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	boxCollision->SetBoxExtent(FVector(501.f, 501.f, 501.f));
+	boxCollision->SetupAttachment(RootComponent);
+
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
-	mesh->SetupAttachment(RootComponent);
+	mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	mesh->SetupAttachment(boxCollision);
 	ConstructorHelpers::FObjectFinder<UStaticMesh>sphereMesh(TEXT("/Script/Engine.StaticMesh'/Game/LSJ/Resource/MapResource/Potal/SM_MERGED_StaticMeshActor.SM_MERGED_StaticMeshActor'"));
 	if (sphereMesh.Succeeded())
 	{
 		mesh->SetStaticMesh(sphereMesh.Object);
 	}
-
-	boxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BOXCOMPONENT"));
-	boxCollision->SetRelativeScale3D_Direct(FVector(5.f, 10.f, 10.f));
-	boxCollision->SetRelativeLocation(FVector(-145.f, 0.f, 310.0f));
-	boxCollision->SetupAttachment(GetRootComponent());
+	boxCollision->OnComponentBeginOverlap.AddDynamic(this, &AWarpGate::OnOverlapBegin);
 }
 
 // Called when the game starts or when spawned
 void AWarpGate::BeginPlay()
 {
 	Super::BeginPlay();
-	boxCollision->OnComponentBeginOverlap.AddDynamic(this, &AWarpGate::OverlapBegin);
+	
 }
-
-void AWarpGate::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AWarpGate::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Error, TEXT("AWarpGate OverlapBegin"));
-	if(OtherActor->ActorHasTag("Player"))
-		if(state==0)
-			UGameplayStatics::OpenLevel(this, TEXT("Hell"));
-		else if (state == 1)
-			return;
-}
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("On Overlap Begin... Other Actor Name: %s"), *OtherActor->GetName()));
+	if (OtherActor->ActorHasTag("Player"))
+		if (state == 0)
+		{
+			/*	UMAMCGameInstance* instanceMAMC = Cast<UMAMCGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+				APlayerCharacter* player = Cast<APlayerCharacter>(OtherActor);
+				instanceMAMC->SaveInventory(player->inventoryComponent->Items);
+				instanceMAMC->Save();*/
+			APlayerCharacter* player = Cast<APlayerCharacter>(OtherActor);
+			UMAMCGameInstance* gi = Cast<UMAMCGameInstance>(GetGameInstance());
+			gi->Save(player->inventoryComponent->Items);
+			UGameplayStatics::OpenLevel(this, TEXT("HMap"));
+		}
 
+		else if (state == 1)
+		{
+			AMAMCGameModeBase* gamemode = Cast<AMAMCGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+			gamemode->VisibleSuccessWidget();
+			UGameplayStatics::SetGamePaused(GetWorld(),true);
+		}
+		
+}
 // Called every frame
 void AWarpGate::Tick(float DeltaTime)
 {

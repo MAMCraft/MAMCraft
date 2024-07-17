@@ -18,8 +18,7 @@ AItemBowBubble::AItemBowBubble()
 	FString Path = FString("/Script/Engine.Texture2D'/Game/GameResource/Player/Bow/T_BubbleBow_Spooky2_Icon_Inventory.T_BubbleBow_Spooky2_Icon_Inventory'");
 	UTexture2D* Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path));
 	Thumnail = Texture;
-	//아이템명 으로 탐색 for문
-	ItemDisplayName = FText::FromString("ItemBowBubble");
+	itemID = 2;
 	Tags.Add(FName("ItemBowBubble"));
 	category = (int)EItemCategroy::bow;
 }

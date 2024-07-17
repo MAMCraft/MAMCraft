@@ -17,8 +17,7 @@ AItemBowBasic::AItemBowBasic()
 	FString Path = FString("/Script/Engine.Texture2D'/Game/GameResource/Player/Bow/T_Bow_Icon_inventory.T_Bow_Icon_inventory'");
 	UTexture2D* Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path));
 	Thumnail = Texture;
-	//아이템명 으로 탐색 for문
-	ItemDisplayName = FText::FromString("ItemBowBasic");
+	itemID = 1;
 	Tags.Add(FName("ItemBowBasic"));
 	category = (int)EItemCategroy::bow;
 }

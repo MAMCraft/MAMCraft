@@ -139,7 +139,6 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	{
 		//LSJ 인벤토리
 		AItem* item = Cast<AItem>(Target);
-		PlayerCharacter2->inventoryComponent->AddItem(item);
 		PlayerCharacter2->IncreaseHP(10);
 		Target->Destroy();
 

@@ -50,7 +50,7 @@ public:
 	int32 Capacity;
 	UPROPERTY(BlueprintAssignable)
 	FOnInventoryUpdated OnInventoryUpdated;
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="ITEMS")
+
 	TArray<AItem*> Items;
 
 	EBowCategory GetCurrentBow();

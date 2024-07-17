@@ -16,8 +16,6 @@ AIncreaseHPItem::AIncreaseHPItem()
 	FString Path = FString("/Script/Engine.Texture2D'/Game/GameResource/Player/UI/Hp/potion_empty.potion_empty'");
 	UTexture2D* Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path));
 	Thumnail = Texture;
-	//아이템명 으로 탐색 for문
-	ItemDisplayName = FText::FromString("ItemPosion");
 	Tags.Add(FName("IncreaseHPItem"));
 	category = (int)EItemCategroy::posion;
 }

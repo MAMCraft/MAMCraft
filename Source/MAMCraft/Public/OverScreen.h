@@ -4,16 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-
-#include "FailScreen.generated.h"
+#include "OverScreen.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MAMCRAFT_API UFailScreen : public UUserWidget
+class MAMCRAFT_API UOverScreen : public UUserWidget
 {
 	GENERATED_BODY()
-public:
-
+	
 };

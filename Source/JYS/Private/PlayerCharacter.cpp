@@ -125,6 +125,12 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	//레벨 전환시 캐릭터 HP 가져오기
+	class UMAMCGameInstance* gi = Cast<UMAMCGameInstance>(GetGameInstance());
+	if(gi->GetPlayerHp()>0.f)
+		playerHP = gi->GetPlayerHp();
+	if (gi->GetHPCooldownRemainTime() > 1.f)
+		bIsHPCooldownActive = true;
 
 	FireDamageTimerHandle.Invalidate();
 	StopFireDamageTimerHandle.Invalidate();
@@ -195,7 +201,10 @@ void APlayerCharacter::BeginPlay()
 	// UE_LOG(LogTemp, Log, TEXT("CollisionBox"));
 	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
 
-
+	if (HPWidget)
+	{
+		HPWidget->SetHP(playerHP, playerMaxHP);
+	}
 }
 
 // Called every frame
@@ -231,6 +240,17 @@ void APlayerCharacter::Rolling()
 void APlayerCharacter::IncreaseHP(int32 Amount)
 {
 	// Check if cooldown is active
+	if (Amount == 10)
+	{
+		// Increase HP
+		playerHP = FMath::Clamp(playerHP + Amount, 0, playerMaxHP);
+
+		// Update HP widget if available
+		if (HPWidget)
+		{
+			HPWidget->SetHP(playerHP, playerMaxHP);
+		}
+	}
 	if (bIsHPCooldownActive)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("HP item is on cooldown."));

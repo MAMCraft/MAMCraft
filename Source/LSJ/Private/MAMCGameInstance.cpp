@@ -12,10 +12,11 @@ UMAMCGameInstance::UMAMCGameInstance()
 	myStats = DATA.Object;
 
 }
-
+//캐릭터 생성전에 시작
 void UMAMCGameInstance::Init()
 {
 	Super::Init();
+
 }
 FEnemyData UMAMCGameInstance::GetStatData(FName name)
 {
@@ -55,4 +56,32 @@ void UMAMCGameInstance::Load(TArray<AItem*>& outputItems)
 void UMAMCGameInstance::Shutdown()
 {
 	Super::Shutdown();
+}
+
+void UMAMCGameInstance::SetPlayerHp(int setHp)
+{
+	playerCurrentHp = setHp;
+}
+
+int UMAMCGameInstance::GetPlayerHp()
+{
+	return playerCurrentHp;
+}
+
+void UMAMCGameInstance::SetHPCooldownRemainTime(float remainTime)
+{
+	instanceHPCooldownRemainTime = remainTime;
+	GetTimerManager().SetTimer(instanceHPCooldownTimerHandle,this, &UMAMCGameInstance::SetPlayerHpPosionEnable, instanceHPCooldownRemainTime, false);
+}
+
+float UMAMCGameInstance::GetHPCooldownRemainTime()
+{
+	return instanceHPCooldownRemainTime;
+}
+
+void UMAMCGameInstance::SetPlayerHpPosionEnable()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	player->bIsHPCooldownActive = false;
+	instanceHPCooldownRemainTime = 0;
 }

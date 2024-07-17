@@ -89,9 +89,18 @@ public:
 	virtual void Shutdown() override;
 	//void SaveCharacterInfo();
 	//void LoadCharacterInfo();
+	void SetPlayerHp(int setHp);
+	int GetPlayerHp();
+	void SetHPCooldownRemainTime(float remainTime);
+	float GetHPCooldownRemainTime();
+	UFUNCTION()
+	void SetPlayerHpPosionEnable();
+	FTimerHandle instanceHPCooldownTimerHandle;
 private:
 	UPROPERTY()
 	class UDataTable* myStats;
+	int playerCurrentHp;
+	float instanceHPCooldownRemainTime=0.f;
 
 };
 

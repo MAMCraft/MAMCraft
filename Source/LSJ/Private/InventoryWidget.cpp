@@ -4,17 +4,30 @@
 #include "InventoryWidget.h"
 #include <Kismet/GameplayStatics.h>
 #include "PlayerCharacter.h"
-#include "MAMCGameInstance.h"
 #include "MAMCGameModeBase.h"
 void UInventoryWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	UE_LOG(LogTemp, Log, TEXT("UpdateCanTick, %f %s"), GetWorld()->GetTimerManager().GetTimerRemaining(player->HPCooldownTimerHandle), GetWorld()->GetTimerManager().IsTimerActive(player->HPCooldownTimerHandle)?TEXT("null") : TEXT("Yes"));
-	if (GetWorld()->GetTimerManager().IsTimerActive(player->HPCooldownTimerHandle))
+	
+	if (gi->GetHPCooldownRemainTime() > 0.1f)
 	{
-		PosionCoolTimeBar->SetVisibility(ESlateVisibility::Visible);
-		UpdatePosionCoolTimeUpdate();
+		if (GetWorld()->GetTimerManager().IsTimerActive(gi->instanceHPCooldownTimerHandle))
+		{
+			PosionCoolTimeBar->SetVisibility(ESlateVisibility::Visible);
+			PosionCoolTimeBar->SetPercent(GetWorld()->GetTimerManager().GetTimerRemaining(gi->instanceHPCooldownTimerHandle) / 60.0f);
+		}
 	}
+	else
+	{
+		if (GetWorld()->GetTimerManager().IsTimerActive(player->HPCooldownTimerHandle))
+		{
+			PosionCoolTimeBar->SetVisibility(ESlateVisibility::Visible);
+			UpdatePosionCoolTimeUpdate();
+		}
+
+	}
+		
 }
 
 void UInventoryWidget::UpdatePosionCoolTimeUpdate()
@@ -25,6 +38,9 @@ void UInventoryWidget::UpdatePosionCoolTimeUpdate()
 void UInventoryWidget::AddToViewport()
 {
 	Super::AddToViewport();
+	gi = Cast<UMAMCGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (gi && gi->GetHPCooldownRemainTime()>1.0f)
+		bNextLevel = true;
 	//FString CurrentMapName = GetWorld()->GetMapName();
 	////if (CurrentMapName.Equals(TEXT("UEDPIE_0_HMap")))
 	////{

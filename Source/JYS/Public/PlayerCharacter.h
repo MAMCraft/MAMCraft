@@ -169,7 +169,7 @@ private:
 	UFUNCTION()
 	void StopFireDamage();
 
-	bool bIsHPCooldownActive;
+	
 
 
 
@@ -250,4 +250,5 @@ public:
 	bool bCanUseIncreaseHPItem = true;
 	FTimerHandle CooldownTimerHandle;
 	void ResetHPCooldown();
+	bool bIsHPCooldownActive;
 };

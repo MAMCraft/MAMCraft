@@ -99,5 +99,7 @@ public:
 	UTexture2D* swordTexture;
 	UTexture2D* arrowTexture;
 	UTexture2D* posionTexture;
+	class UMAMCGameInstance* gi;
+	bool bNextLevel;
 };
 

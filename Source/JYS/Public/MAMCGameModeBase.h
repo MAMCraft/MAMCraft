@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Blueprint/UserWidget.h"
 #include "MAMCGameModeBase.generated.h"
 
 /**
@@ -15,11 +16,18 @@ class JYS_API AMAMCGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 protected:
     virtual void BeginPlay() override;
-	//UPROPERTY()
-	//TSubclassOf<UUserWidget> MainHUDWidgetClass;
-	//UUIStartMenu* MainHUDWidget;
+
+private:
+	class UUserWidget* FailUI;
+	class UUserWidget* OverUI;
+
 public:
     AMAMCGameModeBase();
-	UFUNCTION()
-	void EndViewport();
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> FailScreen;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> OverScreen;
+	
+	void showfailscreen();
+	void showoverscreen();
 };

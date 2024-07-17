@@ -22,6 +22,7 @@
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 #include <RespawnWidget.h>
 #include "MAMCraft/Public/FailScreen.h"
+#include "MAMCGameModeBase.h"
 
 
 
@@ -116,6 +117,8 @@ APlayerCharacter::APlayerCharacter()
 	{
 		RespawnWidgetClass = RespawnWidgetBPClass.Class;
 	}
+
+
 }
 
 // Called when the game starts or when spawned
@@ -287,12 +290,25 @@ void APlayerCharacter::OnMyTakeDamage(int damage)
 
 	if (playerHP == 0 && RespawnCount > 0)
 	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+		AMAMCGameModeBase* currentGameMode = Cast<AMAMCGameModeBase>(GetWorld()->GetAuthGameMode());
+		if (currentGameMode != nullptr) {
+			currentGameMode->showfailscreen();
+		}
 		Respawn();
 		RespawnCount--;
+
 		playerHP = playerMaxHP;
-	} else if (playerHP == 0 && RespawnCount <=0) {
-			// 부활 횟수 초과시 캐릭터 파괴 
-			Destroy();
+
+
+	}
+	else if (playerHP == 0 && RespawnCount <= 0) {
+		Destroy();
+		AMAMCGameModeBase* currentGameMode = Cast<AMAMCGameModeBase>(GetWorld()->GetAuthGameMode());
+		if (currentGameMode != nullptr) {
+			currentGameMode->showoverscreen();
+		}
 	}
 }
 

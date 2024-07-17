@@ -9,6 +9,8 @@
 #include "PlayerAnim.h"
 #include "InventoryWidget.h"
 #include "InventoryComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "FailScreen.h"
 #include "PlayerCharacter.generated.h"
 
 

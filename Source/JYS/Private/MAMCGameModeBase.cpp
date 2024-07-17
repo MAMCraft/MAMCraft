@@ -2,37 +2,44 @@
 
 
 #include "MAMCGameModeBase.h"
+#include "Blueprint/UserWidget.h"
+#include "FailScreen.h"
+#include "Kismet/GameplayStatics.h"
+#include "OverScreen.h"
 
 
 
 void AMAMCGameModeBase::BeginPlay()
 {
     Super::BeginPlay();
-    //if (IsValid(MainHUDWidgetClass))
-    //{
-    //    MainHUDWidget = Cast<UUIStartMenu>(CreateWidget(GetWorld(), MainHUDWidgetClass));
 
-    //    if (IsValid(MainHUDWidget))
-    //    {
-    //        MainHUDWidget->AddToViewport();
-    //       // MainHUDWidget->OnButtonLevelUpdated.AddDynamic(this,&AMAMCGameModeBase::EndViewport);
-    //    }
-    //}
 }
 
 AMAMCGameModeBase::AMAMCGameModeBase()
 {
-    static ConstructorHelpers::FClassFinder<UUserWidget> MainHUDWidgetAsset(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KYH/Blueprint/BP_StartMenu.BP_StartMenu_C'"));
-
-    // TSubclassOf 템플릿 클래스 객체에 블루프린트 클래스를 넣어준다
-    //if (MainHUDWidgetAsset.Succeeded())
-    //    MainHUDWidgetClass = MainHUDWidgetAsset.Class;
 
 }
 
-void AMAMCGameModeBase::EndViewport()
+
+void AMAMCGameModeBase::showfailscreen()
 {
-    UE_LOG(LogTemp, Log, TEXT("EndViewport"));
-    //MainHUDWidget->FinishDestroy();
+	if (FailScreen != nullptr) {
+		FailUI = CreateWidget<UFailScreen>(GetWorld(), FailScreen);
+		if (FailUI != nullptr) {
+			FailUI->AddToViewport();
+		}
+	}
 }
+void AMAMCGameModeBase::showoverscreen()
+{
+	if (OverScreen != nullptr) {
+		OverUI = CreateWidget<UOverScreen>(GetWorld(), OverScreen);
+		if (OverUI != nullptr) {
+			UGameplayStatics::SetGamePaused(GetWorld(), true);
+			OverUI->AddToViewport();
+		}
+}
+}
+
+
 

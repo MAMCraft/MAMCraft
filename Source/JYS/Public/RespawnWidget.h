@@ -21,6 +21,9 @@ public:
     UFUNCTION(BlueprintCallable, Category="Respawn")
     void SetRespawnCount(int32 CurrentRespawns, int32 MaxRespawns);
 
+    UPROPERTY(EditAnywhere)
+    class UTextBlock* RespawnCount;
+
 protected:
     UPROPERTY(meta = (BindWidget))
     USlider* RespawnSlider;

@@ -179,18 +179,9 @@ void APlayerCharacter::BeginPlay()
 				{
 					AttackStartComboState();
 					UE_LOG(LogTemp, Error, TEXT("%d"), CurrentCombo);
-					//switch (CurrentCombo)
-					//{
-					//case 1:
-					//	//AnimInstance->JumpToAttackMontageSection1();
-					//	break;
-					//case 2:
-					//	//AnimInstance->JumpToAttackMontageSection2();
-					//}
+
 					if (CurrentCombo>1)
 					{
-						//GetMesh()->SocketRo
-						//소켓의 ratation
 					}
 					AnimInstance->JumpToAttackMontageSection(CurrentCombo);
 				}
@@ -207,20 +198,7 @@ void APlayerCharacter::BeginPlay()
 	// UE_LOG(LogTemp, Log, TEXT("CollisionBox"));
 	rightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnrightWeaponCollision);
 
-	//if (FailScreenWidgetClass)
-	//{
-	//	FailScreenWidget = CreateWidget<UFailScreen>(GetWorld(), FailScreenWidgetClass);
-	//	if (FailScreenWidget)
-	//	{
-	//		FailScreenWidget->AddToViewport();
-	//		// 기본 이미지 설정 (프로젝트에 맞는 이미지를 가져와야 함)
-	//		UTexture2D* YouDiedImage = LoadObject<UTexture2D>(nullptr, TEXT("/Game/YourPath/YouDiedImage"));
-	//		if (YouDiedImage)
-	//		{
-	//			FailScreenWidget->SetDeathImage(YouDiedImage);
-	//		}
-	//	}
-	//}
+
 }
 
 // Called every frame
@@ -236,8 +214,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("RollingAction", IE_Pressed, this, &APlayerCharacter::Rolling);
 	PlayerInputComponent->BindAction("comboAttack", IE_Pressed, this, &APlayerCharacter::comboAttack);
-	//PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::comboAttackStart);
-	//PlayerInputComponent->BindAction("Skill", IE_Released, this, &APlayerCharacter::comboAttackEnd);
 	PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &APlayerCharacter::skill);
 
 }
@@ -248,13 +224,6 @@ void APlayerCharacter::Rolling()
 
 	if (rollingMontage)
 	{
-
-			/*FVector Destination = GetActorLocation() + GetActorForwardVector() * 120.0f;
-			float const Distance = FVector::Dist(Destination,GetActorLocation());
-			if (Distance > 120.0f)
-			{
-				UAIBlueprintHelperLibrary::SimpleMoveToLocation(UGameplayStatics::GetPlayerController(GetWorld(), 0), Destination);
-			}*/
 		char_controller->SetNewMove(GetActorLocation() + GetActorForwardVector() * 200 );
 		PlayAnimMontage(rollingMontage);
 		UE_LOG(LogTemp, Log, TEXT("rollingMontage"));
@@ -402,10 +371,6 @@ void APlayerCharacter::UpgradeSkill()
 		AArrowAttack* Arrow3 = GetWorld()->SpawnActor<AArrowAttack>(t, NewDirection2.Rotation());
 		AArrowAttack* Arrow2 = GetWorld()->SpawnActor<AArrowAttack>(t, NewDirection.Rotation());
 		
-			//FireArrow(GetActorForwardVector());
-			//FireArrow(NewDirection.GetSafeNormal());
-			//FireArrow(GetActorForwardVector() + FVector(0.0f, FMath::RandRange(-0.2f, 0.2f), FMath::RandRange(-0.2f, 0.2f)));
-		
 	}
 
 	arrowCount -= 1;
@@ -418,10 +383,6 @@ void APlayerCharacter::FireArrow(const FVector& Direction)
 	{
 		FTransform ArrowSpawnTransform = arrowPositionComp->GetComponentTransform();
 		AArrowAttack* Arrow = GetWorld()->SpawnActor<AArrowAttack>(ArrowSpawnTransform.GetLocation(), Direction.Rotation());
-		/*	if (Arrow)
-			{
-				Arrow->SetActorRotation(Direction.Rotation());
-			}*/
 	}
 }
 
@@ -627,27 +588,6 @@ void APlayerCharacter::comboAttackCheck()
 
 void APlayerCharacter::Respawn()
 {
-
-	//if (RespawnCount == 0)
-	//{
-	//	// 실패 화면 위젯에 'YouDied' 이미지 설정
-	//	// 프로젝트에 맞는 이미지를 가져와서 설정해야 함
-	//	UTexture2D* YouDiedImage = LoadObject<UTexture2D>(nullptr, TEXT("/Game/YourPath/YouDiedImage"));
-	//	if (FailScreenWidget && YouDiedImage)
-	//	{
-	//		FailScreenWidget->SetDeathImage(YouDiedImage);
-	//	}
-	//}
-	//else if (RespawnCount == 1)
-	//{
-	//	// 실패 화면 위젯에 'LastChance' 이미지 설정
-	//	// 프로젝트에 맞는 이미지를 가져와서 설정해야 함
-	//	UTexture2D* LastChanceImage = LoadObject<UTexture2D>(nullptr, TEXT("/Game/YourPath/LastChanceImage"));
-	//	if (FailScreenWidget && LastChanceImage)
-	//	{
-	//		FailScreenWidget->SetDeathImage(LastChanceImage);
-	//	}
-	//}
 	// 캐릭터 위치와 회전을 시작 위치로 설정
 	SetActorLocation(StartLocation);
 	SetActorRotation(StartRotation);

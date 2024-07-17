@@ -235,12 +235,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Respawn")
 	void Respawn();
 
-	//UPROPERTY(EditAnywhere, Category = "Widgets")
- //   TSubclassOf<UUserWidget> FailScreenWidgetClass;
-
- //   UPROPERTY(BlueprintReadOnly)
- //   class UFailScreen* FailScreenWidget;
-
 	UPROPERTY(EditDefaultsOnly)
 	class AClickMovePlayerController* char_controller;
 	void SetController(AClickMovePlayerController* cont);

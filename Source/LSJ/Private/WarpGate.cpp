@@ -20,6 +20,7 @@ AWarpGate::AWarpGate()
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
 	mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	mesh->SetupAttachment(boxCollision);
+
 	ConstructorHelpers::FObjectFinder<UStaticMesh>sphereMesh(TEXT("/Script/Engine.StaticMesh'/Game/LSJ/Resource/MapResource/Potal/SM_MERGED_StaticMeshActor.SM_MERGED_StaticMeshActor'"));
 	if (sphereMesh.Succeeded())
 	{

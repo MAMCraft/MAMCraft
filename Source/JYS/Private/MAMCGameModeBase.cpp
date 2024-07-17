@@ -12,12 +12,43 @@
 void AMAMCGameModeBase::BeginPlay()
 {
     Super::BeginPlay();
+    if (IsValid(successHUDWidgetClass))
+    {
+        successHUDWidget = Cast<USuccessScreen>(CreateWidget(GetWorld(), successHUDWidgetClass));
+
+        if (IsValid(successHUDWidget))
+        {
+            successHUDWidget->AddToViewport();
+            successHUDWidget->SetVisibility(ESlateVisibility::Hidden);
+            // MainHUDWidget->OnButtonLevelUpdated.AddDynamic(this,&AMAMCGameModeBase::EndViewport);
+        }
+    }
+    //LSJ 인벤토리
+    if (!IsValid(inventoryHUD))
+    {
+        inventoryHUD = Cast<UInventoryWidget>(CreateWidget(GetWorld(), inventoryHUDFactory));
+        if (inventoryHUD)
+        {
+            //inventoryHUD->SetVisibility(ESlateVisibility::Hidden);
+            //inventoryHUD->AddToViewport();
+        }
+    }
 
 }
 
 AMAMCGameModeBase::AMAMCGameModeBase()
 {
+    static ConstructorHelpers::FClassFinder<UUserWidget> successHUDWidgetAsset(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KYH/Blueprint/BP_SuceessScreen.BP_SuceessScreen_C'"));
 
+    // TSubclassOf 템플릿 클래스 객체에 블루프린트 클래스를 넣어준다
+    if (successHUDWidgetAsset.Succeeded())
+        successHUDWidgetClass = successHUDWidgetAsset.Class;
+
+    static ConstructorHelpers::FClassFinder<UUserWidget> inventoryHUDClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LSJ/Blueprints/Inventory/BP_InventoryWidget1.BP_InventoryWidget1_C'"));
+    if (inventoryHUDClass.Succeeded())
+    {
+        inventoryHUDFactory = inventoryHUDClass.Class;
+    }
 }
 
 
@@ -39,6 +70,46 @@ void AMAMCGameModeBase::showoverscreen()
 			OverUI->AddToViewport();
 		}
 }
+}
+
+
+void AMAMCGameModeBase::EndViewport()
+{
+    UE_LOG(LogTemp, Log, TEXT("EndViewport"));
+    //MainHUDWidget->FinishDestroy();
+}
+
+void AMAMCGameModeBase::VisibleSuccessWidget()
+{
+    successHUDWidget->SetVisibility(ESlateVisibility::Visible);
+}
+
+void AMAMCGameModeBase::HiddenSuccessWidget()
+{
+    successHUDWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void AMAMCGameModeBase::VisibleInventoryWidget()
+{
+    inventoryHUD->AddToViewport();
+    //inventoryHUD->SetVisibility(ESlateVisibility::Visible);
+}
+
+void AMAMCGameModeBase::HiddenInventoryWidget()
+{
+    inventoryHUD->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void AMAMCGameModeBase::Save(TArray<AItem*>& inputItems)
+{
+    UMAMCGameInstance* instanceMAMC = Cast<UMAMCGameInstance>(GetGameInstance());
+    instanceMAMC->Save(inputItems);
+}
+
+void AMAMCGameModeBase::Load(TArray<AItem*>& outputItems)
+{
+    UMAMCGameInstance* instanceMAMC = Cast<UMAMCGameInstance>(GetGameInstance());
+    instanceMAMC->Load(outputItems);
 }
 
 

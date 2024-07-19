@@ -13,52 +13,34 @@
 AAIControllerZombie::AAIControllerZombie()
 {
 
-	//static ConstructorHelpers::FObjectFinder<UBlackboardData> bBObject(TEXT("/Script/AIModule.BlackboardData'/Game/LSJ/AI/BB_EnemyZombie.BB_EnemyZombie'"));
-	//if (bBObject.Succeeded())
-	//{
-	//	UE_LOG(LogTemp, Display, TEXT("bBObject.Object"));
-	//	bBAsset = bBObject.Object;
-	//}
-	//else
-	//	UE_LOG(LogTemp, Display, TEXT("bBObject.Object Fail"));
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> bBObject(TEXT("/Script/AIModule.BlackboardData'/Game/LSJ/AI/BB_EnemyZombie.BB_EnemyZombie'"));
+	if (bBObject.Succeeded())
+	{
+		UE_LOG(LogTemp, Display, TEXT("bBObject.Object"));
+		bBAsset = bBObject.Object;
+	}
+	else
+		UE_LOG(LogTemp, Display, TEXT("bBObject.Object Fail"));
 
-	//static ConstructorHelpers::FObjectFinder<UBehaviorTree> bTObject(TEXT("/Script/AIModule.BehaviorTree'/Game/LSJ/AI/BT_EnemyZombie.BT_EnemyZombie'"));
-	//if (bTObject.Succeeded())
-	//{
-	//	UE_LOG(LogTemp, Display, TEXT("bTObject.Object"));
-	//	bTAsset = bTObject.Object;
-	//}
-	//else
-	//	UE_LOG(LogTemp, Display, TEXT("bTObject.Object Fail"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> bTObject(TEXT("/Script/AIModule.BehaviorTree'/Game/LSJ/AI/BT_EnemyZombie.BT_EnemyZombie'"));
+	if (bTObject.Succeeded())
+	{
+		UE_LOG(LogTemp, Display, TEXT("bTObject.Object"));
+		bTAsset = bTObject.Object;
+	}
+	else
+		UE_LOG(LogTemp, Display, TEXT("bTObject.Object Fail"));
 }
 
 void AAIControllerZombie::RunAI()
 {
-	UBehaviorTreeComponent* BTComp = Cast<UBehaviorTreeComponent>(BrainComponent);
-	// BTComp가 NULL이면 UBehaviorTreeComponent 인스턴스를 새롭게 생성한다.
-	if (BTComp == NULL)
+	if (UBehaviorTree* const tree = bTAsset)
 	{
-		UE_VLOG(this, LogBehaviorTree, Log, TEXT("RunBehaviorTree: spawning BehaviorTreeComponent.."));
-
-		BTComp = NewObject<UBehaviorTreeComponent>(this, TEXT("BTComponent"));
-		BTComp->RegisterComponent();
+		UBlackboardComponent* b;
+		UseBlackboard(tree->BlackboardAsset, b);
+		Blackboard = b;
+		RunBehaviorTree(tree);
 	}
-
-	// 앞서 BrainComponent는 NULL일 수도 있고, 아닐 수도 있다.
-	// 새로 만든 BTComp는 기존 BrainComponent의 값과 같거나, 새롭게 할당한 값이다.
-	// make sure BrainComponent points at the newly created BT component
-	BrainComponent = BTComp;
-
-	check(BTComp != NULL);
-	BTComp->StartTree(*bTAsset, EBTExecutionMode::Looped);
-
-
-	/*UBlackboardComponent* blackboardComp = Blackboard;
-	if (UseBlackboard(bBAsset, blackboardComp))
-	{
-		RunBehaviorTree(bTAsset);
-	}
-	this->Blackboard = blackboardComp;*/
 }
 
 

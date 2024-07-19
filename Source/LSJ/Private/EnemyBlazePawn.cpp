@@ -8,7 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "ActorBlazeBullet.h"
 #include "Components/WidgetComponent.h"
-
+#include "UIDamageComponent.h"
+#include <Kismet/KismetMathLibrary.h>
 // Sets default values
 AEnemyBlazePawn::AEnemyBlazePawn()
 {
@@ -70,6 +71,9 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 		FireParticle = Fire.Object;
 	}
 
+	//DamageUI
+	uiDamageComponent = CreateDefaultSubobject<UUIDamageComponent>(TEXT("UIDAMAGECOMPONENT"));
+	
 	AIControllerClass = AAIControllerBlaze::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -222,12 +226,6 @@ void AEnemyBlazePawn::Hit(AActor* damageCauser)
 	{
 		OnAttackEnd();
 	}
-
-	/*if (hitCurrentTime > 0)
-		return;*/
-
-	//색 변하게
-	BlinkRed();
 	//부딧친 방향 구하기
 	FVector start = GetActorLocation();
 	start.Z = 0;
@@ -235,6 +233,17 @@ void AEnemyBlazePawn::Hit(AActor* damageCauser)
 	end.Z = 0;
 	hitDirection = (start - end).GetSafeNormal();
 	hitDirection.Z = 0.f;
+	//맞은 위치에서 카메라를 바라보는 Rotator
+	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	FRotator damageRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCamera->GetCameraLocation());
+	//시작위치 homePos
+	uiDamageComponent->SetVisibleDamageUI(damageRotation, hitDirection, GetActorTransform());
+	/*if (hitCurrentTime > 0)
+		return;*/
+
+	//색 변하게
+	BlinkRed();
+
 
 	if (statComponent->GetHp() <= 0)
 	{
@@ -259,6 +268,14 @@ void AEnemyBlazePawn::Die(AActor* damageCauser)
 	}
 	animInstance->PlayDieMontage();
 	GetController()->UninitializeComponents();
+	//플레이어와 출동 하지 않게
+	boxComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECollisionResponse::ECR_Ignore);
+	//Enemy와 출동 하지 않게
+	boxComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
+	//플레이어와 출동 하지 않게
+	skMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECollisionResponse::ECR_Ignore);
+	//Enemy와 출동 하지 않게
+	skMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
 }
 
 void AEnemyBlazePawn::BlinkRed()

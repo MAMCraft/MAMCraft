@@ -11,6 +11,7 @@
 #include "StatComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "HpBarWidget.h"
+#include "UIDamage.h"
 #include "EnemyZombiePawn.generated.h"
 
 
@@ -25,7 +26,7 @@ class LSJ_API AEnemyZombiePawn : public APawn, public IEnemyAnimationAttackInter
 	bool bHit;
 	void Hit(AActor* damageCauser);
 
-	float dieDestroyTime = 2.f;
+	float dieDestroyTime = 10.f;
 	float dieFalldownTime = 1.5f;
 	float dieCurrentTime;
 	bool bDie;
@@ -37,6 +38,7 @@ class LSJ_API AEnemyZombiePawn : public APawn, public IEnemyAnimationAttackInter
 	UBlackboardComponent* bc;
 	FVector pawnLocation;
 	FVector direction;
+
 public:
 	// Sets default values for this pawn's properties
 	AEnemyZombiePawn();
@@ -69,10 +71,6 @@ public:
 	USkeletalMeshComponent* skMeshComponent;
 	UPROPERTY(VisibleAnywhere, Category = "COLLISIONCAPCULE")
 	UCapsuleComponent* capsuleComponent;
-	//UPROPERTY(VisibleAnywhere, Category = "ROOT")
-	//USceneComponent* rootComp;
-	//UPROPERTY(VisibleAnywhere, Category = "ROOT")
-	//FVector rootCompScale;
 	UPROPERTY(VisibleAnywhere, Category = "MOVEMENT")
 	UFloatingPawnMovement* movement;
 
@@ -92,8 +90,10 @@ public:
 	FTimerHandle damageBlinkTimerHandle;
 	void BlinkRed();
 	void EndBlink();
-
+	//hpbar
 	UPROPERTY(VisibleAnyWhere, Category = UI)
 	class UWidgetComponent* hpBarWidgetComponent;
 	UHpBarWidget* hpBarWidget;
+	//DamageUI
+	class UUIDamageComponent* uiDamageComponent;
 };

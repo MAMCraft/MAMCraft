@@ -126,4 +126,7 @@ public:
 	class UGameplayStatics* GameStatic;
 	UPROPERTY()
 	class UParticleSystem * FireParticle;
+
+	//DamageUI
+	class UUIDamageComponent* uiDamageComponent;
 };

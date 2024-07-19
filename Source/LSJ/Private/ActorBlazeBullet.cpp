@@ -15,7 +15,7 @@ AActorBlazeBullet::AActorBlazeBullet()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	root = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ROOT"));
+	root = CreateDefaultSubobject<USceneComponent>(TEXT("ROOT"));
 	RootComponent = root;
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
 	mesh->SetupAttachment(RootComponent);

@@ -1,18 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #include "ArrowAttack.h"
 #include "Components/BoxComponent.h"
 #include "Engine/DamageEvents.h"
-
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
 
 // Sets default values
 AArrowAttack::AArrowAttack()
 {
     // Set this actor to call Tick() every frame. You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
-
-
 
     // 루트 컴포넌트로 UBoxComponent를 설정
     BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
@@ -44,6 +45,13 @@ AArrowAttack::AArrowAttack()
             MeshComp->AttachToComponent(ParentMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
         }
     }
+
+    // 파티클 시스템 로드
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleSystem(TEXT("/ Script / Engine.ParticleSystem'/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_B.P_Explosion_Big_B'"));
+    if (ParticleSystem.Succeeded())
+    {
+        HitEffect = ParticleSystem.Object;
+    }
 }
 
 // Called when the game starts or when spawned
@@ -60,16 +68,13 @@ void AArrowAttack::BeginPlay()
 // Called every frame
 void AArrowAttack::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime);
 
-    //FVector NewLocation = GetActorLocation() + GetActorForwardVector() * Speed * DeltaTime;
-    //SetActorLocation(NewLocation);
-
-	FVector P0 = GetActorLocation();
-	FVector velocity = GetActorForwardVector() * Speed;
-	float t = DeltaTime;
-	FVector NewLocation = P0 + velocity * t;
-	SetActorLocation(NewLocation);
+    FVector P0 = GetActorLocation();
+    FVector velocity = GetActorForwardVector() * Speed;
+    float t = DeltaTime;
+    FVector NewLocation = P0 + velocity * t;
+    SetActorLocation(NewLocation);
 }
 
 void AArrowAttack::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -79,14 +84,20 @@ void AArrowAttack::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, A
     {
         FDamageEvent damageEvent;
         OtherActor->TakeDamage(1, damageEvent, nullptr, this);
+
+        // 이펙트를 생성하는 부분
+        if (HitEffect)
+        {
+            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, OtherActor->GetActorLocation(), FRotator::ZeroRotator);
+        }
+
         Destroy();
     }
-
 }
 
 void AArrowAttack::DestroyArrow()
 {
-	Destroy();
+    Destroy();
 }
 
 

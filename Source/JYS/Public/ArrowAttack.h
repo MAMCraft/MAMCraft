@@ -45,9 +45,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* arrowMesh;
 
-
-
-
+	UPROPERTY(EditAnywhere, Category = "Effects")
+    UParticleSystem* HitEffect;
 
 };
 

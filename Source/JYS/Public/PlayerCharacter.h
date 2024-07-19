@@ -26,6 +26,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	class USoundWave* onearrow;
+	class USoundWave* threearrow;
+	class USoundWave* twosword;
+	class USoundWave* threesword;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

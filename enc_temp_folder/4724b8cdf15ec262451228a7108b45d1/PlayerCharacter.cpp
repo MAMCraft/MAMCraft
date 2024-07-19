@@ -605,10 +605,7 @@ void APlayerCharacter::comboAttack()
 	if (IsAttacking)
 	{
 		//sound
-		if (CurrentCombo != 0)
-		{
-			UGameplayStatics::PlaySound2D(this, threesword);
-		}
+		UGameplayStatics::PlaySound2D(this, threesword, 2.f);
 		if (CanNextCombo)
 		{
 			IsComboInputOn = true;

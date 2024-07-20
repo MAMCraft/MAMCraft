@@ -32,7 +32,7 @@ public:
 	TArray<class UWidgetComponent*> deleteComponentArray;
 	//보이게
 	//맞은 위치에서 카메라를 바라보는 damageRotation, 날라가야하는 direction, 시작위치 homePos
-	void SetVisibleDamageUI(FRotator damageRotation, FVector direction, FTransform homePos);
+	void SetVisibleDamageUI(FRotator damageRotation, FVector direction, FTransform homePos, float damageAmount);
 	//안보이게
 	void SetHiidenDamageUI();
 	//비활성화 된거 리턴

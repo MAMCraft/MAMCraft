@@ -78,7 +78,7 @@ void UUIDamageComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	}
 }
 
-void UUIDamageComponent::SetVisibleDamageUI(FRotator damageRotation, FVector direction, FTransform homePos)
+void UUIDamageComponent::SetVisibleDamageUI(FRotator damageRotation, FVector direction, FTransform homePos,float damageAmount)
 {
 	UWidgetComponent* currentComponent = nullptr;
 	UUIDamage* currentWidget = nullptr;
@@ -90,6 +90,8 @@ void UUIDamageComponent::SetVisibleDamageUI(FRotator damageRotation, FVector dir
 	FVector location = homePos.GetLocation();
 	location += FVector(0, 0, 250);
 	currentComponent->SetRelativeLocation(location);
+	//Damage 수치를 표시
+	currentWidget->SetDamageText(damageAmount);
 	//카메라를 바라보게 한다.
 	currentWidget->DamageRotation(damageRotation);
 	//UI가 이동될 방향을 저장한다.

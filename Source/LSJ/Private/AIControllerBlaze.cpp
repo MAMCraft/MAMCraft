@@ -47,10 +47,3 @@ void AAIControllerBlaze::RunAI()
 {
 	
 }
-
-FPathFollowingRequestResult AAIControllerBlaze::MoveTo(const FAIMoveRequest& MoveRequest, FNavPathSharedPtr* OutPath)
-{
-	FPathFollowingRequestResult ResultData = Super::MoveTo(MoveRequest, OutPath);
-
-	return ResultData;
-}

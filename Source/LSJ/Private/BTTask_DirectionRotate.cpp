@@ -16,24 +16,28 @@ void UBTTask_DirectionRotate::TickTask(UBehaviorTreeComponent& OwnerComp, uint8*
 	FVector start = ControllingPawn->GetActorLocation();
 	start.Z = 0;
 	FVector end;
-	if(BlackboardKey.IsSet())
-		end = OwnerComp.GetBlackboardComponent()->GetValueAsVector(BlackboardKey.SelectedKeyName);
+	if (OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("Player"))==nullptr)
+	{
+		end = OwnerComp.GetBlackboardComponent()->GetValueAsVector(FName("PatrolPos"));
+	}
 	else
 	{
 		APawn* target = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("Player")));
 		FVector oppositeDirection = target->GetActorLocation() - ControllingPawn->GetActorLocation();
 		oppositeDirection.Z = 0;
-		FVector bActorLocation = ControllingPawn->GetActorLocation() + -1.0f * oppositeDirection.GetSafeNormal2D() * 500.0f * DeltaSeconds;
+		FVector bActorLocation = ControllingPawn->GetActorLocation() + -1.0f * oppositeDirection.GetSafeNormal() * 500.0f * DeltaSeconds;
 		end = bActorLocation;//OwnerComp.GetBlackboardComponent()->GetValueAsVector(FName("RunAwayPos"));
 	}
 
 	end.Z = 0;
 	FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(start, end);
-	if (ControllingPawn->GetActorRotation().Yaw > lookRotation.Yaw - 5.0 && lookRotation.Yaw + 5.0 > ControllingPawn->GetActorRotation().Yaw)
+	//if (ControllingPawn->GetActorRotation().Yaw > lookRotation.Yaw - 5.0 && lookRotation.Yaw + 5.0 > ControllingPawn->GetActorRotation().Yaw)
+		//FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if(currentTime>1.0f)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	FRotator newRotation = FRotator(ControllingPawn->GetActorRotation().Pitch, lookRotation.Yaw, ControllingPawn->GetActorRotation().Roll);
-
-	ControllingPawn->SetActorRotation(FMath::RInterpTo(ControllingPawn->GetActorRotation(), newRotation, DeltaSeconds, 5.f));
+	currentTime += DeltaSeconds;
+	ControllingPawn->SetActorRotation(FMath::RInterpTo(ControllingPawn->GetActorRotation(), newRotation, currentTime, 5.f));
 
 }
 

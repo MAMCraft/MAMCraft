@@ -13,7 +13,7 @@ UCLASS()
 class LSJ_API UBTTaskNode_LookTarget : public UBTTaskNode
 {
 	GENERATED_BODY()
-
+	float currentTime;
 	APawn* ControllingPawn;
 	APawn* target;
 	double newYaw;

@@ -21,12 +21,13 @@ class LSJ_API AEnemyBlazePawn : public APawn, public IEnemyAnimationAttackInterf
 {
 	GENERATED_BODY()
 
+
 	float hitTime = 0.3f;
 	float hitCurrentTime;
 	bool bHit;
-	void Hit(AActor* damageCauser);
+	void Hit(AActor* damageCauser, float DamageAmount);
 
-	float dieDestroyTime = 2.f;
+	float dieDestroyTime = 5.f;
 	float dieFalldownTime = 1.5f;
 	float dieCurrentTime;
 	bool bDie;
@@ -72,7 +73,8 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "AI", meta=(AllowPrivateAccess="true"))
 	class UBlackboardData* bData;
 
-	
+	FRotator currentRotator;
+	FVector currentLocation;
 public:	
 	UBehaviorTree* GetBehaviorTree() const;
 	// Called every frame

@@ -20,10 +20,12 @@ void UBTTaskNode_LookTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	FVector end = target->GetActorLocation();
 	end.Z = 0;
 	FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(start, end);
-	if (ControllingPawn->GetActorRotation().Yaw > lookRotation.Yaw - 5.0 && lookRotation.Yaw + 5.0 > ControllingPawn->GetActorRotation().Yaw)
+	//if (ControllingPawn->GetActorRotation().Yaw > lookRotation.Yaw - 5.0 && lookRotation.Yaw + 5.0 > ControllingPawn->GetActorRotation().Yaw)
+		//FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if (currentTime > 1.0f)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	FRotator newRotation = FRotator(ControllingPawn->GetActorRotation().Pitch, lookRotation.Yaw, ControllingPawn->GetActorRotation().Roll);
-	
+	currentTime += DeltaSeconds;
 	ControllingPawn->SetActorRotation(FMath::RInterpTo(ControllingPawn->GetActorRotation(), newRotation, DeltaSeconds, 5.f));
 }
 

@@ -5,7 +5,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
 #include "Navigation/PathFollowingComponent.h"
-
+#include "AIControllerBlaze.h"
 UBTTaskNode_RunAway::UBTTaskNode_RunAway()
 {
 	NodeName = "UBTTaskNode_RunAway";
@@ -58,7 +58,7 @@ void UBTTaskNode_RunAway::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		}
 		oppositeDirection = target->GetActorLocation() - ControllingPawn->GetActorLocation();
 		oppositeDirection.Z = 0;
-		bActorLocation = ControllingPawn->GetActorLocation() + -1.0f * oppositeDirection.GetSafeNormal2D() * runAwaySpeed * DeltaSeconds;
+		bActorLocation = ControllingPawn->GetActorLocation() + -1.0f * oppositeDirection.GetSafeNormal() * runAwaySpeed * DeltaSeconds;
 	}
 	else
 	{
@@ -74,13 +74,17 @@ void UBTTaskNode_RunAway::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		//랜덤 이동
 		oppositeDirection = (NextPatrol.Location - ControllingPawn->GetActorLocation());
 		oppositeDirection.Z = 0;
-		bActorLocation = ControllingPawn->GetActorLocation() + oppositeDirection.GetSafeNormal2D() * runAwaySpeed * DeltaSeconds;
+		bActorLocation = ControllingPawn->GetActorLocation() + oppositeDirection.GetSafeNormal() * runAwaySpeed * DeltaSeconds;
 	}
 	//로그
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %d"), IsGround));
 	ControllingPawn->SetActorLocation(bActorLocation,true);
-
+	//AAIController* aicontroller =Cast<AAIController>(ControllingPawn->GetController());
+	//aicontroller->MoveToLocation(NextPatrol);
 	//OwnerComp.GetBlackboardComponent()->SetValueAsVector(FName("RunAwayPos"), bActorLocation);
+
+	//aicontroller->MoveToLocation(NextPatrol,10.0f);
+
 }
 EBTNodeResult::Type UBTTaskNode_RunAway::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -92,9 +96,9 @@ EBTNodeResult::Type UBTTaskNode_RunAway::ExecuteTask(UBehaviorTreeComponent& Own
 	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(ControllingPawn->GetWorld());
 	if (nullptr == NavSystem) return EBTNodeResult::Failed;
 	start = ControllingPawn->GetActorLocation();
-	if (NavSystem->GetRandomPointInNavigableRadius(start, 300.0f, NextPatrol))
+	if (NavSystem->GetRandomPointInNavigableRadius(start, 500.0f, NextPatrol))
 	{
-
+		NextPatrol.Location.Z = ControllingPawn->GetActorLocation().Z;
 	}
 	return EBTNodeResult::InProgress;
 }

@@ -13,7 +13,7 @@ UCLASS()
 class LSJ_API UBTTask_DirectionRotate : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
-	
+	float currentTime;
 	APawn* ControllingPawn;
 	double newYaw;
 protected:

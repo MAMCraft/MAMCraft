@@ -24,7 +24,7 @@ class LSJ_API AEnemyZombiePawn : public APawn, public IEnemyAnimationAttackInter
 	float hitTime=0.3f;
 	float hitCurrentTime;
 	bool bHit;
-	void Hit(AActor* damageCauser);
+	void Hit(AActor* damageCauser, float DamageAmount);
 
 	float dieDestroyTime = 10.f;
 	float dieFalldownTime = 1.5f;
@@ -96,4 +96,5 @@ public:
 	UHpBarWidget* hpBarWidget;
 	//DamageUI
 	class UUIDamageComponent* uiDamageComponent;
+	FVector currentLocation;
 };

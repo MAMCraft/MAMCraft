@@ -70,6 +70,8 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 		hpBarWidgetComponent->SetDrawSize(FVector2D(150, 50));
 	}
 
+	
+
 	//DamageUI
 	uiDamageComponent = CreateDefaultSubobject<UUIDamageComponent>(TEXT("UIDAMAGECOMPONENT"));
 
@@ -93,6 +95,7 @@ void AEnemyZombiePawn::BeginPlay()
 	{
 		hpBarWidget->BindCharacterStat(statComponent);
 	}
+
 }
 
 void AEnemyZombiePawn::OnUnPossess()
@@ -190,13 +193,14 @@ void AEnemyZombiePawn::EndBlink()
 float AEnemyZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	currentLocation = GetActorLocation();
 	statComponent->SetDamage(damage);
-	Hit(DamageCauser);
+	Hit(DamageCauser, DamageAmount);
 	return damage;
 }
 
 
-void AEnemyZombiePawn::Hit(AActor* damageCauser)
+void AEnemyZombiePawn::Hit(AActor* damageCauser,float DamageAmount)
 {
 	if (bDie)
 		return;
@@ -221,7 +225,7 @@ void AEnemyZombiePawn::Hit(AActor* damageCauser)
 	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 	FRotator damageRotation2 = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCamera->GetCameraLocation());
 	//시작위치 homePos
-	uiDamageComponent->SetVisibleDamageUI(damageRotation2, direction, GetActorTransform());
+	uiDamageComponent->SetVisibleDamageUI(damageRotation2, direction, GetActorTransform(), DamageAmount);
 
 	if (statComponent->GetHp()<=0)
 	{
@@ -249,9 +253,9 @@ void AEnemyZombiePawn::Die(AActor* damageCauser)
 	skMeshComponent->SetEnableGravity(true);
 	
 	//부딧친 방향 구하기
-	FVector start = GetActorLocation();
+	FVector start = currentLocation;
 	start.Z = 0;
-	FVector end = damageCauser->GetActorLocation();
+	FVector end = damageCauser->GetActorLocation() + damageCauser->GetActorForwardVector() * -1.f * 1000.f;
 	end.Z = 0;
 	FVector newDirection = (start - end).GetSafeNormal() * 5.0f;
 	newDirection.Z = 4.0f;

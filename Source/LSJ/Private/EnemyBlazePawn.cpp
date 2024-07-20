@@ -10,6 +10,8 @@
 #include "Components/WidgetComponent.h"
 #include "UIDamageComponent.h"
 #include <Kismet/KismetMathLibrary.h>
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 // Sets default values
 AEnemyBlazePawn::AEnemyBlazePawn()
 {
@@ -73,6 +75,15 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 	//DamageUI
 	uiDamageComponent = CreateDefaultSubobject<UUIDamageComponent>(TEXT("UIDAMAGECOMPONENT"));
 	
+	//sound
+	//audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("SOUND"));
+	//audioComponent->SetupAttachment(boxComponent);
+	static ConstructorHelpers::FObjectFinder<USoundCue> soundFinder(TEXT("/Game/LSJ/Sound/Minecraft_Blaze_Sound_Effect.Minecraft_Blaze_Sound_Effect"));
+	if (soundFinder.Succeeded())
+	{
+		soundPack = soundFinder.Object;
+	}
+
 	AIControllerClass = AAIControllerBlaze::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -98,6 +109,14 @@ void AEnemyBlazePawn::BeginPlay()
 	{
 		hpBarWidget->BindCharacterStat(statComponent);
 	}
+	skMeshComponent->BodyInstance.bLockXRotation = true; // X축 회전 제한
+	skMeshComponent->BodyInstance.bLockYRotation = true; // Y축 회전 제한
+
+	///if (audioComponent->IsValidLowLevelFast())
+	///{
+	///	audioComponent->SetSound(soundPack);
+	///}
+	
 }
 
 // Called every frame
@@ -106,13 +125,20 @@ void AEnemyBlazePawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (bDie)
 	{
+		//skMeshComponent->SetRelativeRotation(currentRotator);
 		dieCurrentTime += DeltaTime;
+		///audioComponent->Play(0.5f);
 		if (dieCurrentTime > dieDestroyTime)
 		{
 			Destroy();
 		}
 		if (GetActorLocation().Z - groundZValue < -100.f)
+		{
+			//skMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			return;
+		}
+
+		/*
 		//위치 이동 포물선
 		//ground까지
 		timeDie += DeltaTime;
@@ -143,6 +169,7 @@ void AEnemyBlazePawn::Tick(float DeltaTime)
 		//float angle = FMath::Atan2(fy + PositionY, fx + PositionX) * FMath::RadiansToDegrees(angle);
 		//angle 부분은 미사일이 현 상황에 따라 앞 꼬다리 부분의 방향을 말하는 것인데 어느정도 수정이 필요해보이네요 전
 		//transform.eulerAngles = new Vector3(0, 0, angle);
+		*/
 	}
 }
 
@@ -211,12 +238,13 @@ void AEnemyBlazePawn::Attack(TArray<FVector>& location)
 float AEnemyBlazePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	currentLocation = GetActorLocation();
 	statComponent->SetDamage(damage);
-	Hit(DamageCauser);
+	Hit(DamageCauser, DamageAmount);
 	return damage;
 }
 
-void AEnemyBlazePawn::Hit(AActor* damageCauser)
+void AEnemyBlazePawn::Hit(AActor* damageCauser,float DamageAmount)
 {
 	if (bDie)
 		return;
@@ -235,7 +263,7 @@ void AEnemyBlazePawn::Hit(AActor* damageCauser)
 	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 	FRotator damageRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCamera->GetCameraLocation());
 	//시작위치 homePos
-	uiDamageComponent->SetVisibleDamageUI(damageRotation, hitDirection, GetActorTransform());
+	uiDamageComponent->SetVisibleDamageUI(damageRotation, hitDirection, GetActorTransform(), DamageAmount);
 	/*if (hitCurrentTime > 0)
 		return;*/
 
@@ -264,16 +292,41 @@ void AEnemyBlazePawn::Die(AActor* damageCauser)
 	{
 		animInstance = Cast<UAnimInstanceBlaze>(skMeshComponent->GetAnimInstance());
 	}
-	animInstance->PlayDieMontage();
+	//animInstance->StopAllMontages(1.0f);
+	//animInstance->PlayDieMontage();
+	skMeshComponent->SetAnimInstanceClass(nullptr);
 	GetController()->UninitializeComponents();
 	//플레이어와 출동 하지 않게
 	boxComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECollisionResponse::ECR_Ignore);
 	//Enemy와 출동 하지 않게
 	boxComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
+
+	//부딧친 방향 구하기
+	FVector start = currentLocation;
+	//start.Z = 0;
+	FVector end = damageCauser->GetActorLocation() + damageCauser->GetActorForwardVector() * -1.f * 100.f;
+	//end.Z = 0;
+	FVector newDirection = (start - end).GetSafeNormal() * 5.0f;
+	newDirection.Z = 1.0f;
+	boxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	skMeshComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	//플레이어와 출동 하지 않게
 	skMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECollisionResponse::ECR_Ignore);
 	//Enemy와 출동 하지 않게
 	skMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
+	skMeshComponent->SetSimulatePhysics(true);
+	skMeshComponent->SetEnableGravity(true);
+	//skMeshComponent->SetConstraintMode(EDOFMode::Default);
+	currentRotator =skMeshComponent->GetRelativeRotation();
+	//skMeshComponent->BodyInstance.bLockXRotation = true; // X축 회전 제한
+	//skMeshComponent->BodyInstance.bLockYRotation = true; // Y축 회전 제한
+	//skMeshComponent->BodyInstance.bLockRotation = true;
+	skMeshComponent->AddImpulse(newDirection * 5000.f);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s, %f %f %f"), *damageCauser->GetFName().ToString(), newDirection.X, newDirection.Y, newDirection.Z));
+	UE_LOG(LogTemp, Error, TEXT("Hit Actor Name: %s, %f %f %f"), *damageCauser->GetFName().ToString(), newDirection.X, newDirection.Y, newDirection.Z);
+	//currentLocation.Z -= 100.0f;
+	//skMeshComponent->AddImpulseAtLocation(newDirection * 5000.f, currentLocation);
 }
 
 void AEnemyBlazePawn::BlinkRed()

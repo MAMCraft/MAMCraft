@@ -18,15 +18,12 @@ UAnimInstanceZombie::UAnimInstanceZombie()
 	if (ATTACK_MONTAGE.Succeeded())
 	{
 		attackMontage = ATTACK_MONTAGE.Object;
-	}else
-		UE_LOG(LogTemp, Display, TEXT("attackMontage nullptr"));
+	}
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> HIT_MONTAGE(TEXT("/Script/Engine.AnimMontage'/Game/LSJ/Resource/Zombie/Animation/zombieAnimationHitRootEdit_SK_Zombie_ao_Zombie_GetHitFromTheFront_Montage.zombieAnimationHitRootEdit_SK_Zombie_ao_Zombie_GetHitFromTheFront_Montage'"));
 	if (ATTACK_MONTAGE.Succeeded())
 	{
 		hitMontage = HIT_MONTAGE.Object;
 	}
-	else
-		UE_LOG(LogTemp, Display, TEXT("hitMontage nullptr"));
 }
 
 void UAnimInstanceZombie::UpdateProperties()
@@ -66,5 +63,4 @@ void UAnimInstanceZombie::AnimNotify_HitEnd()
 {
 	hitEnd.Broadcast();
 	//Montage_Stop(0.1f,hitMontage);
-	UE_LOG(LogTemp, Error, TEXT("AnimNotify_HitEnd"));
 }

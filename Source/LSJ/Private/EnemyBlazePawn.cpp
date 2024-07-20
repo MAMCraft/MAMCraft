@@ -37,7 +37,6 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 	static ConstructorHelpers::FClassFinder<UAnimInstance> blazeAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/LSJ/Resource/Blaze/BP_AnimInstanceBlaze.BP_AnimInstanceBlaze_C'"));
 	if (blazeAnim.Succeeded())
 	{
-		UE_LOG(LogTemp, Log, TEXT("blazeAnim.Succeeded()"));
 		skMeshComponent->SetAnimInstanceClass(blazeAnim.Class);
 	}
 	static ConstructorHelpers::FClassFinder<AActorBlazeBullet> blazeAnim1(TEXT("/Script/Engine.Blueprint'/Game/LSJ/Blueprints/BP_BlazeBullet.BP_BlazeBullet_C'"));
@@ -97,7 +96,6 @@ void AEnemyBlazePawn::BeginPlay()
 	hpBarWidget = Cast<UHpBarWidget>(hpBarWidgetComponent->GetUserWidgetObject());
 	if (nullptr != hpBarWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("BindCharacterStat"));
 		hpBarWidget->BindCharacterStat(statComponent);
 	}
 }

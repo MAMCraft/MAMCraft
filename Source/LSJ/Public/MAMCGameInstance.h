@@ -84,7 +84,7 @@ public:
 	UFUNCTION()
 	FEnemyData GetStatData(FName name);
 	TArray<FItemStruct> itemStruct;
-	void Save(TArray<AItem*> inputItems);
+	void Save(TArray<AItem*>& inputItems);
 	void Load(TArray<AItem*>& outputItems);
 	virtual void Shutdown() override;
 	//void SaveCharacterInfo();

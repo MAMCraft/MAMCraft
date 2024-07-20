@@ -16,20 +16,14 @@ AAIControllerZombie::AAIControllerZombie()
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> bBObject(TEXT("/Script/AIModule.BlackboardData'/Game/LSJ/AI/BB_EnemyZombie.BB_EnemyZombie'"));
 	if (bBObject.Succeeded())
 	{
-		UE_LOG(LogTemp, Display, TEXT("bBObject.Object"));
 		bBAsset = bBObject.Object;
 	}
-	else
-		UE_LOG(LogTemp, Display, TEXT("bBObject.Object Fail"));
 
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> bTObject(TEXT("/Script/AIModule.BehaviorTree'/Game/LSJ/AI/BT_EnemyZombie.BT_EnemyZombie'"));
 	if (bTObject.Succeeded())
 	{
-		UE_LOG(LogTemp, Display, TEXT("bTObject.Object"));
 		bTAsset = bTObject.Object;
 	}
-	else
-		UE_LOG(LogTemp, Display, TEXT("bTObject.Object Fail"));
 }
 
 void AAIControllerZombie::RunAI()

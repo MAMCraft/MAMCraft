@@ -10,10 +10,19 @@ void UInventoryComponent::StartItem()
 {
 	if (Items.IsEmpty())
 	{
-		Items.Add(GetWorld()->SpawnActor<AIncreaseHPItem>(itemHp));
-		Items.Add(GetWorld()->SpawnActor<AItemSword>(itemSword));
-		Items.Add(GetWorld()->SpawnActor<AItemBowBasic>(itemBowBasic));
-		Items.Add(GetWorld()->SpawnActor<AArrowItem>(itemArrow));
+		AItem* itemActor = GetWorld()->SpawnActor<AIncreaseHPItem>(itemHp);
+		Items.Add(itemActor);
+		itemActor->Destroy();
+		itemActor =GetWorld()->SpawnActor<AItemSword>(itemSword);
+		Items.Add(itemActor);
+		itemActor->Destroy();
+		itemActor =GetWorld()->SpawnActor<AItemBowBasic>(itemBowBasic);
+		Items.Add(itemActor);
+		itemActor->Destroy();
+		itemActor =GetWorld()->SpawnActor<AArrowItem>(itemArrow);
+		Items.Add(itemActor);
+		itemActor->Destroy();
+	
 		Items[3]->count = 10;
 		FString CurrentMapName = GetWorld()->GetMapName();
 		if (CurrentMapName.Equals(TEXT("UEDPIE_0_HMap")))

@@ -24,7 +24,7 @@ FEnemyData UMAMCGameInstance::GetStatData(FName name)
 	return *myStats->FindRow<FEnemyData>(name, "",false);
 }
 //아이템 저장
-void UMAMCGameInstance::Save(TArray<AItem*> inputItems)
+void UMAMCGameInstance::Save(TArray<AItem*>& inputItems)
 {
 	itemStruct.Empty();
 	for (int index = 0; index < inputItems.Num(); index++)
@@ -42,6 +42,7 @@ void UMAMCGameInstance::Save(TArray<AItem*> inputItems)
 //아이템 로드
 void UMAMCGameInstance::Load(TArray<AItem*>& outputItems)
 {
+
 	for (int index = 0; index < itemStruct.Num(); index++)
 	{
 		outputItems[index]->UseActionText = itemStruct[index].UseActionText;

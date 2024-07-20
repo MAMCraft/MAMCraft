@@ -63,8 +63,6 @@ void UStatComponent::OnAttacked(float DamageAmount)
 
 float UStatComponent::GetHPRatio()
 {
-	UE_LOG(LogTemp, Error, TEXT("GetHPRatio currentHp %d"), currentHp);
-	UE_LOG(LogTemp, Error, TEXT("GetHPRatio hp %d"), hp);
 	return (float)currentHp / hp;
 }
 

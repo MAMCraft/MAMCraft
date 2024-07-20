@@ -121,10 +121,6 @@ void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	if (one) //한번 닿았다면 리턴
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("HitComp : %s"), *HitComp->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("OtherActor : %s"), *OtherActor->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("OtherComp : %s"), *OtherComp->GetName());
-
 	//충돌
 	FCollisionQueryParams Params(NAME_None, true, this);
 	FVector Center = Hit.Location;
@@ -132,7 +128,6 @@ void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	USTRUCT()
 	TArray<FOverlapResult> OverlapResults;
 	FVector attackExplosionBox = FVector(100, 100, 100); // 폭발범위
-	//FCollisionQueryParams Params(EName::Name, false, this);
 	//결과를 채널로 반환
 	bool bResult = GetWorld()->OverlapMultiByChannel(
 		OverlapResults,
@@ -150,7 +145,6 @@ void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 			if (overlapResults.GetActor()->ActorHasTag("Player"))
 			{
 				FDamageEvent damageEvent;
-				UE_LOG(LogTemp, Error, TEXT("AActorBlazeBullet OverlapMultiByChannel Damage : %s"), *overlapResults.GetActor()->GetName());
 				//데미지를 받는쪽의 TakeDamage를 호출한다
 				overlapResults.GetActor()->TakeDamage(explosionDamage, damageEvent, nullptr, this);
 				break;
@@ -163,7 +157,6 @@ void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	{
 		if (explosionDamage <= 0 && fireDamage <= 0)
 		{
-			UE_LOG(LogTemp, Log, TEXT("OnHit fail"));
 			return;
 		}
 		FActorSpawnParameters SpawnParams;

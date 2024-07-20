@@ -8,7 +8,6 @@
 void UInventoryWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	UE_LOG(LogTemp, Log, TEXT("UpdateCanTick, %f %s"), GetWorld()->GetTimerManager().GetTimerRemaining(player->HPCooldownTimerHandle), GetWorld()->GetTimerManager().IsTimerActive(player->HPCooldownTimerHandle)?TEXT("null") : TEXT("Yes"));
 	
 	if (gi->GetHPCooldownRemainTime() > 0.1f)
 	{

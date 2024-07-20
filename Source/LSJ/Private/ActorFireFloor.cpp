@@ -67,13 +67,11 @@ void AActorFireFloor::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	if (OtherActor->ActorHasTag("Player"))
 	{
 		FDamageEvent damageEvent;
-		UE_LOG(LogTemp, Log, TEXT("AActorFireFloor OverlapBegin Damage : %s"), *SweepResult.GetActor()->GetName());
 		//데미지를 받는쪽의 TakeDamage를 호출한다
 		OtherActor->TakeDamage(explosionDamage, damageEvent, nullptr, this);
 
 		//지속 데미지
 		//FDamageEvent damageEvent;
-		//UE_LOG(LogTemp, Log, TEXT("Hit Actor : %s"), *HitResult.Actor->GetName());
 		// 데미지를 받는쪽의 TakeDamage를 호출한다
 		//OtherActor->TakeDamage(statComponent->GetAttackDamage(), damageEvent, GetController(), this);
 		//델리게이트
@@ -86,7 +84,6 @@ void AActorFireFloor::OnOverlapEnd(UPrimitiveComponent * OverlappedComp, AActor 
 	if (OtherActor->ActorHasTag("Player"))
 	{
 		FDamageEvent damageEvent;
-		UE_LOG(LogTemp, Log, TEXT("AActorFireFloor OverlapBegin Damage : %s"), *OtherActor->GetName());
 		//데미지를 받는쪽의 TakeDamage를 호출한다
 		OtherActor->TakeDamage(explosionDamage, damageEvent, nullptr, this);
 

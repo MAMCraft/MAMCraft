@@ -36,12 +36,12 @@ struct FItemStruct
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY()
+	/*UPROPERTY()
 	FText UseActionText;
 	UPROPERTY()
 	UTexture2D* Thumnail;
 	UPROPERTY()
-	TArray<FName> Tags;
+	TArray<FName> Tags;*/
 	UPROPERTY()
 	int32 category;
 	UPROPERTY()
@@ -52,10 +52,10 @@ struct FItemStruct
 	FItemStruct()
 	{
 		category = -1;
-		UseActionText = FText::FromString(TEXT(""));
 		itemID = -1;
-		Thumnail=nullptr;
-		Tags.Empty();
+		//UseActionText = FText::FromString(TEXT(""));
+		//Thumnail=nullptr;
+		//Tags.Empty();
 	}
 };
 

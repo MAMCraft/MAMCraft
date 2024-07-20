@@ -89,6 +89,8 @@ public:
 	virtual void Shutdown() override;
 	//void SaveCharacterInfo();
 	//void LoadCharacterInfo();
+	void SetLife(int amount);
+	int GetLife();
 	void SetPlayerHp(int setHp);
 	int GetPlayerHp();
 	void SetHPCooldownRemainTime(float remainTime);
@@ -101,6 +103,6 @@ private:
 	class UDataTable* myStats;
 	int playerCurrentHp;
 	float instanceHPCooldownRemainTime=0.f;
-
+	int life = 1;
 };
 

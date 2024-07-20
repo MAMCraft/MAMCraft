@@ -59,6 +59,16 @@ void UMAMCGameInstance::Shutdown()
 	Super::Shutdown();
 }
 
+void UMAMCGameInstance::SetLife(int amount)
+{
+	life = amount;
+}
+
+int UMAMCGameInstance::GetLife()
+{
+	return life;
+}
+
 void UMAMCGameInstance::SetPlayerHp(int setHp)
 {
 	playerCurrentHp = setHp;

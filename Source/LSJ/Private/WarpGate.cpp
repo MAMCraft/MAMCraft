@@ -49,6 +49,7 @@ void AWarpGate::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 			UMAMCGameInstance* gi = Cast<UMAMCGameInstance>(GetGameInstance());
 			gi->Save(player->inventoryComponent->Items);
 			gi->SetPlayerHp(player->playerHP);
+			gi->SetLife(player->GetRespawnCount());
 			gi->SetHPCooldownRemainTime(GetWorld()->GetTimerManager().GetTimerRemaining(player->HPCooldownTimerHandle));
 			UGameplayStatics::OpenLevel(this, TEXT("HMap"));
 		}

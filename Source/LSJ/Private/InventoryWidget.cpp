@@ -49,9 +49,32 @@ void UInventoryWidget::AddToViewport()
 	////	AMAMCGameModeBase* gamemode = Cast<AMAMCGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	////	gamemode->Load();
 	////}
-	
-	if(GetVisibility()!=ESlateVisibility::Hidden)
+	Items = inventoryComponent->Items;
+	if (!Items.IsEmpty())
+	{
+		//인벤토리에 넣어주기
+		for (auto* item : Items)
+		{
+			if (item->category == (int)EItemCategroy::arrow)
+			{
+				ItemQuantityArrow->SetText(FText::AsNumber(item->count));
+				ArrowEmptyImage->SetVisibility(ESlateVisibility::Hidden);
+				switch (item->count)
+				{
+				case -1:ItemQuantityArrow->SetText(FText::AsNumber(0));
+				case 0:ItemIconArrow_1->SetVisibility(ESlateVisibility::Hidden);
+				case 1:ItemIconArrow_2->SetVisibility(ESlateVisibility::Hidden);
+				case 2:ItemIconArrow_3->SetVisibility(ESlateVisibility::Hidden);
+				case 3:ItemIconArrow_4->SetVisibility(ESlateVisibility::Hidden);
+				case 4:ItemIconArrow_5->SetVisibility(ESlateVisibility::Hidden);
+				}
+			}
+		}
+	}
+	if (GetVisibility() != ESlateVisibility::Hidden)
+	{
 		UpdateInventory();
+	}
 }
 
 void UInventoryWidget::ArrowPlayAnimation(int count)
@@ -92,33 +115,33 @@ void UInventoryWidget::UpdateInventory()
 		switch (item->category)
 		{
 		case (int)EItemCategroy::posion:
-			ItemQuantity1->SetText(FText::AsNumber(Items[0]->count)); //??
+			ItemQuantity1->SetText(FText::AsNumber(item->count)); //??
 			ItemIconHp->SetBrushFromTexture(posionTexture);
 			break;
 		case (int)EItemCategroy::sword:
-			ItemQuantitySword->SetText(FText::AsNumber(Items[1]->count));
+			ItemQuantitySword->SetText(FText::AsNumber(item->count));
 			ItemIconSword->SetBrushFromTexture(swordTexture);
 			break;
 		case (int)EItemCategroy::bow:
-			ItemQuantityBow->SetText(FText::AsNumber(Items[2]->count));
+			ItemQuantityBow->SetText(FText::AsNumber(item->count));
 			if(item->itemID==1)
 				ItemIconBow->SetBrushFromTexture(bowBasicTexture);
 			else
 				ItemIconBow->SetBrushFromTexture(bowBubbleTexture);
 			break;
 		case (int)EItemCategroy::arrow:
-			if (Items[3]->count == -1)
+			if (item->count == -1)
 			{
 				ItemQuantityArrow->SetText(FText::AsNumber(0));
 			}
 			else
 			{
-				ItemQuantityArrow->SetText(FText::AsNumber(Items[3]->count));
+				ItemQuantityArrow->SetText(FText::AsNumber(item->count));
 				ArrowEmptyImage->SetVisibility(ESlateVisibility::Hidden);
 			}
-			if(Items[3]->count<5)
-				ArrowPlayAnimation(Items[3]->count);
-			if (Items[3]->count >= 5)
+			if(item->count<5)
+				ArrowPlayAnimation(item->count);
+			if (item->count >= 5)
 			{
 				ItemIconArrow_1->SetRenderTranslation(FVector2D(0, 0));
 				ItemIconArrow_2->SetRenderTranslation(FVector2D(1, 17));

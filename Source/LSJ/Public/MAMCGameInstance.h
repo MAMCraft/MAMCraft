@@ -53,6 +53,7 @@ struct FItemStruct
 	{
 		category = -1;
 		itemID = -1;
+		count = 0;
 		//UseActionText = FText::FromString(TEXT(""));
 		//Thumnail=nullptr;
 		//Tags.Empty();

@@ -103,4 +103,6 @@ public:
 	TObjectPtr<USoundWave> SoundDie;
 				UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Default")
 	TObjectPtr<USoundWave> SoundAppear;
+					UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Default")
+	TObjectPtr<USoundWave> SoundPlayerHit;
 };

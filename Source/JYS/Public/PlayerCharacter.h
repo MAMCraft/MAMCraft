@@ -233,7 +233,8 @@ public:
 	void comboAttackCheck();
 
 	//LSJ 인벤토리
-	UInventoryComponent* inventoryComponent;
+	UPROPERTY(EditAnywhere)
+	class UInventoryComponent* inventoryComponent;
 
 	bool OnSkill;
 	float characterSpeed;

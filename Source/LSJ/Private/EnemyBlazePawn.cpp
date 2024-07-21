@@ -58,6 +58,7 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 	hpBarWidgetComponent->SetupAttachment(skMeshComponent);
 	hpBarWidgetComponent->SetRelativeLocation(FVector(0, 0, 180));
 	hpBarWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	hpBarWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/LSJ/Blueprints/WBP_HP.WBP_HP_C'"));
 	if (UI_HUD.Succeeded())
 	{

@@ -68,10 +68,11 @@ UInventoryComponent::UInventoryComponent()
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	// ...
 	StartItem();
 	AMAMCGameModeBase* gamemode = Cast<AMAMCGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	gamemode->VisibleInventoryWidget();
+	// ...
+	////////////////////////////////////////////////// initcomponent
 	//OnInventoryUpdated.Broadcast();
 	//for (auto* Item : DefaultItems)
 	//{
@@ -89,11 +90,11 @@ bool UInventoryComponent::AddItem(AItem* Item)
 		if (findItem->category == Item->category) //ItemDisplayName 으로 검색
 		{
 			//아이템설명
-			findItem->UseActionText = Item->UseActionText;
+			//findItem->UseActionText = Item->UseActionText;
 			//텍스트 지정
-			findItem->Thumnail = Item->Thumnail;
+			//findItem->Thumnail = Item->Thumnail;
 			//아이템명 으로 탐색 for문
-			findItem->Tags = Item->Tags;
+			//findItem->Tags = Item->Tags;
 			findItem->category = Item->category;
 			findItem->count++;
 			findItem->itemID = Item->itemID;

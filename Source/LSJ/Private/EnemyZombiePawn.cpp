@@ -77,6 +77,7 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 	//sound
 	SoundDie = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/Zombie_Death.Zombie_Death'"));
 	SoundAppear = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/zombie-_sound_effect.zombie-_sound_effect'"));
+	SoundPlayerHit = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/Y2meta_app_-_Minecraft_Dungeons__Endersent_SFX__128_kbps___1_.Y2meta_app_-_Minecraft_Dungeons__Endersent_SFX__128_kbps___1_'"));
 	AIControllerClass = AAIControllerZombie::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -158,9 +159,11 @@ void AEnemyZombiePawn::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 {
 	if (OtherActor == UGameplayStatics::GetPlayerPawn(this, 0))
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundPlayerHit, GetActorLocation(), 0.2f, 1.0f);
 		FDamageEvent damageEvent;
 		// 데미지를 받는쪽의 TakeDamage를 호출한다
 		OtherActor->TakeDamage(statComponent->GetAttackDamage(), damageEvent, GetController(), this);
+
 	}
 	else
 		if (OtherActor->ActorHasTag("Player"))
@@ -228,7 +231,6 @@ void AEnemyZombiePawn::Hit(AActor* damageCauser,float DamageAmount)
 	FRotator damageRotation2 = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCamera->GetCameraLocation());
 	//시작위치 homePos
 	uiDamageComponent->SetVisibleDamageUI(damageRotation2, direction, GetActorTransform(), DamageAmount);
-
 	if (statComponent->GetHp()<=0)
 	{
 		bDie = true;
@@ -249,6 +251,7 @@ void AEnemyZombiePawn::Die(AActor* damageCauser)
 	FVector locationTarget = FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 1000.0f);
 	dieDirection = locationTarget;
 	GetController()->UninitializeComponents();
+	skMeshComponent->SetAnimInstanceClass(nullptr);
 	capsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	skMeshComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	skMeshComponent->SetSimulatePhysics(true);
@@ -256,11 +259,11 @@ void AEnemyZombiePawn::Die(AActor* damageCauser)
 	
 	//부딧친 방향 구하기
 	FVector start = currentLocation;
-	start.Z = 0;
-	FVector end = damageCauser->GetActorLocation() + damageCauser->GetActorForwardVector() * -1.f * 1000.f;
-	end.Z = 0;
-	FVector newDirection = (start - end).GetSafeNormal() * 5.0f;
-	newDirection.Z = 4.0f;
+	//start.Z = 0;
+	FVector end = damageCauser->GetActorLocation();// +damageCauser->GetActorForwardVector() * -1.f * 1000.f;
+	//end.Z = 0;
+	FVector newDirection = (start-end).GetSafeNormal() * 5.0f;
+	newDirection.Z = 1.0f;
 	skMeshComponent->AddImpulse(newDirection * 10000.f);
 	//플레이어와 출동 하지 않게
 	skMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECollisionResponse::ECR_Ignore);

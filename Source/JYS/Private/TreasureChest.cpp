@@ -8,7 +8,9 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
 #include "GameFramework/Character.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "ItemBowBubble.h"
+
 // Sets default values
 ATreasureChest::ATreasureChest()
 {
@@ -21,8 +23,6 @@ ATreasureChest::ATreasureChest()
     TreasureMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TreasureMesh"));
     TreasureMesh->SetupAttachment(RootComponent);
     TreasureMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -50.0f));
-
-    // (X = 540.000000, Y = 1400.000000, Z = 60.000000)
 
     // 애니메이션 몽타주 로드
     static ConstructorHelpers::FObjectFinder<UAnimMontage> MontageAsset(TEXT("/Game/GameResource/Player/GoldChest/AM_GoldChest_Anim_Montage.AM_GoldChest_Anim_Montage"));
@@ -52,9 +52,19 @@ ATreasureChest::ATreasureChest()
     static ConstructorHelpers::FClassFinder<AItemBowBubble> bowItemFinder(TEXT("/Game/LSJ/Blueprints/Inventory/BP_BowBubble.BP_BowBubble_C"));
     if (bowItemFinder.Succeeded())
     {
-        bowItem =(bowItemFinder.Class);
+        bowItem = bowItemFinder.Class;
     }
     OnlyOnce = false;
+
+    // 파티클 시스템 로드
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleSystem(TEXT("/Script/Engine.ParticleSystem'/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Fire/P_Fire_Wall.P_Fire_Wall'"));
+    if (ParticleSystem.Succeeded())
+    {
+        HitEffect = ParticleSystem.Object;
+    }
+
+    // 초기화
+    SpawnedEffectComponent = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -91,18 +101,43 @@ void ATreasureChest::OnChestClicked()
         if (AnimInstance)
         {
             AnimInstance->Montage_Play(OpenChestMontage);
+
+            // 이펙트를 생성하는 타이머 설정
+            GetWorldTimerManager().SetTimer(SpawnEffectTimerHandle, this, &ATreasureChest::SpawnEffectAfterDelay, 1.0f, false);
         }
     }
 
     UE_LOG(LogTemp, Warning, TEXT("Item Spawn!!!!!!!!!!!!!!!!"));
     UE_LOG(LogTemp, Warning, TEXT("Item!!!!!!!!!!!!!"));
 
-    if(itemState!=2)
+    if (itemState != 2)
+    {
         // ItemState를 클릭 시 무작위로 설정
         itemState = FMath::RandRange(0, 1);
+    }
     UE_LOG(LogTemp, Warning, TEXT("Random ItemState: %d"), itemState);
 
     GetWorldTimerManager().SetTimer(SpawnItemTimerHandle, this, &ATreasureChest::SpawnItemAfterDelay, 1.0f, false);
+}
+
+void ATreasureChest::SpawnEffectAfterDelay()
+{
+    if (HitEffect)
+    {
+        FVector EffectLocation = GetActorLocation() + FVector(0.0f, 0.0f, 100.0f); 
+        SpawnedEffectComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, EffectLocation, FRotator::ZeroRotator);
+
+        // 이펙트를 3초 후에 파괴하는 타이머 설정
+        GetWorldTimerManager().SetTimer(DestroyEffectTimerHandle, this, &ATreasureChest::DestroyEffect, 2.0f, false);
+    }
+}
+
+void ATreasureChest::DestroyEffect()
+{
+    if (SpawnedEffectComponent)
+    {
+        SpawnedEffectComponent->DestroyComponent();
+    }
 }
 
 void ATreasureChest::SpawnItemAfterDelay()
@@ -120,7 +155,7 @@ void ATreasureChest::SpawnItemAfterDelay()
         int32 RandomIndex = FMath::RandRange(0, ArrowItems.Num() - 1);
         ItemToSpawn = ArrowItems[0];
     }
-    else if(itemState == 2)
+    else if (itemState == 2)
     {
         ItemToSpawn = bowItem;
     }
@@ -130,9 +165,7 @@ void ATreasureChest::SpawnItemAfterDelay()
         FActorSpawnParameters SpawnParams;
         SpawnParams.Owner = this;
 
-        // FVector SpawnLocation = GetActorLocation() + FVector(-50.0f, -200.0f, 0.0f);
         FVector SpawnLocation = GetActorLocation() + GetActorRightVector() * 200.0f;
         AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ItemToSpawn, SpawnLocation, GetActorRotation(), SpawnParams);
     }
 }
-// (X = 766.030739, Y = 1844.202016, Z = 60.000000)

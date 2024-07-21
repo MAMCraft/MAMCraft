@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "IncreaseHPItem.h"
 #include "Animation/AnimMontage.h"
+#include "Particles/ParticleSystem.h"
 #include "TreasureChest.generated.h"
 
 UCLASS()
@@ -43,10 +44,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Items")
     int32 itemState;
-
-	//UPROPERTY(EditAnywhere, Category = "Items")
- //   TArray<TSubclassOf<AActor>> ItemClasses;
-
 	
     UPROPERTY(EditAnywhere, Category = "Items")
     TArray<TSubclassOf<AActor>> IncreaseHPItems;
@@ -65,6 +62,21 @@ private:
 
 	// 타이머 핸들
 	FTimerHandle SpawnItemTimerHandle;
+
+	// 이펙트 타이머 핸들
+	FTimerHandle SpawnEffectTimerHandle;
+	FTimerHandle DestroyEffectTimerHandle;
+
+	// 이펙트
+	UPROPERTY(EditAnywhere, Category = "Effects")
+    UParticleSystem* HitEffect;
+
+	void SpawnEffectAfterDelay();
+	void DestroyEffect();
+
+	// Particle system component
+	UPROPERTY()
+	UParticleSystemComponent* SpawnedEffectComponent;
 
 	// 아이템 스폰 함수
 	void SpawnItemAfterDelay();

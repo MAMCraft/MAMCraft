@@ -23,7 +23,9 @@ void AMAMCGameModeBase::BeginPlay()
             // MainHUDWidget->OnButtonLevelUpdated.AddDynamic(this,&AMAMCGameModeBase::EndViewport);
         }
     }
+
     //LSJ 인벤토리
+    //inventoryHUD->initwidget
     if (!IsValid(inventoryHUD))
     {
         inventoryHUD = Cast<UInventoryWidget>(CreateWidget(GetWorld(), inventoryHUDFactory));

@@ -70,4 +70,8 @@ public:
 	USceneComponent* root;
 	UPROPERTY(EditAnywhere, Category = "Firing")
 	class UNiagaraSystem* FireEffectMuzzle;
+
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Default")
+	TObjectPtr<USoundWave> SoundExplosion;
 };

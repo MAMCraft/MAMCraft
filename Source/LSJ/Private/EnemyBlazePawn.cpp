@@ -76,14 +76,9 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 	uiDamageComponent = CreateDefaultSubobject<UUIDamageComponent>(TEXT("UIDAMAGECOMPONENT"));
 	
 	//sound
-	//audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("SOUND"));
-	//audioComponent->SetupAttachment(boxComponent);
-	static ConstructorHelpers::FObjectFinder<USoundCue> soundFinder(TEXT("/Game/LSJ/Sound/Minecraft_Blaze_Sound_Effect.Minecraft_Blaze_Sound_Effect"));
-	if (soundFinder.Succeeded())
-	{
-		soundPack = soundFinder.Object;
-	}
-
+	SoundDie = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/Minecraft_Blaze_Sound_Effect2.Minecraft_Blaze_Sound_Effect2'"));
+	SoundFire = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/fire2wav.fire2wav'"));
+	SoundHit = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/hitwav.hitwav'"));
 	AIControllerClass = AAIControllerBlaze::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -201,9 +196,11 @@ void AEnemyBlazePawn::Attack()
 	}
 	movement->MaxSpeed = 0;
 	animInstance->PlayAttackMontage();
+
 }
 void AEnemyBlazePawn::Fire()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), SoundFire,1.0f);
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	FVector fireLocation = GetActorLocation() + FVector(0.f,0.f,120.f);
@@ -232,6 +229,7 @@ void AEnemyBlazePawn::Attack(TArray<FVector>& location)
 	}
 	movement->MaxSpeed = 0;
 	animInstance->PlayAttackMontage();
+	
 }
 
 
@@ -252,6 +250,7 @@ void AEnemyBlazePawn::Hit(AActor* damageCauser,float DamageAmount)
 	{
 		OnAttackEnd();
 	}
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(),SoundHit,GetActorLocation(),0.5f,1.0f);
 	//何调模 规氢 备窍扁
 	FVector start = GetActorLocation();
 	start.Z = 0;
@@ -288,6 +287,7 @@ void AEnemyBlazePawn::Hit(AActor* damageCauser,float DamageAmount)
 }
 void AEnemyBlazePawn::Die(AActor* damageCauser)
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), SoundDie);
 	if (animInstance == nullptr)
 	{
 		animInstance = Cast<UAnimInstanceBlaze>(skMeshComponent->GetAnimInstance());

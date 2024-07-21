@@ -22,6 +22,8 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
+	int32 GetRespawnCount() const { return RespawnCount; }
+	void SetRespawnCount(int32 val) { RespawnCount = val; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

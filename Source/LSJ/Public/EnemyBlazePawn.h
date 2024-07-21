@@ -131,4 +131,11 @@ public:
 
 	//DamageUI
 	class UUIDamageComponent* uiDamageComponent;
+	//sound
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Default")
+	TObjectPtr<USoundWave> SoundDie;
+		UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Default")
+	TObjectPtr<USoundWave> SoundFire;
+			UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Default")
+	TObjectPtr<USoundWave> SoundHit;
 };

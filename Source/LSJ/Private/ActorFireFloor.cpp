@@ -32,6 +32,9 @@ AActorFireFloor::AActorFireFloor()
 	{
 		ExplosionParticle = Explosion.Object;
 	}
+	Sound = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/firefloor.firefloor'"));
+
+
 	mesh->OnComponentBeginOverlap.AddDynamic(this,&AActorFireFloor::OverlapBegin);
 	mesh->OnComponentEndOverlap.AddDynamic(this,&AActorFireFloor::OnOverlapEnd);
 }
@@ -48,6 +51,10 @@ void AActorFireFloor::BeginPlay()
 	GameStatic->SpawnEmitterAttached(FireParticle, RootComponent, FName("Muzzle"));
 	//ÀÌÆåÆ®
 	GameStatic->SpawnEmitterAttached(ExplosionParticle, RootComponent);
+
+
+	UGameplayStatics::PlaySound2D(GetWorld(), Sound);
+
 }
 
 // Called every frame

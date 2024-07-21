@@ -44,4 +44,7 @@ public:
 	class UParticleSystem * FireParticle;
 	UPROPERTY()
 	class UParticleSystem * ExplosionParticle;
+
+		UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Default")
+	TObjectPtr<USoundWave> Sound;
 };

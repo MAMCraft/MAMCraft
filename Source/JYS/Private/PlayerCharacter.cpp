@@ -155,8 +155,9 @@ void APlayerCharacter::BeginPlay()
 	StartLocation = GetActorLocation();
 	StartRotation = GetActorRotation();
 
-	// 초기 부활 횟수 설정
-	RespawnCount = 1;
+	// 초기 부활 횟수 설정 //이전 레벨 respawncount 받기
+	SetRespawnCount(gi->GetLife());
+
 
 	HPWidget = CreateWidget<UHPWidget>(GetWorld(), HPWidgetFactory);
 	if (HPWidget)
@@ -170,8 +171,8 @@ void APlayerCharacter::BeginPlay()
 		if (RespawnWidget)
 		{
 			RespawnWidget->AddToViewport();
-			RespawnWidget->SetRespawnCount(RespawnCount, MaxRespawns);
-			UE_LOG(LogTemp, Log, TEXT("RespawnWidget added to viewport with RespawnCount: %d, MaxRespawns: %d"), RespawnCount, MaxRespawns);
+			RespawnWidget->SetRespawnCount(GetRespawnCount()+1, MaxRespawns);
+			UE_LOG(LogTemp, Log, TEXT("RespawnWidget added to viewport with RespawnCount: %d, MaxRespawns: %d"), GetRespawnCount(), MaxRespawns);
 
 
 		}
@@ -317,7 +318,7 @@ void APlayerCharacter::OnMyTakeDamage(int damage)
 	// 빨간색으로 깜빡이기
 	BlinkRed();
 
-	if (playerHP == 0 && RespawnCount > 0)
+	if (playerHP == 0 && GetRespawnCount() > 0)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 
@@ -326,19 +327,20 @@ void APlayerCharacter::OnMyTakeDamage(int damage)
 			currentGameMode->showfailscreen();
 		}
 		Respawn();
-		RespawnCount--;
-
+		SetRespawnCount(0);
 		playerHP = playerMaxHP;
-
+		RespawnWidget->SetRespawnCount(GetRespawnCount()+1, 2);
 
 	}
-	else if (playerHP == 0 && RespawnCount <= 0) {
+	else if (playerHP == 0 && GetRespawnCount() <= 0) {
+		RespawnWidget->SetRespawnCount(0, 2);
 		Destroy();
 		AMAMCGameModeBase* currentGameMode = Cast<AMAMCGameModeBase>(GetWorld()->GetAuthGameMode());
 		if (currentGameMode != nullptr) {
 			currentGameMode->showoverscreen();
 		}
 	}
+	
 }
 
 void APlayerCharacter::HandleOnMontageNotifyBegin(FName a_nNotifyName, const FBranchingPointNotifyPayload& a_pBranchingpayload)
@@ -487,7 +489,7 @@ void APlayerCharacter::UpdateRespawnUI()
 {
 	if (RespawnWidget)
 	{
-		RespawnWidget->SetRespawnCount(RespawnCount, MaxRespawns);
+		RespawnWidget->SetRespawnCount(GetRespawnCount(), MaxRespawns);
 	}
 }
 
@@ -660,6 +662,7 @@ void APlayerCharacter::Respawn()
 	{
 		HPWidget->SetHP(playerHP, playerMaxHP);
 	}
+
 }
 
 void APlayerCharacter::SetController(AClickMovePlayerController* cont)

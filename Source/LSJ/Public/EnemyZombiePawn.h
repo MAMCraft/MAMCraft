@@ -97,4 +97,10 @@ public:
 	//DamageUI
 	class UUIDamageComponent* uiDamageComponent;
 	FVector currentLocation;
+
+	//sound
+				UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Default")
+	TObjectPtr<USoundWave> SoundDie;
+				UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Default")
+	TObjectPtr<USoundWave> SoundAppear;
 };

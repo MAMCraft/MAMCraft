@@ -74,7 +74,9 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 
 	//DamageUI
 	uiDamageComponent = CreateDefaultSubobject<UUIDamageComponent>(TEXT("UIDAMAGECOMPONENT"));
-
+	//sound
+	SoundDie = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/Zombie_Death.Zombie_Death'"));
+	SoundAppear = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/zombie-_sound_effect.zombie-_sound_effect'"));
 	AIControllerClass = AAIControllerZombie::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -264,5 +266,6 @@ void AEnemyZombiePawn::Die(AActor* damageCauser)
 	skMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECollisionResponse::ECR_Ignore);
 	//Enemy와 출동 하지 않게
 	skMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
-
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundDie, GetActorLocation(), 0.5f, 1.0f);
+	//UGameplayStatics::PlaySound2D(GetWorld(), SoundDie, 1.0f);
 }

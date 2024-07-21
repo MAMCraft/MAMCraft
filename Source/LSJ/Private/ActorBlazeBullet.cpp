@@ -50,6 +50,7 @@ AActorBlazeBullet::AActorBlazeBullet()
 	//{particleComponent->SetTemplate(ParticleAsset.Object);
 	//	particleComponent->SetTemplate(FireParticle);
 	//}
+	SoundExplosion = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/LSJ/Sound/explosion4.explosion4'"));
 
 	mesh->OnComponentHit.AddDynamic(this, &AActorBlazeBullet::OnHit);
 }
@@ -155,6 +156,7 @@ void AActorBlazeBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	//FireFloor spawn
 	if (OtherActor->ActorHasTag(FName("Floor")))
 	{
+		UGameplayStatics::PlaySound2D(GetWorld(), SoundExplosion,1.0f);
 		if (explosionDamage <= 0 && fireDamage <= 0)
 		{
 			return;

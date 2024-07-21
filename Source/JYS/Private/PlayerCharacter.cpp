@@ -304,6 +304,7 @@ void APlayerCharacter::IncreaseAttackDamage(float Amount)
 
 void APlayerCharacter::OnMyTakeDamage(int damage)
 {
+	IsAttacking = false;
 	// 데미지 만큼 체력을 소모한다.
 	playerHP -= damage;
 	if (playerHP < damage)

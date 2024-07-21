@@ -10,6 +10,7 @@
 #include "InventoryComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "FailScreen.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "PlayerCharacter.generated.h"
 
 
@@ -258,4 +259,9 @@ public:
 	FTimerHandle CooldownTimerHandle;
 	void ResetHPCooldown();
 	bool bIsHPCooldownActive;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo")
+    UParticleSystem* ComboParticle;
+
+	void SpawnComboParticle();
 };

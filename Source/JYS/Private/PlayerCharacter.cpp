@@ -499,6 +499,18 @@ void APlayerCharacter::ResetHPCooldown()
 	UE_LOG(LogTemp, Log, TEXT("HP item cooldown finished."));
 }
 
+void APlayerCharacter::SpawnComboParticle()
+{
+	if (ComboParticle)
+	{
+		FVector ParticleLocation = GetActorLocation() + (GetActorForwardVector() * 150.0f);
+		FRotator ParticleRotation = FRotator(0.0f, 0.0f, 0.0f); // 필요에 따라 회전 조정
+		FVector ParticleScale = FVector(1.0f); // 필요에 따라 스케일 조정
+
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ComboParticle, ParticleLocation, ParticleRotation, true)->SetWorldScale3D(ParticleScale);
+	}
+}
+
 
 
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -628,6 +640,12 @@ void APlayerCharacter::comboAttack()
 		AnimInstance->JumpToAttackMontageSection(CurrentCombo);
 		IsAttacking = true;
 		
+	}
+
+	// 두 번째 공격에서 파티클 스폰
+	if (CurrentCombo == 1)
+	{
+		SpawnComboParticle();
 	}
 
 }

@@ -102,7 +102,7 @@ public:
 private:
 	UPROPERTY()
 	class UDataTable* myStats;
-	int playerCurrentHp;
+	int playerCurrentHp = 10;
 	float instanceHPCooldownRemainTime=0.f;
 	int life = 1;
 };

@@ -83,7 +83,7 @@ void UInventoryComponent::BeginPlay()
 
 bool UInventoryComponent::AddItem(AItem* Item)
 {
-	for (AItem* findItem : Items)
+	for (AItem*& findItem : Items)
 	{
 		if (nullptr == findItem)
 			continue;

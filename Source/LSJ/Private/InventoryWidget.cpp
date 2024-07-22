@@ -139,10 +139,26 @@ void UInventoryWidget::UpdateInventory()
 				ItemQuantityArrow->SetText(FText::AsNumber(item->count));
 				ArrowEmptyImage->SetVisibility(ESlateVisibility::Hidden);
 			}
-			if(item->count<5)
+			if (item->count < 5)
+			{
+				switch (item->count)
+				{
+				case 4:ItemIconArrow_5->SetVisibility(ESlateVisibility::Visible);
+				case 3:ItemIconArrow_4->SetVisibility(ESlateVisibility::Visible);
+				case 2:ItemIconArrow_3->SetVisibility(ESlateVisibility::Visible);
+				case 1:ItemIconArrow_2->SetVisibility(ESlateVisibility::Visible);
+				case 0:ItemIconArrow_1->SetVisibility(ESlateVisibility::Visible);
+				}
 				ArrowPlayAnimation(item->count);
+			}
+			
 			if (item->count >= 5)
 			{
+				ItemIconArrow_1->SetVisibility(ESlateVisibility::Visible);
+				ItemIconArrow_2->SetVisibility(ESlateVisibility::Visible);
+				ItemIconArrow_3->SetVisibility(ESlateVisibility::Visible);
+				ItemIconArrow_4->SetVisibility(ESlateVisibility::Visible);
+				ItemIconArrow_5->SetVisibility(ESlateVisibility::Visible);
 				ItemIconArrow_1->SetRenderTranslation(FVector2D(0, 0));
 				ItemIconArrow_2->SetRenderTranslation(FVector2D(1, 17));
 				ItemIconArrow_3->SetRenderTranslation(FVector2D(1, 17));

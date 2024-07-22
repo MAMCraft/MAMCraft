@@ -12,8 +12,7 @@ void AItemBowBubble::BeginPlay()
 
 AItemBowBubble::AItemBowBubble()
 
-{	//아이템설명
-	UseActionText = FText::FromString("BowBubble");
+{	
 	//텍스트 지정
 	FString Path = FString("/Script/Engine.Texture2D'/Game/GameResource/Player/Bow/T_BubbleBow_Spooky2_Icon_Inventory.T_BubbleBow_Spooky2_Icon_Inventory'");
 	UTexture2D* Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *Path));

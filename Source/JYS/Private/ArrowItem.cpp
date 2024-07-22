@@ -6,8 +6,7 @@
 // Sets default values
 AArrowItem::AArrowItem()
 {
-	//아이템설명
-	UseActionText = FText::FromString("Arrow");
+
 	Tags.Add(FName("ItemArrow"));
 	category = (int)EItemCategroy::arrow;
 	itemID = 3;

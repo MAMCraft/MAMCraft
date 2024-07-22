@@ -26,7 +26,7 @@ void UBTTaskNode_LookTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	FRotator newRotation = FRotator(ControllingPawn->GetActorRotation().Pitch, lookRotation.Yaw, ControllingPawn->GetActorRotation().Roll);
 	currentTime += DeltaSeconds;
-	ControllingPawn->SetActorRotation(FMath::RInterpTo(ControllingPawn->GetActorRotation(), newRotation, DeltaSeconds, 5.f));
+	ControllingPawn->SetActorRotation(FMath::RInterpTo(ControllingPawn->GetActorRotation(), newRotation, currentTime, 5.f));
 }
 
 EBTNodeResult::Type UBTTaskNode_LookTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)

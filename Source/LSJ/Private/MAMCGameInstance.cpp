@@ -42,9 +42,9 @@ void UMAMCGameInstance::Save(TArray<AItem*>& inputItems)
 //아이템 로드
 void UMAMCGameInstance::Load(TArray<AItem*>& outputItems)
 {
-
 	for (int index = 0; index < itemStruct.Num(); index++)
 	{
+		
 		//outputItems[index]->UseActionText = itemStruct[index].UseActionText;
 		//outputItems[index]->Thumnail = itemStruct[index].Thumnail;
 		//outputItems[index]->Tags = itemStruct[index].Tags;
@@ -52,6 +52,7 @@ void UMAMCGameInstance::Load(TArray<AItem*>& outputItems)
 		outputItems[index]->itemID = itemStruct[index].itemID;
 		outputItems[index]->count = itemStruct[index].count;
 	}
+	
 }
 
 void UMAMCGameInstance::Shutdown()

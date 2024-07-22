@@ -34,15 +34,9 @@ public:
 
 	UPROPERTY(Transient)
 	class UWorld* World;
-
-	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite,Category="ITEM")
-	FText UseActionText;
-
-	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite,Category="ITEM",meta=(MultiLine = true))
-	FText ItemDescription;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ITEM",meta = (ClampMin = 0.0))
 	int itemID;
-	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite,Category="ITEM")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ITEM")
 	class UTexture2D* Thumnail;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ITEM",meta = (ClampMin = 0.0))
 	int count;

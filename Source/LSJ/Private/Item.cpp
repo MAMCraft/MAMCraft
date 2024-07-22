@@ -10,7 +10,6 @@ AItem::AItem()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	itemID = 0;
-	UseActionText = FText::FromString("Use");
 
 	itemWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
 	itemWidgetComponent->SetupAttachment(RootComponent);

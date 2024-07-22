@@ -40,7 +40,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Media")
 	class UMediaSource* MediaSource;
-
+	    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+    class USoundWave* MySoundCue;
 public:
 	UFUNCTION(BlueprintCallable, Category = "Media")
 	void PlayVideo();

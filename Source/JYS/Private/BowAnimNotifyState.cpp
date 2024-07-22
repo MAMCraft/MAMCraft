@@ -12,7 +12,7 @@ void UBowAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
     {
         if (PlayerCharacter->rightWeaponCollision)
         {
-            UE_LOG(LogTemp, Warning, TEXT("ddddd"));
+            //UE_LOG(LogTemp, Warning, TEXT("ddddd"));
             //PlayerCharacter->rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
             //PlayerCharacter->rightWeaponCollision->SetGenerateOverlapEvents(true);  // 충돌 이벤트를 생성하도록 설정
             PlayerCharacter->OnSkill = true;
@@ -29,7 +29,7 @@ void UBowAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeque
     {
         if (PlayerCharacter->rightWeaponCollision)
         {
-            UE_LOG(LogTemp, Warning, TEXT("fffff"));
+            //UE_LOG(LogTemp, Warning, TEXT("fffff"));
             //PlayerCharacter->rightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             //PlayerCharacter->rightWeaponCollision->SetGenerateOverlapEvents(false);  // 충돌 이벤트를 비활성화
             PlayerCharacter->OnSkill = false;

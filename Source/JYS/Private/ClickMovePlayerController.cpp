@@ -14,7 +14,7 @@
 AClickMovePlayerController::AClickMovePlayerController()
 {
 	bShowMouseCursor = true;
-	UE_LOG(LogTemp, Log, TEXT("Mouse"));
+	//UE_LOG(LogTemp, Log, TEXT("Mouse"));
 }
 
 void AClickMovePlayerController::SetupInputComponent()
@@ -39,7 +39,7 @@ void AClickMovePlayerController::PlayerTick(float DeltaTime)
 		float distance = (EnemyLocation - PlayerCharacter2->GetActorLocation()).Length();
 		if (distance < 170.f)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ATTACK!!!!!!!!!!!!!!!!!!!!!!!!!!"))
+			//UE_LOG(LogTemp, Warning, TEXT("ATTACK!!!!!!!!!!!!!!!!!!!!!!!!!!"))
 			FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(PlayerCharacter2->GetActorLocation(), EnemyLocation);
 			FRotator newRotation = FRotator(PlayerCharacter2->GetActorRotation().Pitch, lookRotation.Yaw, PlayerCharacter2->GetActorRotation().Roll);
 			PlayerCharacter2->SetActorRotation(newRotation);
@@ -107,7 +107,7 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	if (Target->ActorHasTag(FName(TEXT("ItemBowBubble"))))
 	{
 		// do something
-		UE_LOG(LogTemp, Warning, TEXT("ItemBowBubble"));
+		//UE_LOG(LogTemp, Warning, TEXT("ItemBowBubble"));
 		AItem* item = Cast<AItem>(Target);
 		PlayerCharacter2->inventoryComponent->AddItem(item);
 		Target->Destroy();
@@ -116,14 +116,14 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	else if (Target->ActorHasTag(FName(TEXT("ItemBowBasic"))))
 	{
 		// do something
-		UE_LOG(LogTemp, Warning, TEXT("ItemBowBasic"));
+		//UE_LOG(LogTemp, Warning, TEXT("ItemBowBasic"));
 		Target->Destroy();
 
 	}
 	else if (Target->ActorHasTag(FName(TEXT("ItemSword"))))
 	{
 		// do something
-		UE_LOG(LogTemp, Warning, TEXT("ItemSword"));
+		//UE_LOG(LogTemp, Warning, TEXT("ItemSword"));
 		Target->Destroy();
 
 	}
@@ -131,7 +131,7 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	{
 		// do something
 		PlayerCharacter2->inventoryComponent->AddArrow(5);
-		UE_LOG(LogTemp, Warning, TEXT("Arrow Item"));
+		//UE_LOG(LogTemp, Warning, TEXT("Arrow Item"));
 		Target->Destroy();
 
 	}
@@ -146,14 +146,14 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	else if (Target->ActorHasTag(FName(TEXT("FirstEquipmentItem"))))
 	{
 		// do something
-		UE_LOG(LogTemp, Warning, TEXT("First Equipment Item"));
+		//UE_LOG(LogTemp, Warning, TEXT("First Equipment Item"));
 		Target->Destroy();
 
 	}
 	else if (Target->ActorHasTag(FName(TEXT("SecondEquipmentItem"))))
 	{
 		// do something
-		UE_LOG(LogTemp, Warning, TEXT("Second Equipment Item"));
+		//UE_LOG(LogTemp, Warning, TEXT("Second Equipment Item"));
 		Target->Destroy();
 	}
 	else if (Target->ActorHasTag(FName(TEXT("Enemy"))))
@@ -164,7 +164,7 @@ void AClickMovePlayerController::MoveToMouseCursor()
 	}
 	else if (Target->ActorHasTag(FName("TreasureChest")))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Item Spawn22222222222222222222222222222"))
+		//UE_LOG(LogTemp, Warning, TEXT("Item Spawn22222222222222222222222222222"))
 			ATreasureChest* Chest = Cast<ATreasureChest>(Target);
 		if (Chest)
 		{
@@ -174,7 +174,7 @@ void AClickMovePlayerController::MoveToMouseCursor()
 
 	if (hit.bBlockingHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Iclick"))
+		//UE_LOG(LogTemp, Warning, TEXT("Iclick"))
 			SetNewDestination(hit.ImpactPoint);
 	}
 }

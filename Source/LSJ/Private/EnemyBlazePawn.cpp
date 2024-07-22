@@ -324,8 +324,8 @@ void AEnemyBlazePawn::Die(AActor* damageCauser)
 	//skMeshComponent->BodyInstance.bLockYRotation = true; // Y축 회전 제한
 	//skMeshComponent->BodyInstance.bLockRotation = true;
 	skMeshComponent->AddImpulse(newDirection * 5000.f);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s, %f %f %f"), *damageCauser->GetFName().ToString(), newDirection.X, newDirection.Y, newDirection.Z));
-	UE_LOG(LogTemp, Error, TEXT("Hit Actor Name: %s, %f %f %f"), *damageCauser->GetFName().ToString(), newDirection.X, newDirection.Y, newDirection.Z);
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s, %f %f %f"), *damageCauser->GetFName().ToString(), newDirection.X, newDirection.Y, newDirection.Z));
+	//UE_LOG(LogTemp, Error, TEXT("Hit Actor Name: %s, %f %f %f"), *damageCauser->GetFName().ToString(), newDirection.X, newDirection.Y, newDirection.Z);
 	//currentLocation.Z -= 100.0f;
 	//skMeshComponent->AddImpulseAtLocation(newDirection * 5000.f, currentLocation);
 }

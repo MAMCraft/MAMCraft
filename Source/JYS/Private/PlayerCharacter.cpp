@@ -117,7 +117,7 @@ APlayerCharacter::APlayerCharacter()
 	ConstructorHelpers::FObjectFinder<UMaterialInterface> RedMaterialFinder(TEXT("/Script/Engine.Material'/Game/GameResource/Player/Mesh/MI_DamageRed.MI_DamageRed'"));
 	if (RedMaterialFinder.Succeeded())
 	{
-	UE_LOG(LogTemp, Warning, TEXT("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+	//UE_LOG(LogTemp, Warning, TEXT("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
 		RedMaterial = RedMaterialFinder.Object;
 	}
 
@@ -172,7 +172,7 @@ void APlayerCharacter::BeginPlay()
 		{
 			RespawnWidget->AddToViewport();
 			RespawnWidget->SetRespawnCount(GetRespawnCount()+1, MaxRespawns);
-			UE_LOG(LogTemp, Log, TEXT("RespawnWidget added to viewport with RespawnCount: %d, MaxRespawns: %d"), GetRespawnCount(), MaxRespawns);
+			//UE_LOG(LogTemp, Log, TEXT("RespawnWidget added to viewport with RespawnCount: %d, MaxRespawns: %d"), GetRespawnCount(), MaxRespawns);
 
 
 		}
@@ -198,7 +198,7 @@ void APlayerCharacter::BeginPlay()
 				if (IsComboInputOn)
 				{
 					AttackStartComboState();
-					UE_LOG(LogTemp, Error, TEXT("%d"), CurrentCombo);
+					//UE_LOG(LogTemp, Error, TEXT("%d"), CurrentCombo);
 
 					AnimInstance->JumpToAttackMontageSection(CurrentCombo);
 				}
@@ -242,13 +242,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::Rolling()
 {
-	UE_LOG(LogTemp, Log, TEXT("rollingMontage"));
+	//UE_LOG(LogTemp, Log, TEXT("rollingMontage"));
 
 	if (rollingMontage)
 	{
 		char_controller->SetNewMove(GetActorLocation() + GetActorForwardVector() * 200 );
 		PlayAnimMontage(rollingMontage);
-		UE_LOG(LogTemp, Log, TEXT("rollingMontage"));
+		//UE_LOG(LogTemp, Log, TEXT("rollingMontage"));
 	}
 }
 
@@ -269,7 +269,7 @@ void APlayerCharacter::IncreaseHP(int32 Amount)
 	}
 	if (bIsHPCooldownActive)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HP item is on cooldown."));
+		//UE_LOG(LogTemp, Warning, TEXT("HP item is on cooldown."));
 		return;
 	}
 
@@ -282,7 +282,7 @@ void APlayerCharacter::IncreaseHP(int32 Amount)
 		HPWidget->SetHP(playerHP, playerMaxHP);
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("HP Increased: %d / %d"), playerHP, playerMaxHP);
+	//UE_LOG(LogTemp, Log, TEXT("HP Increased: %d / %d"), playerHP, playerMaxHP);
 
 	// Start cooldown
 	
@@ -293,13 +293,13 @@ void APlayerCharacter::IncreaseHP(int32 Amount)
 	}
 		
 
-	UE_LOG(LogTemp, Log, TEXT("HP item used. Cooldown started."));
+	//UE_LOG(LogTemp, Log, TEXT("HP item used. Cooldown started."));
 }
 
 void APlayerCharacter::IncreaseAttackDamage(float Amount)
 {
 	AttackDamage += Amount;
-	UE_LOG(LogTemp, Log, TEXT("Attack Damage Increased: %d"), AttackDamage);
+	//UE_LOG(LogTemp, Log, TEXT("Attack Damage Increased: %d"), AttackDamage);
 }
 
 void APlayerCharacter::OnMyTakeDamage(int damage)
@@ -365,7 +365,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 			if (!bIsTakingFireDamage)
 			{
 				bIsTakingFireDamage = true;
-				UE_LOG(LogTemp, Warning, TEXT("Started taking fire damage"));
+				//UE_LOG(LogTemp, Warning, TEXT("Started taking fire damage"));
 
 				// 타이머 설정: 0.5초마다 ApplyFireDamage 함수 호출
 				GetWorldTimerManager().SetTimer(FireDamageTimerHandle, this, &APlayerCharacter::ApplyFireDamage, 0.1f, true, 0.0f);
@@ -376,7 +376,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("TakeDamage : %s"), *DamageCauser->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("TakeDamage : %s"), *DamageCauser->GetName());
 	return ActualDamage;
 }
 
@@ -387,7 +387,7 @@ void APlayerCharacter::UpgradeSkill()
 
 	if (bowState == 0)
 	{
-		UE_LOG(LogTemp, Log, TEXT("%d UpgradeSkill"), bowState);
+		//UE_LOG(LogTemp, Log, TEXT("%d UpgradeSkill"), bowState);
 		// Fire 1 arrow
 		FVector t = rightWeaponCollision->GetComponentLocation();
 		AArrowAttack* Arrow = GetWorld()->SpawnActor<AArrowAttack>(t, GetActorForwardVector().Rotation());
@@ -398,7 +398,7 @@ void APlayerCharacter::UpgradeSkill()
 	}
 	else if (bowState == 1)
 	{
-		UE_LOG(LogTemp, Log, TEXT("%d UpgradeSkill"),bowState);
+		//UE_LOG(LogTemp, Log, TEXT("%d UpgradeSkill"),bowState);
 		// 현재 방향 벡터를 기준으로 왼쪽으로 30도 회전시키기 위한 Rotator 생성
 		FRotator Left30DegreesRotator = FRotator(0.0f, -30.0f, 0.0f);
 		FRotator Right30DegreesRotator = FRotator(0.0f, 30.0f, 0.0f);
@@ -443,14 +443,14 @@ void APlayerCharacter::skill()
 {
 	if (inventoryComponent->GetArrow() <= 0)
 		return;
-	UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
+	//UE_LOG(LogTemp, Log, TEXT("bowMonatge"));
 	if (OnSkill)
 	{
 		return;
 	}
 	if (arrowCount <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No arrows left!"));
+		//UE_LOG(LogTemp, Warning, TEXT("No arrows left!"));
 		return;
 	}
 	bowState = (int)inventoryComponent->GetCurrentBow();
@@ -469,7 +469,7 @@ void APlayerCharacter::ApplyFireDamage()
 	OnMyTakeDamage(1);
 
 	// 로그 남기기
-	UE_LOG(LogTemp, Warning, TEXT("Applying fire damage"));
+	//UE_LOG(LogTemp, Warning, TEXT("Applying fire damage"));
 }
 
 
@@ -483,7 +483,7 @@ void APlayerCharacter::StopFireDamage()
 	GetWorldTimerManager().ClearTimer(StopFireDamageTimerHandle);
 
 	// 로그 남기기
-	UE_LOG(LogTemp, Warning, TEXT("Stopped taking fire damage"));
+	//UE_LOG(LogTemp, Warning, TEXT("Stopped taking fire damage"));
 }
 
 void APlayerCharacter::UpdateRespawnUI()
@@ -497,7 +497,7 @@ void APlayerCharacter::UpdateRespawnUI()
 void APlayerCharacter::ResetHPCooldown()
 {
 	bIsHPCooldownActive = false;
-	UE_LOG(LogTemp, Log, TEXT("HP item cooldown finished."));
+	//UE_LOG(LogTemp, Log, TEXT("HP item cooldown finished."));
 }
 
 void APlayerCharacter::SpawnComboParticle()

@@ -20,7 +20,7 @@ void UUIStartMenu::StartButtonCallback()
 	{
 		CanvasSlot->SetZOrder(1);
 	}
-
+	UGameplayStatics::PlaySound2D(GetWorld(), MySoundCue);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UUIStartMenu::TestFunction, 15.f);
 
 }
@@ -63,6 +63,8 @@ void UUIStartMenu::NativeConstruct()
 	Start->OnClicked.AddDynamic(this, &UUIStartMenu::StartButtonCallback);
 	Exit->OnClicked.AddDynamic(this, &UUIStartMenu::EndButtonCallback);
 	//OnButtonLevelUpdated.AddDynamic(this, &UUIStartMenu::RemoveFromParent);
+	MySoundCue = LoadObject<USoundWave>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/JYS/Audio/MAMCraft_Start_Audio.MAMCraft_Start_Audio'"));
+
 }
 void UUIStartMenu::EndViewport()
 {

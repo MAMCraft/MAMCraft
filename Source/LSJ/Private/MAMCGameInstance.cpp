@@ -16,7 +16,8 @@ UMAMCGameInstance::UMAMCGameInstance()
 void UMAMCGameInstance::Init()
 {
 	Super::Init();
-
+	playerCurrentHp = 10;
+	itemStruct.Empty();
 }
 FEnemyData UMAMCGameInstance::GetStatData(FName name)
 {

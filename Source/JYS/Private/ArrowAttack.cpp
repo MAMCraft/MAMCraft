@@ -79,7 +79,7 @@ void AArrowAttack::Tick(float DeltaTime)
 
 void AArrowAttack::OnrightWeaponCollision(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    UE_LOG(LogTemp, Warning, TEXT("OnrightWeaponCollision : %s"), *OtherActor->GetName());
+   // UE_LOG(LogTemp, Warning, TEXT("OnrightWeaponCollision : %s"), *OtherActor->GetName());
     if (OtherActor->ActorHasTag("Enemy"))
     {
         FDamageEvent damageEvent;

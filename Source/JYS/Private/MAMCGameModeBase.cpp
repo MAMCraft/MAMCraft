@@ -77,7 +77,7 @@ void AMAMCGameModeBase::showoverscreen()
 
 void AMAMCGameModeBase::EndViewport()
 {
-    UE_LOG(LogTemp, Log, TEXT("EndViewport"));
+    //UE_LOG(LogTemp, Log, TEXT("EndViewport"));
     //MainHUDWidget->FinishDestroy();
 }
 

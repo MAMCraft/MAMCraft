@@ -31,13 +31,13 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 void UPlayerAnim::AnimNotify_NextAttackCheck()
 {
-	UE_LOG(LogTemp, Error, TEXT("AnimNotify_NextAttackCheck"));
+	//UE_LOG(LogTemp, Error, TEXT("AnimNotify_NextAttackCheck"));
 	OnNextAttackCheck.Broadcast();
 }
 
 void UPlayerAnim::AnimNotify_EndAttack()
 {
-	UE_LOG(LogTemp, Error, TEXT("AnimNotify_EndAttack"));
+	//UE_LOG(LogTemp, Error, TEXT("AnimNotify_EndAttack"));
 	EndAttack.Broadcast();
 }
 
@@ -54,7 +54,7 @@ void UPlayerAnim::PlayAttackMontage()
 void UPlayerAnim::JumpToAttackMontageSection(int32 NewSection)
 {
 	PlayAttackMontage();
-	UE_LOG(LogTemp, Error, TEXT("JumpToAttackMontageSection"));
+	//UE_LOG(LogTemp, Error, TEXT("JumpToAttackMontageSection"));
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), attackComboMontage);
 }
 

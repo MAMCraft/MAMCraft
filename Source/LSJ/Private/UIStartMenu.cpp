@@ -5,14 +5,42 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
+#include "MediaPlayer.h"
+#include "MediaTexture.h"
+#include "MediaSource.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/Image.h"
 
 	// Start 버튼 클릭시 실행될 함수
 void UUIStartMenu::StartButtonCallback()
 {
+	PlayVideo();
+	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(VideoPlayer->Slot);
+	if (CanvasSlot)
+	{
+		CanvasSlot->SetZOrder(1);
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UUIStartMenu::TestFunction, 15.f);
+
+}
+void UUIStartMenu::TestFunction()
+{
 	// 레벨을 바꿔주는 함수
 	UGameplayStatics::OpenLevel(this, TEXT("Forest"));
 	OnButtonLevelUpdated.Broadcast();
-	//this->SetVisibility(ESlateVisibility::Hidden);
+	this->SetVisibility(ESlateVisibility::Hidden);
+}
+void UUIStartMenu::PlayVideo()
+{
+	if (MediaPlayer && MediaSource)
+	{
+		if (MediaPlayer->CanPlaySource(MediaSource))
+		{
+			MediaPlayer->OpenSource(MediaSource);
+			MediaPlayer->Play();
+		}
+	}
 }
 
 // End 버튼 클릭시 실행될 함수

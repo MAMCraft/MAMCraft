@@ -27,10 +27,31 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UButton* Exit;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UImage* VideoPlayer;
+
 	virtual void NativeConstruct();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Media")
+	class UMediaPlayer* MediaPlayer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Media")
+	class UMediaTexture* MediaTexture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Media")
+	class UMediaSource* MediaSource;
+
 public:
+	UFUNCTION(BlueprintCallable, Category = "Media")
+	void PlayVideo();
 	UPROPERTY(BlueprintAssignable)
 	FOnButtonLevelUpdated OnButtonLevelUpdated;
 		UFUNCTION()
 	void EndViewport();
+	
+	FTimerHandle TimerHandle;
+
+	UFUNCTION()
+	void TestFunction();
+
 };

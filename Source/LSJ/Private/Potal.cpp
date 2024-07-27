@@ -14,7 +14,7 @@ APotal::APotal()
 
 
 	UMaterialInstance* mi = nullptr;
-	ConstructorHelpers::FObjectFinder<UMaterialInstance> materialFinder(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/LSJ/Resource/MapResource/Potal/NewMaterial_Inst.NewMaterial_Inst'"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> materialFinder(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/LSJ/Resource/MapResource/Potal/NewMaterial_Inst.NewMaterial_Inst'"));
 	if (materialFinder.Succeeded())
 	{
 		mi = materialFinder.Object;

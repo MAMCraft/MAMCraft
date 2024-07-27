@@ -25,7 +25,7 @@ AArrowAttack::AArrowAttack()
     MeshComp->SetupAttachment(RootComponent);
 
     // 화살 메시 로드
-    ConstructorHelpers::FObjectFinder<UStaticMesh> TempMesh(TEXT("/Script/Engine.StaticMesh'/Game/GameResource/Player/Arrow/arrowBullet.arrowBullet'"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> TempMesh(TEXT("/Script/Engine.StaticMesh'/Game/GameResource/Player/Arrow/arrowBullet.arrowBullet'"));
     if (TempMesh.Succeeded())
     {
         MeshComp->SetStaticMesh(TempMesh.Object);

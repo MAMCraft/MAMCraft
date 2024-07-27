@@ -53,7 +53,7 @@ AEnemyZombiePawn::AEnemyZombiePawn()
 		skMeshComponent->SetAnimInstanceClass(zombieAnim.Class);
 	}
 
-	ConstructorHelpers::FObjectFinder<UMaterialInterface> hitMaterialFinder(TEXT("/Script/Engine.Material'/Game/LSJ/Resource/Zombie/Skeleton/MI_ZombieHit.MI_ZombieHit'"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> hitMaterialFinder(TEXT("/Script/Engine.Material'/Game/LSJ/Resource/Zombie/Skeleton/MI_ZombieHit.MI_ZombieHit'"));
 	if (hitMaterialFinder.Succeeded())
 	{
 		hitMaterial = hitMaterialFinder.Object;

@@ -40,22 +40,22 @@ UInventoryComponent::UInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	ConstructorHelpers::FClassFinder<AIncreaseHPItem> itemHpClassFinder(TEXT("/Script/Engine.Blueprint'/Game/JYS/Blueprints/BP_IncreaseHPItem.BP_IncreaseHPItem_C'"));
+	static ConstructorHelpers::FClassFinder<AIncreaseHPItem> itemHpClassFinder(TEXT("/Script/Engine.Blueprint'/Game/JYS/Blueprints/BP_IncreaseHPItem.BP_IncreaseHPItem_C'"));
 	if (itemHpClassFinder.Succeeded())
 	{
 		itemHp = itemHpClassFinder.Class;
 	}
-	ConstructorHelpers::FClassFinder<AItemBowBasic> itemBowBasicClassFinder(TEXT("/Script/Engine.Blueprint'/Game/LSJ/Blueprints/Inventory/BP_BowBasic.BP_BowBasic_C'"));
+	static ConstructorHelpers::FClassFinder<AItemBowBasic> itemBowBasicClassFinder(TEXT("/Script/Engine.Blueprint'/Game/LSJ/Blueprints/Inventory/BP_BowBasic.BP_BowBasic_C'"));
 	if (itemBowBasicClassFinder.Succeeded())
 	{
 		itemBowBasic = itemBowBasicClassFinder.Class;
 	}
-	ConstructorHelpers::FClassFinder<AItemSword> itemSwordClassFinder(TEXT("/Script/Engine.Blueprint'/Game/LSJ/Blueprints/Inventory/BP_Sword.BP_Sword_C'"));
+	static ConstructorHelpers::FClassFinder<AItemSword> itemSwordClassFinder(TEXT("/Script/Engine.Blueprint'/Game/LSJ/Blueprints/Inventory/BP_Sword.BP_Sword_C'"));
 	if (itemSwordClassFinder.Succeeded())
 	{
 		itemSword = itemSwordClassFinder.Class;
 	}
-	ConstructorHelpers::FClassFinder<AArrowItem> itemArrowClassFinder(TEXT("/Script/Engine.Blueprint'/Game/JYS/Blueprints/BP_ArrowItem.BP_ArrowItem_C'"));
+	static ConstructorHelpers::FClassFinder<AArrowItem> itemArrowClassFinder(TEXT("/Script/Engine.Blueprint'/Game/JYS/Blueprints/BP_ArrowItem.BP_ArrowItem_C'"));
 	if (itemArrowClassFinder.Succeeded())
 	{
 		itemArrow = itemArrowClassFinder.Class;

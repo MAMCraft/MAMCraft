@@ -21,7 +21,7 @@ AActorBlazeBullet::AActorBlazeBullet()
 	mesh->SetupAttachment(RootComponent);
 	//RootComponent = mesh;
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh>sphereMesh(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>sphereMesh(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	if (sphereMesh.Succeeded())
 	{
 		mesh->SetStaticMesh(sphereMesh.Object);

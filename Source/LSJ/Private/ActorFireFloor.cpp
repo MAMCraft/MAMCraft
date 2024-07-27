@@ -11,7 +11,7 @@ AActorFireFloor::AActorFireFloor()
 	PrimaryActorTick.bCanEverTick = true;
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
 	RootComponent = mesh;
-	ConstructorHelpers::FObjectFinder<UStaticMesh>boxMesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>boxMesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
 	if (boxMesh.Succeeded())
 	{
 		mesh->SetStaticMesh(boxMesh.Object);

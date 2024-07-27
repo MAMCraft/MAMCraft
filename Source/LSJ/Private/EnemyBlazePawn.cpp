@@ -47,7 +47,7 @@ AEnemyBlazePawn::AEnemyBlazePawn()
 		bullet =(blazeAnim1.Class);
 	}
 	//hit material
-	ConstructorHelpers::FObjectFinder<UMaterialInterface> hitMaterialFinder(TEXT("/Script/Engine.Material'/Game/LSJ/Resource/Blaze/Mesh/MI_BlazeHit.MI_BlazeHit'"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> hitMaterialFinder(TEXT("/Script/Engine.Material'/Game/LSJ/Resource/Blaze/Mesh/MI_BlazeHit.MI_BlazeHit'"));
 	if (hitMaterialFinder.Succeeded())
 	{
 		hitMaterial = hitMaterialFinder.Object;
